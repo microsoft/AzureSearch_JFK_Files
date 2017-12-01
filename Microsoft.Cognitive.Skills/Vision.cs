@@ -215,7 +215,12 @@ namespace Microsoft.Cognitive.Skills
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public string Text { get { throw new NotImplementedException(); } }
+        public string Text {
+            get
+            {
+                return string.Join(" ", lines.SelectMany(l => l.words).Select(w => w.text));
+            }
+        }
 
         public OcrResult Concat(OcrResult result)
         {

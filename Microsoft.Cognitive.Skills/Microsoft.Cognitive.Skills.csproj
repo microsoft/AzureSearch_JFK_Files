@@ -59,6 +59,9 @@
     <Compile Include="Vision.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\SearchUI\cia-cryptonyms.json">
+      <Link>cia-cryptonyms.json</Link>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="project.json" />
   </ItemGroup>

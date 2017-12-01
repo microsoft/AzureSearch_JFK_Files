@@ -244,4 +244,3 @@ ModelManifest.xml
 
 # custom files
 **/PublishProfiles/*
-**/EnrichImages/run.csx

@@ -149,7 +149,7 @@ namespace DataEnricher
             // Update documents with boost scores
             Console.WriteLine("Boosting Documents");
             json = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DemoBoost.json"));
-            searchHelper.Put("indexes/" + Config.AZURE_SEARCH_INDEX_NAME + "/docs/index" + Config.AZURE_SEARCH_INDEX_NAME, json);
+            searchHelper.Post("indexes/" + Config.AZURE_SEARCH_INDEX_NAME + "/docs/index", json);
 
             // test the pipeline and index
             Console.WriteLine("Sending a test image through the pipeline");

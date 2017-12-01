@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="cia-cryptonyms.json" />
     <None Include="Properties\PublishProfiles\jfkfiles - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\jfkfiles2 - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">

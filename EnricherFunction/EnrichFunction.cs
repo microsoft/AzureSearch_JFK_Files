@@ -44,13 +44,13 @@ namespace EnricherFunction
                 var serviceClient = new SearchServiceClient(Config.AZURE_SEARCH_SERVICE_NAME, new SearchCredentials(Config.AZURE_SEARCH_ADMIN_KEY));
                 indexClient = serviceClient.Indexes.GetClient(Config.AZURE_SEARCH_INDEX_NAME);
                 linkedEntityClient = new EntityLinkingServiceClient(Config.ENTITY_LINKING_API_KEY);
-                cosmosDb = new AnnotationStore(Config.COSMOSDB_SERVICE_NAME, Config.COSMOSDB_API_KEY);
+                cosmosDb = new AnnotationStore();
             }
         }
 
-        private static Task<EntityLink[]> DetectCIACryptonyms(string txt)
+        private static async Task<EntityLink[]> DetectCIACryptonyms(string txt)
         {
-            throw new NotImplementedException();
+            return new EntityLink[0];
         }
 
         private static Task<EntityLink[]> GetLinkedEntitiesAsync(params string[] txts)
@@ -65,6 +65,9 @@ namespace EnricherFunction
 
             return linkedEntityClient.LinkAsync(txt);
         }
+
+        
+
 
 
         public static SkillSet<PageImage> CreateCognitiveSkillSet()
@@ -97,9 +100,46 @@ namespace EnricherFunction
                 cogOcr, handwriting, vision);
 
             // combine the data as an annotated document
-            var pageContent = skillSet.AddSkill("cia-cryptonyms",
+            var cryptonyms = skillSet.AddSkill("cia-cryptonyms",
                 ocr => DetectCIACryptonyms(ocr.Text),
                 cogOcr);
+
+            // combine the data as an annotated page that can be used by the UI
+            var pageContent = skillSet.AddSkill("page-metadata",
+                async (ocr, hw, vis, cia, entities, img) => {
+                    // The handwriting result also included OCR text but OCR will produce better results on typed documents
+                    // so take the result that produces the most text.  Consider combining them by region to take the best of each.
+                    var result = hw.Text.Length > ocr.Text.Length ? ocr : hw;
+
+                    // create metadata for the vision caption and tags
+                    var captionLines = vis.Description.Captions.Select(c => new lineResult() {
+                        words = c.Text.Split(' ').Select(w => new WordResult()
+                        {
+                            text = w
+                        }).ToArray()
+                    });
+
+                    var tagLines = new[] { new lineResult()
+                    {
+                        words = new[] { "(" }
+                            .Concat(vis.Tags.Select(t => t.Name))
+                            .Concat(new[] { ")" })
+                            .Select(t => new WordResult() { text = t }).ToArray()
+                    }};
+
+                    var newResult = new OcrResult()
+                    {
+                        lines = result.lines.Concat(captionLines).Concat(tagLines).ToArray()
+                    };
+
+                    // rotate the image if needed
+                    var pageImg = ocr.Orientation == "Up" || ocr.Orientation == "NotDetected"
+                        ? img 
+                        : await img.GetImage().Rotate(ocr.Orientation).UploadMedia(blobContainer);
+
+                    return new AnnotatedPage(newResult, pageImg);
+                },
+                cogOcr, handwriting, vision, cryptonyms, linkedEntities, resizedImage);
 
             return skillSet;
         }
@@ -121,11 +161,13 @@ namespace EnricherFunction
             await cosmosDb.SaveAsync(annotations);
 
             // index the annotated document with azure search
+            AnnotatedDocument document = new AnnotatedDocument(annotations.Select(a => a.Get<AnnotatedPage>("page-metadata")));
             var searchDocument = new SearchDocument(name)
             {
-                Metadata = annotations.Metadata,
-                Text = annotations.Text,
-                LinkedEntities = annotations.Get<EntityLink[]>("linked-entities")
+                Metadata = document.Metadata,
+                Text = document.Text,
+                LinkedEntities = annotations
+                     .SelectMany(a => a.Get<EntityLink[]>("linked-entities") ?? new EntityLink[0])
                      .GroupBy(l => l.Name)
                      .OrderByDescending(g => g.Max(l => l.Score))
                      .Select(l => l.Key)

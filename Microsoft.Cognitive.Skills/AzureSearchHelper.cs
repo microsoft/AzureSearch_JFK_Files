@@ -10,7 +10,7 @@ namespace Microsoft.Cognitive.Skills
 {
     public class AzureSearchHelper
     {
-        private const string DefaultApiVersionString = "api-version=2016-09-01";
+        private const string DefaultApiVersionString = "2016-09-01";
         private static Uri _serviceUri;
         private static HttpClient _httpClient;
 
@@ -41,7 +41,7 @@ namespace Microsoft.Cognitive.Skills
             Uri uri = new Uri(_serviceUri, uriPath);
             UriBuilder builder = new UriBuilder(uri);
             string separator = string.IsNullOrWhiteSpace(builder.Query) ? string.Empty : "&";
-            builder.Query = builder.Query.TrimStart('?') + separator + version;
+            builder.Query = builder.Query.TrimStart('?') + separator + "api-version=" + version;
 
             var request = new HttpRequestMessage(method, builder.Uri);
 

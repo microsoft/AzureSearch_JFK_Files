@@ -6,7 +6,8 @@
         "WindowsAzure.Storage": "8.1.1",
         "Microsoft.Azure.Search": "3.0.4",
         "Microsoft.Azure.WebJobs.Extensions": "2.1.0-beta1",
-        "Microsoft.AspNet.WebApi.Client": "5.2.3"
+        "Microsoft.AspNet.WebApi.Client": "5.2.3",
+        "System.Net.Http":  "4.3.2"
       }
     }
   },

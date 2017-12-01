@@ -29,11 +29,6 @@ namespace Microsoft.Cognitive.Skills
 
         private List<AnnotatedPage> pages = new List<AnnotatedPage>();
 
-        public AnnotatedDocument(IEnumerable<Annotation> annotations)
-        {
-            throw new NotImplementedException();
-        }
-
         public AnnotatedDocument(IEnumerable<AnnotatedPage> pages)
         {
             Metadata = header + Environment.NewLine + string.Join(Environment.NewLine, pages.Select(p => p.Metadata)) + Environment.NewLine + footer;
