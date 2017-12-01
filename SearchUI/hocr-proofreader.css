@@ -1,0 +1,51 @@
+.layout, .editor {
+    display: block;
+    margin: auto;
+    background: #fff;
+    box-sizing: border-box;
+    border: 1px solid #c1c1c1;
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.layout .rects rect {
+    fill: none;
+    pointer-events: fill;
+}
+
+.layout .rects .ocr_carea.hover rect.ocr_carea {
+    /* TODO: show ocr_carea just with a line on the left (with some padding?) */
+    stroke: #007eff;
+    stroke-width: 3;
+    stroke-dasharray: 50,50;
+}
+
+.layout .rects .ocr_par.hover rect.ocr_par {
+    stroke: #007eff;
+    stroke-width: 1;
+    stroke-dasharray: 10,10;
+}
+
+.layout .rects .ocr_line.hover rect.ocr_line {
+    fill: #cce5ff;
+    opacity: 0.5;
+    stroke: #007eff;
+    stroke-width: 3;
+}
+
+.layout .rects rect.ocrx_word.highlight {
+    fill: yellow;
+    opacity: 0.5;
+}
+
+.layout .rects rect.ocrx_word.hover {
+    fill: #99cfff;
+    opacity: 0.5;
+    stroke: #007eff;
+    stroke-width: 3;
+}
+
+.editor {
+    width: 100%;
+    height: 100%;
+}
+

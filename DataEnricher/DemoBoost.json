@@ -1,0 +1,43 @@
+﻿{
+  "value": [
+    {
+      "@search.action": "mergeOrUpload",
+      "id": "docid-32271414_pdf",
+      "demoBoost": 80,
+      "demoInitialPage": 4
+    },
+    {
+      "@search.action": "mergeOrUpload",
+      "id": "docid-32352986_pdf",
+      "demoBoost": 20
+    },
+    {
+      "@search.action": "mergeOrUpload",
+      "id": "104-10177-10057_pdf",
+      "demoBoost": 100
+    },
+    {
+      "@search.action": "mergeOrUpload",
+      "id": "docid-32123909_pdf",
+      "demoBoost": 10,
+      "demoInitialPage": 1
+    },
+    {
+      "@search.action": "mergeOrUpload",
+      "id": "photo_jpg",
+      "demoBoost": 24
+    },
+    {
+      "@search.action": "mergeOrUpload",
+      "id": "docid-32404466_pdf",
+      "demoInitialPage": 6
+    },
+    {
+      "@search.action": "mergeOrUpload",
+      "id": "docid-32395634_pdf",
+      "demoBoost": 60
+    }
+
+
+  ]
+}

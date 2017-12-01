@@ -1,0 +1,44 @@
+body {
+    font-family: Times New Roman, serif;
+    font-size: 13pt;
+}
+
+div.ocr_page {
+    border-bottom: 3px dashed #3399ff;
+    padding: 10px 0;
+}
+
+div.ocr_carea {
+    padding-left: 10px;
+    border-left: 3px solid transparent;
+}
+div.ocr_carea.hover {
+    border-left: 3px solid #3399ff;
+}
+
+p.ocr_par {
+    border: 1px solid transparent;
+}
+p.ocr_par.hover {
+    border: 1px dashed #3399ff;
+}
+
+span.ocr_line.hover {
+    background: #cce5ff;
+}
+
+span.ocrx_word.highlight {
+    background: yellow;
+}
+
+span.ocrx_word.hover {
+    background: #99cfff;
+}
+
+
+
+/*
+.ocr_line {
+    display: block;
+}
+*/

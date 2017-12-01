@@ -1,0 +1,41 @@
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../Tools/Fonts/liberation-fonts/LiberationSerif-Regular.ttf");
+}
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../Tools/Fonts/liberation-fonts/LiberationSerif-Bold.ttf");
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../Tools/Fonts/liberation-fonts/LiberationSerif-Italic.ttf");
+    font-style: italic;
+}
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../Tools/Fonts/liberation-fonts/LiberationSerif-BoldItalic.ttf");
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Courier New";
+    src: url("../Tools/Fonts/microsoft-core-fonts/CourierNew-Regular.ttf");
+}
+@font-face {
+    font-family: "Courier New";
+    src: url("../Tools/Fonts/microsoft-core-fonts/CourierNew-Bold.ttf");
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Courier New";
+    src: url("../Tools/Fonts/microsoft-core-fonts/CourierNew-Italic.ttf");
+    font-style: italic;
+}
+@font-face {
+    font-family: "Courier New";
+    src: url("../Tools/Fonts/microsoft-core-fonts/CourierNew-BoldItalic.ttf");
+    font-weight: bold;
+    font-style: italic;
+}
