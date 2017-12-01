@@ -15,38 +15,37 @@ using Microsoft.ProjectOxford.EntityLinking;
 using Microsoft.ProjectOxford.EntityLinking.Contract;
 using Microsoft.ProjectOxford.Vision.Contract;
 using Microsoft.ProjectOxford.Vision;
-
-
+using System.Reflection;
 
 namespace EnricherFunction
 {
     public static class EnrichFunction
     {
-        static EnrichFunction()
-        {
-            Init();
-        }
-
         static ImageStore blobContainer;
         static Vision visionClient;
         static HttpClient httpClient = new HttpClient();
         static ISearchIndexClient indexClient;
         static EntityLinkingServiceClient linkedEntityClient;
         static AnnotationStore cosmosDb;
+        static Dictionary<string, string> cryptonymns;
 
-        static void Init()
+        static EnrichFunction()
         {
-            if (blobContainer == null)
+            blobContainer = new ImageStore($"DefaultEndpointsProtocol=https;AccountName={Config.IMAGE_AZURE_STORAGE_ACCOUNT_NAME};AccountKey={Config.IMAGE_BLOB_STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net", Config.IMAGE_BLOB_STORAGE_CONTAINER);
+            visionClient = new Vision(Config.VISION_API_KEY);
+            var serviceClient = new SearchServiceClient(Config.AZURE_SEARCH_SERVICE_NAME, new SearchCredentials(Config.AZURE_SEARCH_ADMIN_KEY));
+            indexClient = serviceClient.Indexes.GetClient(Config.AZURE_SEARCH_INDEX_NAME);
+            linkedEntityClient = new EntityLinkingServiceClient(Config.ENTITY_LINKING_API_KEY);
+            cosmosDb = new AnnotationStore();
+
+            // read the list of cia-cryptonymns
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("EnricherFunction.cia-cryptonyms.json"))
+            using (StreamReader reader = new StreamReader(stream))
             {
-                // init the blob client
-                blobContainer = new ImageStore($"DefaultEndpointsProtocol=https;AccountName={Config.IMAGE_AZURE_STORAGE_ACCOUNT_NAME};AccountKey={Config.IMAGE_BLOB_STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net", Config.IMAGE_BLOB_STORAGE_CONTAINER);
-                visionClient = new Vision(Config.VISION_API_KEY);
-                var serviceClient = new SearchServiceClient(Config.AZURE_SEARCH_SERVICE_NAME, new SearchCredentials(Config.AZURE_SEARCH_ADMIN_KEY));
-                indexClient = serviceClient.Indexes.GetClient(Config.AZURE_SEARCH_INDEX_NAME);
-                linkedEntityClient = new EntityLinkingServiceClient(Config.ENTITY_LINKING_API_KEY);
-                cosmosDb = new AnnotationStore();
+                cryptonymns = JsonConvert.DeserializeObject<Dictionary<string,string>>(reader.ReadToEnd());
             }
         }
+        
 
         private static async Task<EntityLink[]> DetectCIACryptonyms(string txt)
         {
@@ -56,7 +55,7 @@ namespace EnricherFunction
         private static Task<EntityLink[]> GetLinkedEntitiesAsync(params string[] txts)
         {
             var txt = string.Join(Environment.NewLine, txts);
-            if (!string.IsNullOrWhiteSpace(txt))
+            if (string.IsNullOrWhiteSpace(txt))
                 return Task.FromResult<EntityLink[]>(null);
 
             // truncate each page to 10k charactors
@@ -65,9 +64,6 @@ namespace EnricherFunction
 
             return linkedEntityClient.LinkAsync(txt);
         }
-
-        
-
 
 
         public static SkillSet<PageImage> CreateCognitiveSkillSet()
@@ -147,7 +143,6 @@ namespace EnricherFunction
 
         public static async Task Run(Stream blobStream, string name, TraceWriter log)
         {
-            Init();
             log.Info($"Processing blob:{name}");
 
             // parse the document to extract images

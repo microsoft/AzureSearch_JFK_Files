@@ -29,7 +29,7 @@ Note: This diagram of visuals are inspired by the [CIA's JFK document management
 ## Limitations
 1. This is a demo to showcase a congnitive search pattern.  It is not intended to be a framework or scalable architecture for all scenarios.
 2. The code implementing storing the data in Cosmos DB and extracting topics in Azure ML is not yet included in this codebase.
-   If you are interested in this contact (Azure Search on the MSDN forums)[https://social.msdn.microsoft.com/Forums/azure/en-US/home?forum=azuresearch].
+   If you are interested in this contact [Azure Search on the MSDN forums](https://social.msdn.microsoft.com/Forums/azure/en-US/home?forum=azuresearch).
 3. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
 4. The code currenly only processes images and will support most scanned PDFs. Native PDFs and some scanned PDF formats may not be parsed correctly.
 
