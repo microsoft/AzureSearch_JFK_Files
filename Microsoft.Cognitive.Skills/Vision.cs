@@ -114,10 +114,7 @@ namespace Microsoft.Cognitive.Skills
 
             var result = new OcrResult()
             {
-                lines = lines.ToArray(),
-                Tags = visionResult.Tags.Select(t => t.Name),
-                Width = visionResult.Metadata.Width,
-                Height = visionResult.Metadata.Height,
+                lines = lines.ToArray()
             };
             return result;
         }
@@ -211,9 +208,6 @@ namespace Microsoft.Cognitive.Skills
     {
         public string Orientation { get; set; } = "NotDetected";
         public lineResult[] lines { get; set; }
-        public IEnumerable<string> Tags { get; set; } = Enumerable.Empty<string>();
-        public int Width { get; set; }
-        public int Height { get; set; }
 
         public string Text {
             get
@@ -221,17 +215,6 @@ namespace Microsoft.Cognitive.Skills
                 return string.Join(" ", lines.SelectMany(l => l.words).Select(w => w.text));
             }
         }
-
-        public OcrResult Concat(OcrResult result)
-        {
-            var newResult = new OcrResult();
-            newResult.lines = lines.Concat(result.lines).ToArray();
-            newResult.Tags = Tags.Concat(result.Tags).ToArray();
-            newResult.Width = Width > 0 ? Width : result.Width;
-            newResult.Height = Height > 0 ? Height : result.Height;
-            return newResult;
-        }
-
     }
 
     public class RegionResult
@@ -274,7 +257,4 @@ namespace Microsoft.Cognitive.Skills
     public class WordResult : RegionResult
     {
     }
-
-
-
 }

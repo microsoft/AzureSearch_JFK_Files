@@ -45,11 +45,20 @@ namespace EnricherFunction
                 cryptonymns = JsonConvert.DeserializeObject<Dictionary<string,string>>(reader.ReadToEnd());
             }
         }
-        
 
-        private static async Task<EntityLink[]> DetectCIACryptonyms(string txt)
+
+        private static Task<EntityLink[]> DetectCIACryptonyms(string txt)
         {
-            return new EntityLink[0];
+            var words = txt.Split(' ', '\n', '\r');
+            var ciaWords = words
+                .Select(w => w.ToUpperInvariant())
+                .Where(cryptonymns.ContainsKey)
+                .Distinct()
+                .Select(w => new EntityLink() {
+                    Name = w
+                });
+
+            return Task.FromResult(ciaWords.ToArray());
         }
 
         private static Task<EntityLink[]> GetLinkedEntitiesAsync(params string[] txts)
@@ -63,6 +72,48 @@ namespace EnricherFunction
                 txt = txt.Substring(0, 10000);
 
             return linkedEntityClient.LinkAsync(txt);
+        }
+
+        private static async Task<AnnotatedPage> CombineMetadata(OcrResult ocr, OcrResult hw, AnalysisResult vis, EntityLink[] cia, EntityLink[] entities, ImageReference img)
+        {
+            // The handwriting result also included OCR text but OCR will produce better results on typed documents
+            // so take the result that produces the most text.  Consider combining them by region to take the best of each.
+            var result = hw.Text.Length > ocr.Text.Length ? ocr : hw;
+
+            // create metadata for the vision caption and tags
+            var captionLines = vis.Description.Captions.Select(caption => new lineResult()
+            {
+                words = caption
+                    .Text
+                    .Split(' ')
+                    .Select(word => new WordResult() { text = word })
+                    .ToArray()
+            });
+
+            var tagLines = new[] { new lineResult()
+            {
+                words = new[] { "(" }
+                    .Concat(vis.Tags.Select(t => t.Name))
+                    .Concat(new[] { ")" })
+                    .Select(t => new WordResult() { text = t }).ToArray()
+            }};
+
+            var newResult = new OcrResult()
+            {
+                lines = result
+                    .lines
+                    .Concat(captionLines)
+                    .Concat(tagLines).ToArray()
+            };
+
+            // rotate the image if needed
+            var pageImg = ocr.Orientation == "Up" || ocr.Orientation == "NotDetected"
+                ? img
+                : await img.GetImage().Rotate(ocr.Orientation).UploadMedia(blobContainer);
+
+
+            // TODO: merge annotations for Linked Entities and Cryptonyms
+            return new AnnotatedPage(newResult, pageImg);
         }
 
 
@@ -102,39 +153,7 @@ namespace EnricherFunction
 
             // combine the data as an annotated page that can be used by the UI
             var pageContent = skillSet.AddSkill("page-metadata",
-                async (ocr, hw, vis, cia, entities, img) => {
-                    // The handwriting result also included OCR text but OCR will produce better results on typed documents
-                    // so take the result that produces the most text.  Consider combining them by region to take the best of each.
-                    var result = hw.Text.Length > ocr.Text.Length ? ocr : hw;
-
-                    // create metadata for the vision caption and tags
-                    var captionLines = vis.Description.Captions.Select(c => new lineResult() {
-                        words = c.Text.Split(' ').Select(w => new WordResult()
-                        {
-                            text = w
-                        }).ToArray()
-                    });
-
-                    var tagLines = new[] { new lineResult()
-                    {
-                        words = new[] { "(" }
-                            .Concat(vis.Tags.Select(t => t.Name))
-                            .Concat(new[] { ")" })
-                            .Select(t => new WordResult() { text = t }).ToArray()
-                    }};
-
-                    var newResult = new OcrResult()
-                    {
-                        lines = result.lines.Concat(captionLines).Concat(tagLines).ToArray()
-                    };
-
-                    // rotate the image if needed
-                    var pageImg = ocr.Orientation == "Up" || ocr.Orientation == "NotDetected"
-                        ? img 
-                        : await img.GetImage().Rotate(ocr.Orientation).UploadMedia(blobContainer);
-
-                    return new AnnotatedPage(newResult, pageImg);
-                },
+                CombineMetadata,
                 cogOcr, handwriting, vision, cryptonyms, linkedEntities, resizedImage);
 
             return skillSet;
