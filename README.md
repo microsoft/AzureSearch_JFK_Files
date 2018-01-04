@@ -1,6 +1,5 @@
 # The JFK Files
 Explore the JFK Assassination files using Azure Search and Microsoft Cognitive Services.
-![THE JFK FILES](images/jfk-files.jpg)
 You can watch the demo in action in [Joseph Sirosh Connect 2017 session (@8:10)](https://channel9.msdn.com/Events/Connect/2017/G102)
 or explore the JFK files youself with our [Online Demo](https://aka.ms/jfkfiles-demo).
 
