@@ -1,6 +1,6 @@
 # The JFK Files
 Explore the JFK Assassination files using Azure Search and Microsoft Cognitive Services.
-You can watch the demo in action in [Joseph Sirosh Connect 2017 session (@8:10)](https://channel9.msdn.com/Events/Connect/2017/G102)
+You can watch the demo in action from our [Connect 2017 session](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents)
 or explore the JFK files youself with our [Online Demo](https://aka.ms/jfkfiles-demo).
 
 ## Cognitive Search Pattern
