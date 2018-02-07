@@ -79,10 +79,24 @@ Note: This diagram of visuals are inspired by the [CIA's JFK document management
 7. [Create Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function#create-a-function-app) for your enricher.
    Choose a consumption plan to pay only for what you use, or create a free App Service plan that you will share with your web UI.
    Right click the EnricherFunction Project in Visual Studio and select *Publish...* then publish to the Function app you created.
-   Now go to the function app in the Azure Portal and expand *Functions* and then *EnrichImages* and click *Integrate*.
-   Associate the storage account with this function by clicking *new* next to the *Storage account connection*
-   and select the storage account you created earlier.  Click Save.
+   Now go to the function app in the Azure Portal and you should see a few different functions.
+   * __index-document-blob-trigger__ - Blob trigger that will index all documents uploaded to a blob container.  (to enable see step below)   
+   * __index-document__ - Http function that given a document will process it and put it in the index. (useful for pushing documents or integrating with MS flow)
+   * __get-annotated-document__ - Http function that given a document will return the annoations for each page as JSON. (useful for debugging)
+   * __get-search-document__ - Http function that given a document will return the fully processed Search Document without inserting into the index. (useful for debugging)
+
+   To enable the blob trigger function you must add the blob connection string as an *Application Settings* for the function by clicking below:
+  ![Cognitive Search Pattern](images/click-app-settings.jpg)
+  Then add a new setting called "IMAGE_BLOB_CONNECTION_STRING" with the blob connection string as indicated below and click Click *Save*.
+  ![Cognitive Search Pattern](images/app-settings-add.jpg)
+
    > You can test the function by using the [Azure Storage explorer](http://storageexplorer.com/) to upload images to the *library* blob container on your storage account.
+
+   You can also use the http functions by getting the function url below and doing an HTTP post to the url with *&name=filename.pdf* in the URL and the document contents in the body.
+   ![Cognitive Search Pattern](images/get-function-url.jpg)
+   
+   > You can use fiddler, postman, curl, or powershell to call the http apis.  Here is a powershell example to index a local document<br>
+   > `wget "https://jfk-function-test.azurewebsites.net/api/index-document?code=qabwDWxS8GZfV==&name=test.pdf" -Method Post -InFile "C:\data\test.pdf"`
 
 8. Upload your documents to the *jfk* container in your blob storage account or use [Azure Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) to trigger the function.
 
