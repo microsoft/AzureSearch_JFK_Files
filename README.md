@@ -56,7 +56,8 @@ Note: This diagram of visuals are inspired by the [CIA's JFK document management
    1.  __Account Name__ (Storage account name under the "Access Keys" section)
    2.  __Account Key__ (key1 under the "Access Keys" section)
 
-4. Get a 30 day Cognitive Services Trial Key for the [Computer Vision API](https://azure.microsoft.com/en-us/try/cognitive-services/?api=computer-vision) and [Entity Linking Intelligent Service API](https://azure.microsoft.com/en-us/try/cognitive-services/?api=entity-linking)  or [purchase one in the Azure Portal](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account).
+4. Get a 30 day Cognitive Services Trial Key for the [Computer Vision API](https://azure.microsoft.com/en-us/try/cognitive-services/?api=computer-vision) and [Entity Linking Intelligent Service API](https://azure.microsoft.com/en-us/try/cognitive-services/?api=entity-linking)  or [purchase one in the Azure Portal](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account). 
+   Keep in mind that the trial key limites to 20 calls per minute which is equivilent to about 6 scanned pages per minute.  For more capacity sign up for a S1 or higher pay tier in Azure.
    Copy these settings that you will use later.
    1.  __API Key__ (key1 on the "your APIs" page)
 
