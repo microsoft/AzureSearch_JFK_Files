@@ -16,6 +16,9 @@ namespace EnricherFunction
 
         // Cognitive Services Vision API used to process images
         public const string VISION_API_KEY = "";
+        // The region URL base should match where you deployed your cognitive service to.  default is westus.
+        // For list of region urls see https://westus.dev.cognitive.microsoft.com/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fa
+        public const string VISION_API_REGION = "westus.api.cognitive.microsoft.com";
 
         // Cognitive Entity Linking Service
         public const string ENTITY_LINKING_API_KEY = "";

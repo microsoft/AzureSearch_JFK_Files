@@ -16,6 +16,8 @@ using Microsoft.ProjectOxford.EntityLinking.Contract;
 using Microsoft.ProjectOxford.Vision.Contract;
 using Microsoft.ProjectOxford.Vision;
 using System.Reflection;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 
 namespace EnricherFunction
 {
@@ -32,7 +34,7 @@ namespace EnricherFunction
         static EnrichFunction()
         {
             blobContainer = new ImageStore($"DefaultEndpointsProtocol=https;AccountName={Config.IMAGE_AZURE_STORAGE_ACCOUNT_NAME};AccountKey={Config.IMAGE_BLOB_STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net", Config.IMAGE_BLOB_STORAGE_CONTAINER);
-            visionClient = new Vision(Config.VISION_API_KEY);
+            visionClient = new Vision(Config.VISION_API_KEY, Config.VISION_API_REGION);
             var serviceClient = new SearchServiceClient(Config.AZURE_SEARCH_SERVICE_NAME, new SearchCredentials(Config.AZURE_SEARCH_ADMIN_KEY));
             indexClient = serviceClient.Indexes.GetClient(Config.AZURE_SEARCH_INDEX_NAME);
             linkedEntityClient = new EntityLinkingServiceClient(Config.ENTITY_LINKING_API_KEY);
@@ -46,6 +48,91 @@ namespace EnricherFunction
             }
         }
 
+
+#region Azure Function Entry points
+
+        [FunctionName("index-document")]
+        public static async Task<HttpResponseMessage> HttpProcessDocument([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            // parse query parameter
+            string name = req.GetQueryNameValuePairs().FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0).Value;
+            if (string.IsNullOrEmpty(name))
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body");
+
+            // Get request body
+            var stream = await req.Content.ReadAsStreamAsync();
+
+            try
+            {
+                await Run(stream, name, log);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.ToString());
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Error processing the Document: " + e.ToString());
+            }
+
+            return req.CreateResponse(HttpStatusCode.OK, $"Document {name} was added to the index");
+        }
+
+
+        [FunctionName("get-annotated-document")]
+        public static async Task<HttpResponseMessage> HttpGetAnnotatedDocument([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            // parse query parameter
+            string name = req.GetQueryNameValuePairs().FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0).Value;
+            if (string.IsNullOrEmpty(name))
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body");
+
+            // Get request body
+            var stream = await req.Content.ReadAsStreamAsync();
+
+            try
+            {
+                log.Info($"Annotating Document:{name}");
+                var annotations = await ProcessDocument(stream);
+                return req.CreateResponse(HttpStatusCode.OK, annotations.ToArray());
+            }
+            catch (Exception e)
+            {
+                log.Error(e.ToString());
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Error processing the Document: " + e.ToString());
+            }
+        }
+
+        [FunctionName("get-search-document")]
+        public static async Task<HttpResponseMessage> HttpGetSearchDocument([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            // parse query parameter
+            string name = req.GetQueryNameValuePairs().FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0).Value;
+            if (string.IsNullOrEmpty(name))
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body");
+
+            // Get request body
+            var stream = await req.Content.ReadAsStreamAsync();
+
+            try
+            {
+                log.Info($"Creating Search Document:{name}");
+                var annotations = await ProcessDocument(stream);
+                var searchDocument = CreateSearchDocument(name, annotations);
+
+                return req.CreateResponse(HttpStatusCode.OK, searchDocument);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.ToString());
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Error processing the Document: " + e.ToString());
+            }
+        }
+
+        [FunctionName("index-document-blob-trigger")]
+        public static async Task BlobTriggerIndexDocument([BlobTrigger(Config.LIBRARY_BLOB_STORAGE_CONTAINER + "/{name}", Connection = "IMAGE_BLOB_CONNECTION_STRING")]Stream blobStream, string name, TraceWriter log)
+        {
+            await Run(blobStream, name, log);
+        }
+
+#endregion
 
         private static Task<EntityLink[]> DetectCIACryptonyms(string txt)
         {
@@ -159,21 +246,43 @@ namespace EnricherFunction
             return skillSet;
         }
 
-
         public static async Task Run(Stream blobStream, string name, TraceWriter log)
         {
             log.Info($"Processing blob:{name}");
 
+            // Process the document and extract annotations
+            IEnumerable<Annotation> annotations = await ProcessDocument(blobStream);
+
+            // Commit them to Cosmos DB to be used by full corpus skills such as Topics
+            await cosmosDb.SaveAsync(annotations);
+
+            // Create Search Document and add it to the index
+            SearchDocument searchDocument = CreateSearchDocument(name, annotations);
+            await AddToIndex(name, searchDocument, log);
+        }
+
+        private static async Task<IEnumerable<Annotation>> ProcessDocument(Stream blobStream)
+        {
             // parse the document to extract images
             IEnumerable<PageImage> pages = DocumentParser.Parse(blobStream).Pages;
 
             // create and apply the skill set to create annotations
             SkillSet<PageImage> skillSet = CreateCognitiveSkillSet();
             var annotations = await skillSet.ApplyAsync(pages);
+            return annotations;
+        }
 
-            // Commit them to Cosmos DB to be used by full corpus skills such as Topics
-            await cosmosDb.SaveAsync(annotations);
+        private static async Task AddToIndex(string name, SearchDocument searchDocument, TraceWriter log)
+        {
+            var batch = IndexBatch.MergeOrUpload(new[] { searchDocument });
+            var result = await indexClient.Documents.IndexAsync(batch);
 
+            if (!result.Results[0].Succeeded)
+                log.Error($"index failed for {name}: {result.Results[0].ErrorMessage}");
+        }
+
+        private static SearchDocument CreateSearchDocument(string name, IEnumerable<Annotation> annotations)
+        {
             // index the annotated document with azure search
             AnnotatedDocument document = new AnnotatedDocument(annotations.Select(a => a.Get<AnnotatedPage>("page-metadata")));
             var searchDocument = new SearchDocument(name)
@@ -187,11 +296,7 @@ namespace EnricherFunction
                      .Select(l => l.Key)
                      .ToList(),
             };
-            var batch = IndexBatch.MergeOrUpload(new[] { searchDocument });
-            var result = await indexClient.Documents.IndexAsync(batch);
-
-            if (!result.Results[0].Succeeded)
-                log.Error($"index failed for {name}: {result.Results[0].ErrorMessage}");
+            return searchDocument;
         }
     }
 }

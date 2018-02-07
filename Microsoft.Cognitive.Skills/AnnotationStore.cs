@@ -30,7 +30,7 @@ namespace Microsoft.Cognitive.Skills
     }
 
 
-
+    [JsonConverter(typeof(Annotation.Serializer))]
     public class Annotation
     {
         private Dictionary<string, object> fields = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
@@ -60,5 +60,27 @@ namespace Microsoft.Cognitive.Skills
             fields[name] = value;
         }
 
+        private class Serializer : JsonConverter
+        {
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                Annotation annotation = value as Annotation;
+                if (annotation != null)
+                    serializer.Serialize(writer, annotation.fields);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(Annotation).IsAssignableFrom(objectType);
+            }
+        }
+
     }
+
+   
 }

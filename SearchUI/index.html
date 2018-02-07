@@ -149,17 +149,7 @@
                 <div id="facetPanel" class="col-sm-3 col-md-3 sidebar collapse">
                     <ul class="nav nav-sidebar">
                         <div className="panel panel-primary behclick-panel">
-                            <div id="metadataFilter"></div>
-                            <div id="peopleFacet"></div>
-                            <div id="placesFacet"></div>
-                            <div id="termsFacet"></div>
-                            <div id="tagsFacet"></div>
-                            <div id="agencyFacet"></div>
-                            <div id="typeFacet"></div>
-                            <div id="toFacet"></div>
-                            <div id="fromFacet"></div>
-                            <div id="originatorFacet"></div>
-                            <div id="dateFacet"></div>
+                            <div id="entitiesFacet"></div>
                         </div>
                     </ul>
                 </div>
@@ -293,8 +283,6 @@
         //if (graphVisible)
         getFDNodes(postBody.search);
 
-        //"https://" + searchState.config.service + ".search.windows.net/indexes/" + searchState.config.index + "/docs/search?api-version=2016-09-01"
-        //"/api/search"
         return fetch("/api/search",
             {
                 mode: "cors",
@@ -317,34 +305,7 @@
 
     automagic.addSearchBox("searchBox");
 
-    automagic.addCheckboxFacet("peopleFacet", "people", "collection");
-    automagic.addCheckboxFacet("placesFacet", "places", "collection");
-    //automagic.addCheckboxFacet("termsFacet", "terms", "collection");
-    automagic.addCheckboxFacet("tagsFacet", "tags", "collection");
-
-    automagic.addCheckboxFacet("agencyFacet", "agency", "string");
-    automagic.addCheckboxFacet("typeFacet", "type", "string");
-    automagic.addCheckboxFacet("toFacet", "to", "string");
-    automagic.addCheckboxFacet("fromFacet", "from", "string");
-    automagic.addCheckboxFacet("originatorFacet", "originator", "string");
-
-    var startDate = new Date();
-    startDate.setFullYear(1945);
-    // allow date range to go all the way up to present
-    var endDate = new Date();
-    automagic.addRangeFacet("dateFacet", "date", "date", startDate, endDate);
-
-    //automagic.addRangeFacet("racyFilter", "racy", "number", 0, 1000);
-    //automagic.addRangeFacet("adultFilter", "adult", "number", 0, 1000);
-
-    //var filters = [
-    //    { displayName: "Only Documents With Images", filter: "metadata ne null" },
-    //    { displayName: "All", filter: "" },
-    //];
-    //var defaultFilter = "";
-    //var title = "images";
-    //automagic.addStaticFilter("metadataFilter", "metadata", filters, defaultFilter, title);
-
+    automagic.addCheckboxFacet("entitiesFacet", "entities", "collection");
 
     // get hightlight snippets for text
     automagic.store.updateSearchParameters({ highlight: "text", top: 10, scoringProfile: "demoBooster", searchMode: "all" });

@@ -17,11 +17,13 @@ namespace Microsoft.Cognitive.Skills
     {
         VisionServiceClient visionClient;
         private string apiKey;
+        private string apiRoot;
 
-        public Vision(string visionApiKey)
+        public Vision(string visionApiKey, string visionRegion)
         {
-            visionClient = new VisionServiceClient(visionApiKey);
             apiKey = visionApiKey;
+            apiRoot = $"https://{visionRegion}/vision/v1.0";
+            visionClient = new VisionServiceClient(visionApiKey, apiRoot);
         }
 
 
@@ -139,7 +141,7 @@ namespace Microsoft.Cognitive.Skills
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
 
-            var uri = "https://westus.api.cognitive.microsoft.com/vision/v1.0/recognizeText?handwriting=true";
+            var uri = apiRoot + "/recognizeText?handwriting=true";
 
             HttpResponseMessage response;
 
