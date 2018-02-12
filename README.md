@@ -84,7 +84,13 @@ Note: This diagram of visuals are inspired by the [CIA's JFK document management
    * __index-document-blob-trigger__ - Blob trigger that will index all documents uploaded to a blob container.  (to enable see step below)   
    * __index-document__ - Http function that given a document will process it and put it in the index. (useful for pushing documents or integrating with MS flow)
    * __get-annotated-document__ - Http function that given a document will return the annoations for each page as JSON. (useful for debugging)
-   * __get-search-document__ - Http function that given a document will return the fully processed Search Document without inserting into the index. (useful for debugging)
+   * __get-search-document__ - Http function that given a document will return the fully processed Search Document without inserting into the index. (useful for debugging)  
+   
+   
+   > NOTE: After publishing your functions, you may get this error  
+   > **Your app is currently in read-only mode because you have published a generated function.json. Changes made to function.json will not be honored by the Functions runtime.**.   
+   > You can fix this by changing the **Function Edit Mode**. Go to the functions settings and change it to **read/write**.  
+   
 
    To enable the blob trigger function you must add the blob connection string as an *Application Settings* for the function by clicking below:
   ![Cognitive Search Pattern](images/click-app-settings.jpg)
