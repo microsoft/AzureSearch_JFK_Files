@@ -132,7 +132,78 @@ namespace EnricherFunction
             await Run(blobStream, name, log);
         }
 
-#endregion
+
+        [FunctionName("web-api-skill")]
+        public static async Task<HttpResponseMessage> WebApiSkill([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        {
+            try
+            {
+                // Get request body
+                var jsonRequest = await req.Content.ReadAsStringAsync();
+                var docs = JsonConvert.DeserializeObject<WebApiSkillRequest>(jsonRequest);
+
+                WebApiSkillResponse response = new WebApiSkillResponse();
+
+                HttpClient httpClient = new HttpClient();
+
+                foreach (var inDocument in docs.documents)
+                {
+                    var outDocument = new Dictionary<string, object>();
+                    outDocument["id"] = inDocument["id"];
+                    string name = inDocument["name"] as string;
+                    log.Info($"Creating Search Document:{name}");
+                    string blobUrl = ((string)inDocument["url"]) + inDocument["querystring"] as string;
+
+                    try
+                    {
+                        log.Info($"Downloading Document:{blobUrl}");
+                        var aa = await httpClient.GetAsync(blobUrl);
+                        aa.EnsureSuccessStatusCode();
+                        using (var stream = await aa.Content.ReadAsStreamAsync())
+                        {
+                            log.Info($"Processing Document...");
+                            var annotations = await ProcessDocument(stream);
+
+                            log.Info($"Creating Search Document...");
+                            var searchDocument = CreateSearchDocument(name, annotations);
+                            log.Info($"Document complete");
+
+                            outDocument["metadata"] = searchDocument.Metadata;
+                            outDocument["text"] = searchDocument.Text;
+                            outDocument["entities"] = searchDocument.LinkedEntities;
+
+                            response.documents.Add(outDocument);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error(e.ToString());
+                        outDocument["error"] = "Error processing the Document: " + e.ToString();
+                        response.errors.Add(outDocument);
+                    }
+                }
+
+                return req.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.ToString());
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Error: " + ex.ToString());
+            }
+        }
+
+        public class WebApiSkillRequest
+        {
+            public List<Dictionary<string, object>> documents { get; set; } = new List<Dictionary<string, object>>();
+        }
+
+        public class WebApiSkillResponse
+        {
+            public List<Dictionary<string, object>> documents { get; set; } = new List<Dictionary<string, object>>();
+            public List<Dictionary<string, object>> errors { get; set; } = new List<Dictionary<string, object>>();
+        }
+
+        #endregion
 
         private static Task<EntityLink[]> DetectCIACryptonyms(string txt)
         {
