@@ -50,32 +50,44 @@ namespace Microsoft.Cognitive.Skills
         // Synchronous enrichments
         public ISkill<TResult> AddSkill<TInput1, TResult>(string name, Func<TInput1, TResult> action, ISkill<TInput1> input1)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                action(await input1.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TResult>(string name, Func<TInput1, TInput2, TResult> action, ISkill<TInput1> input1, ISkill<TInput2> input2)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                action(await input1.GetAsync(annotation), await input2.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TResult>(string name, Func<TInput1, TInput2, TInput3, TResult> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                action(await input1.GetAsync(annotation), await input2.GetAsync(annotation), await input3.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TInput4, TResult>(string name, Func<TInput1, TInput2, TInput3, TInput4, TResult> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3, ISkill<TInput4> input4)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                action(await input1.GetAsync(annotation), await input2.GetAsync(annotation), await input3.GetAsync(annotation), await input4.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TInput4, TInput5, TResult>(string name, Func<TInput1, TInput2, TInput3, TInput4, TInput5, TResult> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3, ISkill<TInput4> input4, ISkill<TInput5> input5)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                action(await input1.GetAsync(annotation), await input2.GetAsync(annotation), await input3.GetAsync(annotation), await input4.GetAsync(annotation), await input5.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TInput4, TInput5, TInput6, TResult>(string name, Func<TInput1, TInput2, TInput3, TInput4, TInput5, TInput6, TResult> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3, ISkill<TInput4> input4, ISkill<TInput5> input5, ISkill<TInput6> input6)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                action(await input1.GetAsync(annotation), await input2.GetAsync(annotation), await input3.GetAsync(annotation), await input4.GetAsync(annotation), await input5.GetAsync(annotation), await input6.GetAsync(annotation))
+            ));
         }
 
         // Asynchronous enrichments
@@ -88,7 +100,9 @@ namespace Microsoft.Cognitive.Skills
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TResult>(string name, Func<TInput1, TInput2, Task<TResult>> action, ISkill<TInput1> input1, ISkill<TInput2> input2)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                await action(await input1.GetAsync(annotation), await input2.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TResult>(string name, Func<TInput1, TInput2, TInput3, Task<TResult>> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3)
@@ -100,12 +114,16 @@ namespace Microsoft.Cognitive.Skills
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TInput4, TResult>(string name, Func<TInput1, TInput2, TInput3, TInput4, Task<TResult>> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3, ISkill<TInput4> input4)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                await action(await input1.GetAsync(annotation), await input2.GetAsync(annotation), await input3.GetAsync(annotation), await input4.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TInput4, TInput5, TResult>(string name, Func<TInput1, TInput2, TInput3, TInput4, TInput5, Task<TResult>> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3, ISkill<TInput4> input4, ISkill<TInput5> input5)
         {
-            throw new NotImplementedException();
+            return AddSkillProcessor(new Skill<TResult>(name, async annotation =>
+                await action(await input1.GetAsync(annotation), await input2.GetAsync(annotation), await input3.GetAsync(annotation), await input4.GetAsync(annotation), await input5.GetAsync(annotation))
+            ));
         }
 
         public ISkill<TResult> AddSkill<TInput1, TInput2, TInput3, TInput4, TInput5, TInput6, TResult>(string name, Func<TInput1, TInput2, TInput3, TInput4, TInput5, TInput6, Task<TResult>> action, ISkill<TInput1> input1, ISkill<TInput2> input2, ISkill<TInput3> input3, ISkill<TInput4> input4, ISkill<TInput5> input5, ISkill<TInput6> input6)
