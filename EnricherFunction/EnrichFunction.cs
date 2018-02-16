@@ -365,6 +365,7 @@ namespace EnricherFunction
                      .GroupBy(l => l.Name)
                      .OrderByDescending(g => g.Max(l => l.Score))
                      .Select(l => l.Key)
+                     .Where(l => !string.IsNullOrEmpty(l))
                      .ToList(),
             };
             return searchDocument;
