@@ -146,13 +146,13 @@ namespace EnricherFunction
 
                 HttpClient httpClient = new HttpClient();
 
-                foreach (var inDocument in docs.documents)
+                foreach (var inRecord in docs.values)
                 {
-                    var outDocument = new Dictionary<string, object>();
-                    outDocument["id"] = inDocument["id"];
-                    string name = inDocument["name"] as string;
+                    var outRecord = new WebApiResponseRecord() { recordId = inRecord.recordId };
+                    
+                    string name = inRecord.data["name"] as string;
                     log.Info($"Creating Search Document:{name}");
-                    string blobUrl = ((string)inDocument["url"]) + inDocument["querystring"] as string;
+                    string blobUrl = ((string)inRecord.data["url"]) + inRecord.data["querystring"] as string;
 
                     try
                     {
@@ -168,19 +168,17 @@ namespace EnricherFunction
                             var searchDocument = CreateSearchDocument(name, annotations);
                             log.Info($"Document complete");
 
-                            outDocument["metadata"] = searchDocument.Metadata;
-                            outDocument["text"] = searchDocument.Text;
-                            outDocument["entities"] = searchDocument.LinkedEntities;
-
-                            response.documents.Add(outDocument);
+                            outRecord.data["metadata"] = searchDocument.Metadata;
+                            outRecord.data["text"] = searchDocument.Text;
+                            outRecord.data["entities"] = searchDocument.LinkedEntities;
                         }
                     }
                     catch (Exception e)
                     {
                         log.Error(e.ToString());
-                        outDocument["error"] = "Error processing the Document: " + e.ToString();
-                        response.errors.Add(outDocument);
+                        outRecord.errors.Add("Error processing the Document: " + e.ToString());
                     }
+                    response.values.Add(outRecord);
                 }
 
                 return req.CreateResponse(HttpStatusCode.OK, response);
@@ -188,19 +186,32 @@ namespace EnricherFunction
             catch (Exception ex)
             {
                 log.Error(ex.ToString());
-                return req.CreateResponse(HttpStatusCode.InternalServerError, "Error: " + ex.ToString());
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Error: " + ex.ToString());
             }
         }
 
         public class WebApiSkillRequest
         {
-            public List<Dictionary<string, object>> documents { get; set; } = new List<Dictionary<string, object>>();
+            public List<WebApiRequestRecord> values { get; set; } = new List<WebApiRequestRecord>();
         }
 
         public class WebApiSkillResponse
         {
-            public List<Dictionary<string, object>> documents { get; set; } = new List<Dictionary<string, object>>();
-            public List<Dictionary<string, object>> errors { get; set; } = new List<Dictionary<string, object>>();
+            public List<WebApiResponseRecord> values { get; set; } = new List<WebApiResponseRecord>();
+        }
+
+        public class WebApiRequestRecord
+        {
+            public string recordId { get; set; }
+            public Dictionary<string, object> data { get; set; } = new Dictionary<string, object>();
+        }
+
+        public class WebApiResponseRecord
+        {
+            public string recordId { get; set; }
+            public Dictionary<string, object> data { get; set; } = new Dictionary<string, object>();
+            public List<string> errors { get; set; } = new List<string>();
+            public List<string> warnings { get; set; } = new List<string>();
         }
 
         #endregion
