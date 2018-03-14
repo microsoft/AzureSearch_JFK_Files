@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using BitMiracle.LibTiff.Classic;
 using PdfSharp.Pdf.Filters;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.Cognitive.Skills
 {
@@ -144,7 +145,7 @@ namespace Microsoft.Cognitive.Skills
                 {
                     case "/FlateDecode":  // ?
                         imgData = new FlateDecode().Decode(image.Stream.Value);
-                        break;
+                        return BmpFromRawData(imgData);
 
                     case "/DCTDecode":  // JPEG format
                                         // nativly supported by PDF so nothing to do here
@@ -189,7 +190,42 @@ namespace Microsoft.Cognitive.Skills
 
                 return ImageHelper.ConvertTiffToBmps(new MemoryStream(imgData)).First();
             }
+
+            private Bitmap BmpFromRawData(byte[] imgData)
+            {
+                int w = image.Elements.GetInteger("/Width");
+                int h = image.Elements.GetInteger("/Height");
+                int bpc = image.Elements.GetInteger("/BitsPerComponent");
+                var pixelFormat = bpc == 1 ? PixelFormat.Format1bppIndexed : PixelFormat.Format24bppRgb;
+                var bytesPerPixel = image.Elements.GetString("/ColorSpace") == "/DeviceRGB" ? 3 : 1;
+
+                if (bytesPerPixel == 3)
+                {
+                    //change order of RGB bytes            
+                    byte[] grb = new byte[imgData.Length];
+                    for (int i = 0; i < imgData.Length; i = i + 3)
+                    {
+                        grb[i] = imgData[i + 2];
+                        grb[i + 1] = imgData[i + 1];
+                        grb[i + 2] = imgData[i];
+                    }
+                }
+
+                Bitmap bmp = new Bitmap(w, h, pixelFormat);
+                var bmpData = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.WriteOnly, pixelFormat);
+                int length = (int)Math.Ceiling(w * bytesPerPixel * bpc / 8.0);
+                for (int i = 0; i < h; i++)
+                {
+                    int offset = i * length;
+                    int scanOffset = i * bmpData.Stride;
+                    Marshal.Copy(imgData, offset, new IntPtr(bmpData.Scan0.ToInt32() + scanOffset), length);
+                }
+                bmp.UnlockBits(bmpData);
+
+                return bmp;
+            }
         }
+
     }
 
 
