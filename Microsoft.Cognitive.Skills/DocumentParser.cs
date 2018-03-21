@@ -196,10 +196,16 @@ namespace Microsoft.Cognitive.Skills
                 int w = image.Elements.GetInteger("/Width");
                 int h = image.Elements.GetInteger("/Height");
                 int bpc = image.Elements.GetInteger("/BitsPerComponent");
-                var pixelFormat = bpc == 1 ? PixelFormat.Format1bppIndexed : PixelFormat.Format24bppRgb;
-                var bytesPerPixel = image.Elements.GetString("/ColorSpace") == "/DeviceRGB" ? 3 : 1;
+                var cSpace = image.Elements.GetArray("/ColorSpace");
+                var cSpaceName = cSpace != null ? cSpace.Elements.GetName(0) :  image.Elements.GetString("/ColorSpace");
+                var bytesPerPixel = cSpaceName == "/DeviceRGB" ? 3 : 1;
 
-                if (bytesPerPixel == 3)
+                var pixelFormat = cSpaceName == "/Indexed" ?
+                    PixelFormat.Format8bppIndexed 
+                    : bpc == 1 ? PixelFormat.Format1bppIndexed : PixelFormat.Format24bppRgb;
+
+
+                if (cSpaceName == "/DeviceRGB")
                 {
                     //change order of RGB bytes            
                     byte[] grb = new byte[imgData.Length];
@@ -220,9 +226,25 @@ namespace Microsoft.Cognitive.Skills
                     int scanOffset = i * bmpData.Stride;
                     Marshal.Copy(imgData, offset, new IntPtr(bmpData.Scan0.ToInt32() + scanOffset), length);
                 }
+
+                if (cSpace != null)
+                    SetColorPallete(bmp, cSpace);
+
                 bmp.UnlockBits(bmpData);
 
                 return bmp;
+            }
+
+            private void SetColorPallete(Bitmap bmp, PdfArray cSpace)
+            {
+                var globals2 = cSpace.Elements.GetReference(3).Value as PdfDictionary;
+                var palData = new FlateDecode().Decode(globals2.Stream.Value);
+
+                ColorPalette pal = bmp.Palette;
+                for (int i = 0; i < palData.Length; i += 3)
+                    pal.Entries[i / 3] = Color.FromArgb(255, palData[i], palData[i + 1], palData[i + 2]);
+
+                bmp.Palette = pal;
             }
         }
 
