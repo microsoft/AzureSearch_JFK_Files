@@ -1,0 +1,25 @@
+@import "../../../../theme/_palette.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-left: 1rem;
+
+  .checkbox {
+    color: $colorWhite;
+    font-size: inherit;
+
+    &-checked {
+      color: $colorPrimary;
+    }
+  }
+
+  .label {
+    color: $colorWhite;
+    font-size: inherit;
+  }
+}
+
+

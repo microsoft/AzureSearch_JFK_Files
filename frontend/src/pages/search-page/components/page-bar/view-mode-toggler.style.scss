@@ -1,0 +1,7 @@
+@import "./../../../../theme/_mixins.scss";
+
+.icon {
+  @include jfk-icon;
+
+  transition: color 0.25s ease-out;
+}
