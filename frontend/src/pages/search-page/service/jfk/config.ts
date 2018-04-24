@@ -51,7 +51,7 @@ export const jfkServiceConfig: ServiceConfig = {
         displayName: "Tags",
         iconName: null,
         selectionControl: "checkboxList",
-        maxCount: 10,
+        maxCount: 20,
         values: null,
       },
     ]
