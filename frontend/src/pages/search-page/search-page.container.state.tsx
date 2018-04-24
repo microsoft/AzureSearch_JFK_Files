@@ -3,7 +3,7 @@ import { State, SuggestionCollection, FilterCollection, ResultViewMode } from ".
 
 export const CreateInitialState = (): State => ({
   searchValue: null,
-  resultViewMode: "grid",
+  resultViewMode: "list",
   itemCollection: null,
   activeSearch: null,
   facetCollection: null,
