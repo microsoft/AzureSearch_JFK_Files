@@ -19,6 +19,10 @@
   .label {
     color: $colorWhite;
     font-size: inherit;
+
+    .highlight {
+      color: $colorPrimary;
+    }
   }
 }
 

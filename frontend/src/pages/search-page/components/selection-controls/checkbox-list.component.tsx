@@ -44,6 +44,15 @@ class CheckboxListComponent extends React.Component<SelectionProps, {}> {
     }    
   }
 
+  private getCheckboxLabel = (labelValue: string, labelCount: number) => {
+    return (
+      <>
+        {labelValue}
+        <span className={style.highlight}>{` (${labelCount.toString()})`}</span>
+      </>
+    )
+  }
+
   private getCheckbox = (facetValue) => (
     <Checkbox
       classes={{
@@ -62,7 +71,7 @@ class CheckboxListComponent extends React.Component<SelectionProps, {}> {
     <FormControlLabel
       classes={{label: style.label}}
       control={this.getCheckbox(facetValue.value)}
-      label={`${facetValue.value} (${facetValue.count.toString()})`}
+      label={this.getCheckboxLabel(facetValue.value, facetValue.count)}
       key={index}
     />
   ));
