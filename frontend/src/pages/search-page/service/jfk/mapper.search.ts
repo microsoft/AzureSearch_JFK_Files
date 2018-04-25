@@ -1,12 +1,15 @@
-import { isArrayEmpty } from "../../../../util";
+import { isArrayEmpty, isValueInArray } from "../../../../util";
 import { ServiceConfig } from "../../service";
 import { 
   AzResponse,
   AzResponseFacet,
+  AzResponseFacetValue,
   AzPayload,
   AzPayloadFacet,
+  AzFilter,
   AzFilterGroup,
-  AzFilterCollection
+  AzFilterCollection,
+  AzFilterSingle
 } from "../../../../az-api";
 import {
   Item,
@@ -42,13 +45,24 @@ const mapSearchResponseForResults = (response: AzResponse): ItemCollection => {
   return isArrayEmpty(response.value) ? null : response.value.map(r => mapResultToItem(r));
 };
 
+const mapResponseFacetValueToViewFacetValue = (responseFacetValue: AzResponseFacetValue): FacetValue => {
+  // CUSTOM MAP to support 'Redactions' facet for Demo event.
+  // TODO: This is not generic, remove it.
+  let value = responseFacetValue.value;
+  if (!value) {
+    value = responseFacetValue.to ? "No" : "Yes";
+  }
+
+  return {
+    value,
+    count: responseFacetValue.count,
+  }
+};
+
 const mapResponseFacetToViewFacet = (responseFacet: AzResponseFacet, baseFacet: Facet): Facet => {
   return responseFacet ? ({
     ...baseFacet,
-    values: responseFacet.values.map(responseFacetValue => ({
-      value: responseFacetValue.value,
-      count: responseFacetValue.count,
-    } as FacetValue)),
+    values: responseFacet.values.map(mapResponseFacetValueToViewFacetValue),
   }) : null;
 };
 
@@ -73,6 +87,17 @@ export const mapSearchResponseToState = (state: State, response: AzResponse, con
 
 // [Search] FROM view model TO AzApi.
 
+const mapViewFilterToPayloadCustomFilter = (filter: Filter): AzFilterCollection => {
+  // TODO: This is just tailor made for JFK Demo event.
+  const yesTag = isValueInArray(filter.store, "Yes");
+  return filter ? {
+    fieldName: filter.fieldId,
+    mode: yesTag ? "any" : "all",
+    operator: yesTag ? "ge" : "lt",
+    value: ["50"],
+  } : null;
+}
+
 const mapViewFilterToPayloadCollectionFilter = (filter: Filter): AzFilterCollection => {
   return filter ? {
     fieldName: filter.fieldId,
@@ -82,13 +107,20 @@ const mapViewFilterToPayloadCollectionFilter = (filter: Filter): AzFilterCollect
   } : null;
 }
 
-// TODO: WARNING, this is just tailor made for JFK single tag facet.
+const mapViewFilterToPayloadFilter = (filter: Filter): AzFilter => {
+  // TODO: This is just tailor made for JFK Demo event.
+  return filter.fieldId === "redactions" ?
+    mapViewFilterToPayloadCustomFilter(filter) :
+    mapViewFilterToPayloadCollectionFilter(filter);
+}
+
+
 const mapViewFiltersToPayloadFilters = (filters: FilterCollection): AzFilterGroup => {
   if (isArrayEmpty(filters)) return null;
   // TODO: Only collection filter implemented.
   const filterGroup: AzFilterGroup = {
     logic: "and",
-    items: filters.map(f => mapViewFilterToPayloadCollectionFilter(f)).filter(f => f),
+    items: filters.map(f => mapViewFilterToPayloadFilter(f)).filter(f => f),
   };
   return filterGroup;
 };
@@ -96,9 +128,7 @@ const mapViewFiltersToPayloadFilters = (filters: FilterCollection): AzFilterGrou
 const mapViewFacetToPayloadFacet = (viewFacet: Facet): AzPayloadFacet => {
   return {
     fieldName: viewFacet.fieldId,
-    config: {
-      count: viewFacet.maxCount,
-    },
+    config: viewFacet.config,
   };
 };
 
@@ -114,5 +144,3 @@ export const mapStateToSearchPayload = (state: State, config: ServiceConfig): Az
     filters: mapViewFiltersToPayloadFilters(state.filterCollection),
   };
 }
-
-

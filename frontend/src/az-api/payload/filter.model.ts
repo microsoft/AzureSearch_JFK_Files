@@ -6,15 +6,15 @@
 export interface AzFilterSingle {
   fieldName: string;
   operator: "eq" | "ne" | "gt" | "lt" | "ge" | "le";
-  value: string | string[];
+  value: string[];
   logic?: "and" | "or"; // Only applicable to multiple values.
 }
 
 export interface AzFilterCollection {
   fieldName: string;
   mode: "any" | "all";
-  operator: "eq" | "ne";
-  value: string | string[];
+  operator: "eq" | "ne" | "gt" | "lt" | "ge" | "le";
+  value: string[];
   logic?: "and" | "or";
 }
 
