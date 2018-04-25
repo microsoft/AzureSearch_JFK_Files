@@ -1,6 +1,6 @@
 import { isArrayEmpty, isValueInArray } from "../../../../util";
 import { ServiceConfig } from "../../service";
-import { 
+import {
   AzResponse,
   AzResponseFacet,
   AzResponseFacetValue,
@@ -38,6 +38,9 @@ const mapResultToItem = (result: any): Item => {
     rating: 0,
     extraFields: [result.tags],
     metadata: result.metadata,
+    demoInitialPage: Boolean(result.demoInitialPage) ?
+      result.demoInitialPage :
+      undefined
   } : null;
 };
 
@@ -68,14 +71,14 @@ const mapResponseFacetToViewFacet = (responseFacet: AzResponseFacet, baseFacet: 
 
 const mapSearchResponseForFacets = (response: AzResponse, baseFacets: FacetCollection): FacetCollection => {
   return isArrayEmpty(response.facets) ? null :
-    baseFacets.map(bf => 
+    baseFacets.map(bf =>
       mapResponseFacetToViewFacet(response.facets.find(rf => rf.fieldName === bf.fieldId), bf)
     ).filter(f => f && !isArrayEmpty(f.values));
 };
 
 export const mapSearchResponseToState = (state: State, response: AzResponse, config: ServiceConfig): State => {
-  const viewFacets = isArrayEmpty(state.facetCollection) ? config.initialState.facetCollection : 
-  state.facetCollection; 
+  const viewFacets = isArrayEmpty(state.facetCollection) ? config.initialState.facetCollection :
+    state.facetCollection;
   return {
     ...state,
     resultCount: response.count,
@@ -133,7 +136,7 @@ const mapViewFacetToPayloadFacet = (viewFacet: Facet): AzPayloadFacet => {
 };
 
 export const mapStateToSearchPayload = (state: State, config: ServiceConfig): AzPayload => {
-  const viewFacets = isArrayEmpty(state.facetCollection) ? config.initialState.facetCollection : 
+  const viewFacets = isArrayEmpty(state.facetCollection) ? config.initialState.facetCollection :
     state.facetCollection;
   return {
     ...config.searchConfig.defaultPayload,

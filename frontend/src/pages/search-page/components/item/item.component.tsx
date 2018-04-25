@@ -52,7 +52,7 @@ const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activ
     >
       <HocrPreviewComponent
         hocr={item.metadata}
-        pageIndex="auto"
+        pageIndex={item.demoInitialPage}
         zoomMode="original"
         targetWords={activeSearch && activeSearch.split(" ")}
         renderOnlyTargetWords={true}

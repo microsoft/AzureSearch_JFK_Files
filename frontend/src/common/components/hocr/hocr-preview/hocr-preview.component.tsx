@@ -63,6 +63,10 @@ export class HocrPreviewComponent extends React.Component<HocrPreviewProps, Hocr
     }
   }
 
+  public static defaultProps: Partial<HocrPreviewProps> = {
+    pageIndex: 'auto',
+  };
+
   private viewportRef = null;
 
   private saveViewportRef = (node) => {
