@@ -10,8 +10,8 @@ import {
 } from "../../../../graph-api";
 import { cnc } from "../../../../util";
 
-
 const style = require("./graph-view.style.scss");
+
 
 interface GraphViewProps extends WithTheme {
   searchValue: string;

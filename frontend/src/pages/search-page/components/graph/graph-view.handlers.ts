@@ -13,6 +13,7 @@ const dragstarted = (simulation) => (d) => {
   if (!d3.event.active) simulation.alphaTarget(1).restart();
   d.fx = d.x;
   d.fy = d.y;
+  console.log(d);
 }
 
 const dragged = (d) => {
