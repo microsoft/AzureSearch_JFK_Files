@@ -49,6 +49,11 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
     );
   }
 
+  onGraphNodeDblClick = (value: string) => {
+    const searchValue = `${this.state.searchValue} ${value}`;
+    this.handleReceivedSearchValue(searchValue);
+  }
+
   // *** DRAWER LOGIC ***
 
   private handleDrawerClose = () => {
@@ -181,7 +186,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
           onLoadMore={this.handleLoadMore}
           resultViewMode={this.state.resultViewMode}
           onChangeResultViewMode={this.handleResultViewMode}
-          onGraphNodeDblClick={this.handleReceivedSearchValue}
+          onGraphNodeDblClick={this.onGraphNodeDblClick}
         />
       </div>
     );
