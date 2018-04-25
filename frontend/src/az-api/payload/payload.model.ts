@@ -34,11 +34,13 @@ export interface AzPayload {
   fuzzy?: boolean;
   suggesterName?: string;
   autocompleteMode?: string;
+  scoringProfile?: string;
 }
 
 export const defaultAzPayload: AzPayload = {
   search: "*",
   count: true,
-  searchMode: "any",
+  searchMode: "all",
   top: 10,
+  scoringProfile: "demoBooster",
 }
