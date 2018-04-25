@@ -44,7 +44,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
 
   handleReceivedSearchValue = (searchValue : string) => {
     this.setState(
-      receivedSearchValueUpdate(searchValue, true, "grid"),
+      receivedSearchValueUpdate(searchValue, true, "list"),
       this.handleSearchSubmit
     );
   }

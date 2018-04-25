@@ -108,10 +108,15 @@ class ResultAreaComponent extends React.PureComponent<Partial<SearchPageProps>> 
         <PlaceholderComponent />
         <SpacerComponent>
           {
-            this.props.resultViewMode === "grid" ?
+            this.props.resultViewMode === "graph" ?
+              <GraphViewComponent
+                searchValue={this.props.activeSearch}
+                onGraphNodeDblClick={this.props.onGraphNodeDblClick}
+              /> :
               <div>
                 <ItemCollectionViewComponent
                   items={this.props.itemCollection}
+                  listMode={this.props.resultViewMode === "list"}
                   activeSearch={this.props.activeSearch}
                   onClick={this.props.onItemClick}
                 />
@@ -121,11 +126,7 @@ class ResultAreaComponent extends React.PureComponent<Partial<SearchPageProps>> 
                   resultCount={this.props.resultCount}
                   onLoadMore={this.props.onLoadMore}
                 />
-              </div> :
-              <GraphViewComponent
-                searchValue={this.props.activeSearch}
-                onGraphNodeDblClick={this.props.onGraphNodeDblClick}
-              />
+              </div>
           }
         </SpacerComponent>
       </>

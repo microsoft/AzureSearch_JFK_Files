@@ -62,6 +62,27 @@ $colorTranslucent: transparentize($colorGrey, 0.85);
   }
 }
 
+.list-mode {
+  width: 100%;
+
+  @include respond-to-desktop {
+    width: 100%;
+  }
+
+  .media {
+    height: 14rem;
+
+    @include respond-to-desktop {
+      height: 18rem;
+    }
+  }
+
+  .caption {
+    height: 0rem;
+  }
+}
+
+
 .tag {
   margin: 0.15rem;
 

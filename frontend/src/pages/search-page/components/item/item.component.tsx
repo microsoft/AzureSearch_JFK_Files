@@ -8,12 +8,14 @@ import Collapse from "material-ui/transitions/Collapse";
 import Typography from "material-ui/Typography";
 import Chip from 'material-ui/Chip';
 import StarIcon from "material-ui-icons/Star";
+import { cnc } from "../../../../util";
 
 const style = require("./item.style.scss");
 
 
 interface ItemProps {
   item: Item;
+  listMode?: boolean;
   activeSearch?: string;
   onClick?: (item: Item) => void;
   simplePreview?: boolean;
@@ -155,7 +157,7 @@ export class ItemComponent extends React.Component<ItemProps, State> {
     const {item, activeSearch, onClick } = this.props;
 
     return (
-      <Card classes={{root: style.card}}
+      <Card classes={{root: cnc(style.card, this.props.listMode && style.listMode)}}
         elevation={8}>
         <ItemMedia
           item={item}
