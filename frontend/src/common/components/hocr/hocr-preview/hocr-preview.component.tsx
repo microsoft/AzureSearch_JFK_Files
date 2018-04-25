@@ -117,7 +117,7 @@ export class HocrPreviewComponent extends React.Component<HocrPreviewProps, Hocr
       const wordCompare = CreateWordComparator(newProps.targetWords, newProps.caseSensitiveComparison);
       let pageIndex = newProps.pageIndex;
       let autoFocusNode = null;
-      if (pageIndex === "auto") {
+      if (pageIndex) {
         const wordPosition = parseWordPosition(doc, newProps.pageIndex, wordCompare);
         pageIndex = wordPosition.pageIndex;
         autoFocusNode = wordPosition.firstOcurrenceNode;
