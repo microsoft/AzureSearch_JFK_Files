@@ -63,6 +63,10 @@ export class HocrPreviewComponent extends React.Component<HocrPreviewProps, Hocr
     }
   }
 
+  public static defaultProps: Partial<HocrPreviewProps> = {
+    pageIndex: 'auto',
+  };
+
   private viewportRef = null;
 
   private saveViewportRef = (node) => {
@@ -117,7 +121,7 @@ export class HocrPreviewComponent extends React.Component<HocrPreviewProps, Hocr
       const wordCompare = CreateWordComparator(newProps.targetWords, newProps.caseSensitiveComparison);
       let pageIndex = newProps.pageIndex;
       let autoFocusNode = null;
-      if (pageIndex === "auto") {
+      if (pageIndex) {
         const wordPosition = parseWordPosition(doc, newProps.pageIndex, wordCompare);
         pageIndex = wordPosition.pageIndex;
         autoFocusNode = wordPosition.firstOcurrenceNode;

@@ -6,6 +6,7 @@ export interface Item {
   rating?: number;
   extraFields?: any[];
   metadata?: any;
+  demoInitialPage?: number;
 }
 
 export type ItemCollection = Item[];
