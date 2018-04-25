@@ -17,7 +17,7 @@ class DetailPageInnerContainer extends React.Component<RouteComponentProps<any>,
     super(props);
 
     this.state = {
-      zoomMode: "original",
+      zoomMode: "page-width",
       showText: true,
     };
   }
