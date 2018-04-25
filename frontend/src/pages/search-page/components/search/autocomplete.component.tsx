@@ -34,6 +34,7 @@ const renderInput = (params) => {
           underline: style.underline,
         }
       }}
+      spellCheck={false}
     />
   );
 };
