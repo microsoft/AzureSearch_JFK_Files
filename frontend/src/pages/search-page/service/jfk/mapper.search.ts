@@ -1,4 +1,4 @@
-import { isArrayEmpty } from "../../../../util";
+import { isArrayEmpty, isValueInArray } from "../../../../util";
 import { ServiceConfig } from "../../service";
 import { 
   AzResponse,
@@ -89,7 +89,7 @@ export const mapSearchResponseToState = (state: State, response: AzResponse, con
 
 const mapViewFilterToPayloadCustomFilter = (filter: Filter): AzFilterCollection => {
   // TODO: This is just tailor made for JFK Demo event.
-  const yesTag = filter.store === "Yes";
+  const yesTag = isValueInArray(filter.store, "Yes");
   return filter ? {
     fieldName: filter.fieldId,
     mode: yesTag ? "any" : "all",
@@ -103,7 +103,7 @@ const mapViewFilterToPayloadCollectionFilter = (filter: Filter): AzFilterCollect
     fieldName: filter.fieldId,
     mode: "any",
     operator: "eq",
-    value: [filter.store],
+    value: filter.store,
   } : null;
 }
 
