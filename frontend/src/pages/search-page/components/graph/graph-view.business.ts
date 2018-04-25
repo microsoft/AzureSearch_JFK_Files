@@ -96,11 +96,10 @@ const createLabels = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: 
   
   const labelArcs = svg
     .append("g")
-      .attr("class", "labelarcs")  
+      .attr("class", style.labelarc)  
     .selectAll(style.labelarc)
     .data(graphDescriptor.nodes)
     .enter().append("path")
-      .attr("class", style.labelarc)
       .attr("id", (d, i) => `labelarc${i}`)
       .attr("d", ellipticalArc);
 
