@@ -44,9 +44,11 @@ const createSvg = (containerNodeId: string, theme: Theme) => {
       .style("font-family", theme.typography.fontFamily);
 }
 
-const createArrowDef = (svg) => {
-  return svg
-    .append("defs").append("marker")
+const createDefs = (svg) => {
+  const defs = svg.append("defs");
+
+  const arrow = defs
+    .append("marker")
       .attr("id", "arrowhead")
       .attr("viewBox", "-0 -5 10 10")
       .attr("refX", 25)
@@ -58,6 +60,16 @@ const createArrowDef = (svg) => {
     .append("svg:path")
       .attr("class", style.arrow)      
       .attr("d", "M 0,-5 L 10 ,0 L 0,5");
+
+  const dragFilter = defs
+    .append("filter")
+      .attr("id", "dragFilter")
+    .append("feColorMatrix")
+      .attr("type", "saturate")
+      .attr("values", 10);
+      
+    return defs;
+  
 }
 
 const createEdges = (svg, graphDescriptor: GraphResponse) => {
@@ -80,13 +92,10 @@ const createNodes = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: (
     .data(graphDescriptor.nodes)
     .enter().append("circle")
       .attr("class", style.node)
+      .attr("node", d => d.name)
       .attr("r", nodeRadius)
       .style("fill", colorizeNode(theme))
       .on("dblclick", navigateToSelectedTerm(onGraphNodeDblClick));
-  
-  const nodetitles = nodes
-    .append("title")
-      .text(d => d.name);
 
   return nodes;
 }
@@ -103,22 +112,34 @@ const createLabels = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: 
       .attr("id", (d, i) => `labelarc${i}`)
       .attr("d", ellipticalArc);
 
-  const labels = svg
+  const labelGroup = svg
     .append("g")
-      .attr("class", "labels")  
+      .attr("class", "labels");
+  
+  const labelTexts = labelGroup
     .selectAll(style.label)
     .data(graphDescriptor.nodes)
     .enter()
     .append("text")
       .attr("class", style.label)
-      .on("dblclick", navigateToSelectedTerm(onGraphNodeDblClick))
-    .append("textPath")
-      .attr("class", style.labelPath)
+      .attr("node", d => d.name)
+      .on("dblclick", navigateToSelectedTerm(onGraphNodeDblClick));
+  
+  const labelStrokes = labelTexts
+    .append("textPath") 
+      .attr("class", style.labelStroke)
       .attr("xlink:href", (d, i) => `#labelarc${i}`)
       .attr("startOffset", "50%")
-      .text(d => d.name)      
+      .text(d => d.name);
+
+  const labelInners = labelTexts
+    .append("textPath")
+      .attr("class", style.labelInner)
+      .attr("xlink:href", (d, i) => `#labelarc${i}`)
+      .attr("startOffset", "50%")
+      .text(d => d.name);
   
-  return {labels, labelArcs};
+  return {labelStrokes, labelInners, labelArcs};
 }
 
 
@@ -134,10 +155,10 @@ export const loadGraph = (containerNodeId: string, graphDescriptor: GraphRespons
   resetGraph(containerNodeId);
   
   const svg = createSvg(containerNodeId, theme);
-  const arrowDef = createArrowDef(svg);
+  const defs = createDefs(svg);
   const edges = createEdges(svg, graphDescriptor);
   const nodes = createNodes(svg, graphDescriptor, onGraphNodeDblClick, theme);
-  const {labels, labelArcs} = createLabels(svg, graphDescriptor, onGraphNodeDblClick, theme);
+  const {labelStrokes, labelInners, labelArcs} = createLabels(svg, graphDescriptor, onGraphNodeDblClick, theme);
 
   const svgRect = getSvgBbox(svg);
   const nodeDistance = nodeSeparationFactor * Math.min(svgRect.width, svgRect.height) / 5;
@@ -156,7 +177,10 @@ export const loadGraph = (containerNodeId: string, graphDescriptor: GraphRespons
       .attr("transform", (d: any) => `translate(
           ${keepCoordInCanvas(d.x, "X", nodeRadius)},
           ${keepCoordInCanvas(d.y, "Y", nodeRadius)})`);
-    labels
+    labelStrokes
+      .attr("x", (d: any) => keepCoordInCanvas(d.x, "X", nodeRadius))
+      .attr("y", (d: any) => keepCoordInCanvas(d.y, "Y", nodeRadius));
+    labelInners
       .attr("x", (d: any) => keepCoordInCanvas(d.x, "X", nodeRadius))
       .attr("y", (d: any) => keepCoordInCanvas(d.y, "Y", nodeRadius));
   }
@@ -180,6 +204,8 @@ export const loadGraph = (containerNodeId: string, graphDescriptor: GraphRespons
   
   nodes
     .call(dragBehaviour);
-  labels
+  labelInners
+    .call(dragBehaviour);
+  labelStrokes
     .call(dragBehaviour);
 };
