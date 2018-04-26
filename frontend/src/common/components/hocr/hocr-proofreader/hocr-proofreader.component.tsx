@@ -73,7 +73,7 @@ export class HocrProofreaderComponent extends React.PureComponent<HocrProofreade
           className={style.hocrPreview}
           hocr={this.props.hocr}
           zoomMode={this.props.zoomMode}
-          pageIndex={/*this.state.previewPageIndex*/ this.fixIndex}
+          pageIndex={/*this.state.previewPageIndex*/this.fixIndex}
           autoFocusId={this.state.previewIdHightlighted}
           targetWords={this.props.targetWords}
           onWordHover={this.handlePreviewWordHover}
