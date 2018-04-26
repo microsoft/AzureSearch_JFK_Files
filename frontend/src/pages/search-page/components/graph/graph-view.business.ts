@@ -101,7 +101,7 @@ const createNodes = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: (
 }
 
 const createLabels = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: (string) => void, theme: Theme) => {
-  const ellipticalArc = `M${-5*nodeRadius},${0} A${5*nodeRadius},${2*nodeRadius} 0, 0,0 ${5*nodeRadius},${0}`;
+  const ellipticalArc = `M${-6*nodeRadius},0 A${6*nodeRadius},${2*nodeRadius} 0, 0,0 ${6*nodeRadius},0`;
   
   const labelArcs = svg
     .append("g")
