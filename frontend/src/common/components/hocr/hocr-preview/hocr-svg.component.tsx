@@ -29,19 +29,20 @@ export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) 
       y={nodePosSize.y}
       width={nodePosSize.width}
       height={nodePosSize.height}
-      onMouseEnter={onHover(props, id, props.node.textContent, true)}
-      onMouseLeave={onHover(props, null, null, false)}
+      onMouseEnter={onHover(props, true, id, props.node.textContent, nodePosSize.height)}
+      onMouseLeave={onHover(props, false, null, null)}
     />
   );
 };
 
-const onHover = (props: SvgRectProps, id: string, word: string, isHover: boolean) => (e) => {
+const onHover = (props: SvgRectProps, isHover: boolean, id?: string, word?: string, height?: number) => (e) => {
   const reactangle = e.target.getBoundingClientRect();
   if (props.onHover) {
     props.onHover({
       id,
       left: reactangle.left,
       top: reactangle.top,
+      height,
       word,
       isHover,
     });

@@ -3,7 +3,6 @@ import { getNodeId, getNodeOptions, WordComparator } from "../util/common-util";
 import { HocrNodeProps, getNodeChildrenComponents } from "./hocr-node.component";
 import { HocrPageStyleMap } from "./hocr-page.style";
 import { HocrPreviewStyleMap } from "./hocr-preview.style";
-import { ENGINE_METHOD_DIGESTS } from "constants";
 import { RectangleProps, createEmptyRectangleProps } from "./rectangleProps";
 import { HocrTooltipComponent } from "./horc-tooltip.component";
 

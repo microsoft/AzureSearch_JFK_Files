@@ -4,6 +4,8 @@ import { cryptonyms } from "../../../constants/cryptonyms";
 import { RectangleProps } from "./rectangleProps";
 import { TooltipComponent } from "../tooltip";
 
+const topOffset = 15;
+
 interface Props {
   rectangleProps: RectangleProps;
 }
@@ -27,13 +29,15 @@ export class HocrTooltipComponent extends React.PureComponent<Props, State> {
     if (rectangleProps.isHover !== this.props.rectangleProps.isHover) {
       this.updateTooltip(rectangleProps);
     }
+
+    document.body.style.overflow = getBodyOverflow(rectangleProps.isHover);
   }
 
   updateTooltip = (rectangleProps: RectangleProps) => {
     this.setState({
       isOpen: rectangleProps.isHover,
       left: rectangleProps.left,
-      top: rectangleProps.top,
+      top: rectangleProps.top + rectangleProps.height + topOffset,
       message: getTooltipMessage(rectangleProps.word),
     });
   }
@@ -42,7 +46,7 @@ export class HocrTooltipComponent extends React.PureComponent<Props, State> {
     return (
       <TooltipComponent
         show={this.state.isOpen && Boolean(this.state.message)}
-        top={this.state.top + 50}
+        top={this.state.top}
         left={this.state.left}
       >
         {this.state.message}
@@ -60,4 +64,10 @@ const getTooltipMessage = (word: string): string => {
   return Boolean(cryptonym) ?
     cryptonyms[cryptonym] :
     '';
-}
+};
+
+const getBodyOverflow = (isHover: boolean) => (
+  isHover ?
+    'hidden' :
+    ''
+);
