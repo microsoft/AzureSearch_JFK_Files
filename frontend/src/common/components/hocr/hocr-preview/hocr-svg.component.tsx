@@ -9,17 +9,17 @@ interface SvgRectProps {
   node: Element;
   className: string;
   idSuffix: string;
-  onHover?: (id: string) => void; 
+  onHover?: (id: string, x: number, y: number) => void;
 }
 
 export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) => {
   const nodeOptions = getNodeOptions(props.node);
   if (!nodeOptions || !nodeOptions.bbox) return null;
-  
+
   const nodePosSize = bboxToPosSize(nodeOptions.bbox);
   const id = getNodeId(props.node);
   const suffixedId = composeId(id, props.idSuffix);
-  
+
   return (
     <rect
       className={props.className}
@@ -28,8 +28,8 @@ export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) 
       y={nodePosSize.y}
       width={nodePosSize.width}
       height={nodePosSize.height}
-      onMouseEnter={props.onHover && (() => props.onHover(id))}
-      onMouseLeave={props.onHover && (() => props.onHover(null))}
+      onMouseEnter={props.onHover && (() => props.onHover(id, nodePosSize.x, nodePosSize.y))}
+      onMouseLeave={props.onHover && (() => props.onHover(null, 0, 0))}
     />
   );
 }
