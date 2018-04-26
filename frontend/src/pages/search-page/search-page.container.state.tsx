@@ -1,5 +1,6 @@
 import { jfkService, StateReducer } from "./service";
 import { State, SuggestionCollection, FilterCollection, ResultViewMode } from "./view-model";
+import { buildTargetWords } from "./search-page.container.business";
 
 export const CreateInitialState = (): State => ({
   searchValue: null,
@@ -70,11 +71,13 @@ export const postSearchSuccessUpdate = (stateReducer: StateReducer) => (prevStat
     prevState.searchValue :
     null;
 
+  const targetWords = buildTargetWords(activeSearch);
+
   return {
     ...stateReducer<State>(prevState),
     suggestionCollection: null,
     activeSearch,
-    targetWords: activeSearch && activeSearch.split(" "), //Add filter,
+    targetWords,
   }
 };
 

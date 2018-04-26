@@ -27,8 +27,6 @@ export const resolveNodeEntity = (node: Element): string => {
 };
 
 export const CreateWordComparator = (targetWords: string[], caseSensitive: boolean = false) => {
-  if (!targetWords || targetWords.length <= 0) return null;
-  
   const parsedTargetWords = caseSensitive ? targetWords : targetWords.map(w => w.toLowerCase());
   return (word: string): boolean => {
     return parsedTargetWords.indexOf(caseSensitive ? word : word.toLowerCase()) >= 0;
