@@ -6,6 +6,7 @@ import { HocrPageStyleMap } from "./hocr-page.style";
 import { HocrPreviewStyleMap } from "./hocr-preview.style";
 import { ENGINE_METHOD_DIGESTS } from "constants";
 import { RectangleProps } from "./rectangleProps";
+import { cryptonyms } from "../../../constants/cryptonyms";
 
 
 /**
@@ -29,6 +30,7 @@ interface State {
   isOpenTooltip: boolean;
   tooltipLeft: number;
   tooltipTop: number;
+  tooltipMessage: string;
 }
 
 export class HocrPageComponent extends React.PureComponent<HocrPageProps, State> {
@@ -39,6 +41,7 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
       isOpenTooltip: false,
       tooltipLeft: 0,
       tooltipTop: 0,
+      tooltipMessage: '',
     };
   }
 
@@ -47,6 +50,7 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
       isOpenTooltip: rectangleProps.isHover,
       tooltipLeft: rectangleProps.left,
       tooltipTop: rectangleProps.top,
+      tooltipMessage: getTooltipMessage(rectangleProps.word),
     });
   }
 
@@ -65,8 +69,9 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
       <>
         {
           this.state.isOpenTooltip &&
+          Boolean(this.state.tooltipMessage) &&
           <Tooltip
-            title="Test tooltip"
+            title={this.state.tooltipMessage}
             open={true}
             placement="top"
             style={{
@@ -105,6 +110,15 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
       </>
     );
   }
+}
+
+const getTooltipMessage = (word: string): string => {
+  const regex = new RegExp(word, 'i');
+  const cryptonym = Object.keys(cryptonyms).find((key) => regex.test(key));
+
+  return Boolean(cryptonym) ?
+    cryptonyms[cryptonym] :
+    '';
 }
 
 const getZoomStyle = (zoomMode: ZoomMode, bbox: any) => {
