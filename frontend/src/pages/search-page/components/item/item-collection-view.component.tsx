@@ -10,6 +10,7 @@ interface ItemViewProps {
   items?: ItemCollection;
   listMode?: boolean;
   activeSearch?: string;
+  targetWords: string[];
   onClick?: (item: Item) => void;
 }
 
@@ -27,6 +28,7 @@ export class ItemCollectionViewComponent extends React.Component<ItemViewProps, 
               item={child}
               listMode={this.props.listMode}
               activeSearch={this.props.activeSearch}
+              targetWords={this.props.targetWords}
               onClick={this.props.onClick}
               key={index}
             />

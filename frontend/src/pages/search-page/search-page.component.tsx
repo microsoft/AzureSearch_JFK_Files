@@ -31,7 +31,8 @@ interface SearchPageProps {
   resultViewMode: ResultViewMode;
   searchValue: string;
   itemCollection: ItemCollection;
-  activeSearch?: string
+  activeSearch?: string;
+  targetWords: string[];
   facetCollection: FacetCollection;
   filterCollection: FilterCollection;
   suggestionCollection?: SuggestionCollection;
@@ -118,6 +119,7 @@ class ResultAreaComponent extends React.PureComponent<Partial<SearchPageProps>> 
                   items={this.props.itemCollection}
                   listMode={this.props.resultViewMode === "list"}
                   activeSearch={this.props.activeSearch}
+                  targetWords={this.props.targetWords}
                   onClick={this.props.onItemClick}
                 />
                 <Paginator
@@ -147,6 +149,7 @@ const SearchPageComponent = (props: SearchPageProps) => (
       <ResultAreaComponent
         itemCollection={props.itemCollection}
         activeSearch={props.activeSearch}
+        targetWords={props.targetWords}
         pageIndex={props.pageIndex}
         resultsPerPage={props.resultsPerPage}
         resultCount={props.resultCount}

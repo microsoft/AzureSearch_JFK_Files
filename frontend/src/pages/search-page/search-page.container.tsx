@@ -148,7 +148,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
 
     setDetailState(      {
       hocr: item.metadata,
-      targetWords: this.state.activeSearch && this.state.activeSearch.split(" "),
+      targetWords: this.state.targetWords,
     } as DetailRouteState);
 
     this.props.history.push(detailPath);
@@ -158,7 +158,6 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
   private informMessage = (message: string) => {
     console.log(message);
   }
-
 
   // *** REACT LIFECYCLE ***
 
@@ -175,6 +174,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
           onFilterUpdate={this.handleFilterUpdate}
           itemCollection={this.state.itemCollection}
           activeSearch={this.state.activeSearch}
+          targetWords={this.state.targetWords}
           onItemClick={this.handleOnItemClick}
           resultCount={this.state.resultCount}
           resultsPerPage={this.state.pageSize}
