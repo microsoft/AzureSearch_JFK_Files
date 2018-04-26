@@ -9,7 +9,7 @@ interface SvgRectProps {
   node: Element;
   className: string;
   idSuffix: string;
-  onHover?: (id: string, x: number, y: number) => void;
+  onHover?: (id: string, x: number, y: number, isHover: boolean) => void;
 }
 
 export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) => {
@@ -28,10 +28,17 @@ export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) 
       y={nodePosSize.y}
       width={nodePosSize.width}
       height={nodePosSize.height}
-      onMouseEnter={props.onHover && (() => props.onHover(id, nodePosSize.x, nodePosSize.y))}
-      onMouseLeave={props.onHover && (() => props.onHover(null, 0, 0))}
+      onMouseEnter={onHover(props, id, true)}
+      onMouseLeave={onHover(props, null, false)}
     />
   );
+};
+
+const onHover = (props: SvgRectProps, id: string, isHover: boolean) => (e: React.MouseEvent<SVGRectElement>) => {
+  console.log("IsHover: ", isHover);
+  if (props.onHover) {
+    props.onHover(id, e.clientX, e.clientY, isHover);
+  }
 }
 
 interface SvgGroupProps {

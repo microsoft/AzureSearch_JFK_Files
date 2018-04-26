@@ -28,7 +28,7 @@ export interface HocrNodeProps {
   idSuffix: string;
   renderOnlyTargetWords?: boolean;
   userStyle?: HocrPreviewStyleMap;
-  onWordHover?: (wordId: string, x: number, y: number) => void;
+  onWordHover?: (wordId: string, x: number, y: number, isHover: boolean) => void;
 }
 
 interface HocrGroupProps extends HocrNodeProps {

@@ -4,6 +4,7 @@ import { getNodeId, getNodeOptions, WordComparator } from "../util/common-util";
 import { HocrNodeProps, getNodeChildrenComponents } from "./hocr-node.component";
 import { HocrPageStyleMap } from "./hocr-page.style";
 import { HocrPreviewStyleMap } from "./hocr-preview.style";
+import { ENGINE_METHOD_DIGESTS } from "constants";
 
 
 /**
@@ -40,16 +41,16 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
     };
   }
 
-  toggleTooltip = (x: number, y: number) => {
+  updateTooltip = (x: number, y: number, isHover: boolean) => {
     this.setState({
-      isOpenTooltip: !this.state.isOpenTooltip,
+      isOpenTooltip: isHover,
       tooltipX: x,
       tooltipY: y,
     });
   }
 
-  onNodeHover = (wordId: string, x: number, y: number) => {
-    this.toggleTooltip(x, y);
+  onNodeHover = (wordId: string, x: number, y: number, isHover: boolean) => {
+    this.updateTooltip(x, y, isHover);
     if (this.props.onWordHover) {
       this.props.onWordHover(wordId);
     }
@@ -88,6 +89,7 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
 
         <Tooltip
           title="Test tooltip"
+          placement="top"
           open={this.state.isOpenTooltip}
           style={{
             position: 'absolute',
@@ -95,7 +97,7 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
             left: this.state.tooltipX,
           }}
         >
-          <h1>test</h1>
+          <h1 style={{ border: '1px solid red' }}>test</h1>
         </Tooltip>
       </>
     );
