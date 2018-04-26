@@ -21,6 +21,7 @@ interface HocrProofreaderProps {
   previewStyle?: HocrPreviewStyleMap;
   documentStyle?: HocrDocumentStyleMap;
   className?: string;
+  pageIndex: PageIndex;
 }
 
 interface HocrProofreaderState {
@@ -36,11 +37,12 @@ export class HocrProofreaderComponent extends React.PureComponent<HocrProofreade
     this.state = {
       docIdHighlighted: null,
       previewIdHightlighted: null,
-      previewPageIndex: "auto",
-    }
+      previewPageIndex: this.props.pageIndex,
+    };
+    this.fixIndex = this.props.pageIndex;
   }
 
-  private fixIndex: PageIndex = "auto"; // **FIX. Read below.
+  private fixIndex: PageIndex; // **FIX. Read below.
 
   private handleDocumentWordHover = (id: string) => {
     this.setState({

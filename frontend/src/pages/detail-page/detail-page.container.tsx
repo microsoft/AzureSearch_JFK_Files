@@ -45,6 +45,7 @@ class DetailPageInnerContainer extends React.Component<RouteComponentProps<any>,
         hocr={detailState.hocr}
         targetWords={detailState.targetWords}
         zoomMode={this.state.zoomMode}
+        pageIndex={1}
         showText={this.state.showText}
         onToggleTextClick={this.handleToggleText}
         onZoomChange={this.handleZoomChange}
