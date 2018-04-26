@@ -5,6 +5,7 @@ import { HocrNodeProps, getNodeChildrenComponents } from "./hocr-node.component"
 import { HocrPageStyleMap } from "./hocr-page.style";
 import { HocrPreviewStyleMap } from "./hocr-preview.style";
 import { ENGINE_METHOD_DIGESTS } from "constants";
+import { RectangleProps } from "./rectangleProps";
 
 
 /**
@@ -26,8 +27,8 @@ export interface HocrPageProps {
 
 interface State {
   isOpenTooltip: boolean;
-  tooltipX: number;
-  tooltipY: number;
+  tooltipLeft: number;
+  tooltipTop: number;
 }
 
 export class HocrPageComponent extends React.PureComponent<HocrPageProps, State> {
@@ -36,23 +37,23 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
 
     this.state = {
       isOpenTooltip: false,
-      tooltipX: 0,
-      tooltipY: 0,
+      tooltipLeft: 0,
+      tooltipTop: 0,
     };
   }
 
-  updateTooltip = (x: number, y: number, isHover: boolean) => {
+  updateTooltip = (rectangleProps: RectangleProps) => {
     this.setState({
-      isOpenTooltip: isHover,
-      tooltipX: x,
-      tooltipY: y,
+      isOpenTooltip: rectangleProps.isHover,
+      tooltipLeft: rectangleProps.left,
+      tooltipTop: rectangleProps.top,
     });
   }
 
-  onNodeHover = (wordId: string, x: number, y: number, isHover: boolean) => {
-    this.updateTooltip(x, y, isHover);
+  onNodeHover = (rectangleProps: RectangleProps) => {
+    this.updateTooltip(rectangleProps);
     if (this.props.onWordHover) {
-      this.props.onWordHover(wordId);
+      this.props.onWordHover(rectangleProps.id);
     }
   }
 
@@ -62,6 +63,21 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
 
     return (
       <>
+        {
+          this.state.isOpenTooltip &&
+          <Tooltip
+            title="Test tooltip"
+            open={true}
+            placement="top"
+            style={{
+              position: 'absolute',
+              top: this.state.tooltipTop,
+              left: this.state.tooltipLeft,
+            }}
+          >
+            <p style={{ visibility: 'hidden', border: '1px solid red' }}>test</p>
+          </Tooltip>
+        }
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={this.props.userStyle.page}
@@ -86,19 +102,6 @@ export class HocrPageComponent extends React.PureComponent<HocrPageProps, State>
             })}
           </g>
         </svg>
-
-        <Tooltip
-          title="Test tooltip"
-          placement="top"
-          open={this.state.isOpenTooltip}
-          style={{
-            position: 'absolute',
-            top: this.state.tooltipY,
-            left: this.state.tooltipX,
-          }}
-        >
-          <h1 style={{ border: '1px solid red' }}>test</h1>
-        </Tooltip>
       </>
     );
   }

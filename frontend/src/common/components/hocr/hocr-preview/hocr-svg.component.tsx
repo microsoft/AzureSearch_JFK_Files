@@ -1,5 +1,6 @@
 import * as React from "react";
-import { getNodeOptions, bboxToPosSize, getNodeId, composeId } from "../util/common-util";
+import { getNodeOptions, bboxToPosSize, getNodeId, composeId, PosSize } from "../util/common-util";
+import { RectangleProps } from "./rectangleProps";
 
 /**
  * HOCR Node SVG
@@ -9,7 +10,7 @@ interface SvgRectProps {
   node: Element;
   className: string;
   idSuffix: string;
-  onHover?: (id: string, x: number, y: number, isHover: boolean) => void;
+  onHover?: (rectangleProps: RectangleProps) => void;
 }
 
 export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) => {
@@ -28,16 +29,22 @@ export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) 
       y={nodePosSize.y}
       width={nodePosSize.width}
       height={nodePosSize.height}
-      onMouseEnter={onHover(props, id, true)}
-      onMouseLeave={onHover(props, null, false)}
+      onMouseEnter={onHover(props, id, true, nodePosSize)}
+      onMouseLeave={onHover(props, null, false, nodePosSize)}
     />
   );
 };
 
-const onHover = (props: SvgRectProps, id: string, isHover: boolean) => (e: React.MouseEvent<SVGRectElement>) => {
-  console.log("IsHover: ", isHover);
+const onHover = (props: SvgRectProps, id: string, isHover: boolean, nodePosSize: PosSize) => (e) => {
+  console.log("IsHover: ", isHover, e.clientX, nodePosSize.x, e.clientY, nodePosSize.y);
+  const reactangle = e.target.getBoundingClientRect();
   if (props.onHover) {
-    props.onHover(id, e.clientX, e.clientY, isHover);
+    props.onHover({
+      id,
+      left: reactangle.left,
+      top: reactangle.top,
+      isHover,
+    });
   }
 }
 
