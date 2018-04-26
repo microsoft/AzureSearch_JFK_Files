@@ -5,7 +5,7 @@ import { parse } from "qs";
 import { SearchPageComponent } from "./search-page.component";
 import { State, FilterCollection, Filter, Item, ResultViewMode } from "./view-model";
 import { Service, StateReducer } from "./service";
-import { jfkService  } from "./service";
+import { jfkService } from "./service";
 import { isArrayEmpty } from "../../util";
 import {
   CreateInitialState,
@@ -21,8 +21,9 @@ import {
   receivedSearchValueUpdate,
 } from "./search-page.container.state";
 import { detailPath, DetailRouteState } from "../detail-page";
-import { storeState, restoreLastState, isLastStateAvailable} from './view-model/state.memento';
+import { storeState, restoreLastState, isLastStateAvailable } from './view-model/state.memento';
 import { setDetailState } from "../detail-page/detail-page.memento";
+import { buildRoute } from "../../common/helpers/routes";
 
 class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>, State> {
   constructor(props) {
@@ -32,7 +33,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
   }
 
   componentDidMount() {
-    if(isLastStateAvailable()) {
+    if (isLastStateAvailable()) {
       this.setState(restoreLastState());
     } else if (this.props.location.search) {
       const receivedSearchValue = parse(this.props.location.search.substring(1));
@@ -42,7 +43,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
 
   // *** Search Value received through query string ***
 
-  handleReceivedSearchValue = (searchValue : string) => {
+  handleReceivedSearchValue = (searchValue: string) => {
     this.setState(
       receivedSearchValueUpdate(searchValue, true, "list"),
       this.handleSearchSubmit
@@ -102,7 +103,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
       this.state.filterCollection ?
         [...this.state.filterCollection.filter(f => f.fieldId !== newFilter.fieldId), newFilter]
         : [newFilter])
-    .filter(f => f.store);
+      .filter(f => f.store);
   }
 
   private handleFilterUpdate = (newFilter: Filter) => {
@@ -138,7 +139,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
         console.debug(`Suggestions halted: ${rejectValue}`);
         this.setState(suggestionsUpdate(null));
       });
-  }, 500, {leading: true, trailing: true});
+  }, 500, { leading: true, trailing: true });
 
 
   // *** MISC ***
@@ -146,12 +147,13 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
   private handleOnItemClick = (item: Item) => {
     storeState(this.state);
 
-    setDetailState(      {
+    setDetailState({
       hocr: item.metadata,
       targetWords: this.state.targetWords,
     } as DetailRouteState);
 
-    this.props.history.push(detailPath);
+    const route = buildRoute(detailPath, { pageIndex: item.demoInitialPage });
+    this.props.history.push(route);
   }
 
   // TODO: Snackbar implementation.

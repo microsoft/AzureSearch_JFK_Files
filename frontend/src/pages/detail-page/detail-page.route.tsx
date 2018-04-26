@@ -7,7 +7,7 @@ export interface DetailRouteState {
   targetWords: string[];
 }
 
-export const detailPath = "/detail";
+export const detailPath = "/detail/:pageIndex";
 
 export const DetailRoute = (
   <Route path={detailPath} component={DetailPageContainer} />
