@@ -17,6 +17,7 @@ interface ItemProps {
   item: Item;
   listMode?: boolean;
   activeSearch?: string;
+  targetWords?: string[];
   onClick?: (item: Item) => void;
   simplePreview?: boolean;
 }
@@ -45,7 +46,7 @@ const ItemMediaThumbnail: React.StatelessComponent<ItemProps> = ({ item, onClick
   );
 }
 
-const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activeSearch, onClick }) => {
+const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activeSearch, targetWords, onClick }) => {
   return (
     <div className={style.media}
      onClick={handleOnClick({ item, onClick })}
@@ -54,7 +55,7 @@ const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activ
         hocr={item.metadata}
         pageIndex={item.demoInitialPage}
         zoomMode="original"
-        targetWords={activeSearch && activeSearch.split(" ")}
+        targetWords={targetWords}
         renderOnlyTargetWords={true}
         disabelScroll={true}
       />
@@ -63,7 +64,7 @@ const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activ
 }
 
 const ItemMedia: React.StatelessComponent<ItemProps> = (
-  { item, activeSearch, onClick, simplePreview }) => {
+  { item, activeSearch, targetWords, onClick, simplePreview }) => {
   return (
     simplePreview ? 
       <ItemMediaThumbnail
@@ -73,6 +74,7 @@ const ItemMedia: React.StatelessComponent<ItemProps> = (
       <ItemMediaHocrPreview
         item={item}
         activeSearch={activeSearch}
+        targetWords={targetWords}
         onClick={onClick}
       />
   );
@@ -154,7 +156,7 @@ export class ItemComponent extends React.Component<ItemProps, State> {
   }
     
   public render() {
-    const {item, activeSearch, onClick } = this.props;
+    const {item, activeSearch, targetWords, onClick } = this.props;
 
     return (
       <Card classes={{root: cnc(style.card, this.props.listMode && style.listMode)}}
@@ -162,6 +164,7 @@ export class ItemComponent extends React.Component<ItemProps, State> {
         <ItemMedia
           item={item}
           activeSearch={activeSearch}
+          targetWords={targetWords}
           onClick={onClick}
         />
         <ItemCaption item={item} onClick={onClick} />

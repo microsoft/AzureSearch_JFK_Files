@@ -10,6 +10,7 @@ export interface State {
   searchValue: string;
   itemCollection: ItemCollection;
   activeSearch: string;
+  targetWords: string[];
   facetCollection: FacetCollection;
   filterCollection: FilterCollection;
   suggestionCollection: SuggestionCollection;
