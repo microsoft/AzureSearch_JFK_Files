@@ -33,4 +33,6 @@ Azure Search demo based on declassified JFK Files.
   npm run build:prod
 ```
 
- And copy the content generated from the dist folder into your web server.
+ And copy the content generated from the _dist_ folder into your web server.
+
+ > This process can be easily automated and enclosed on a CD enviroment.
