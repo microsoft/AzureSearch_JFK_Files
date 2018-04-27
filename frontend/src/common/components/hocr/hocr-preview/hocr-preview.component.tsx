@@ -80,8 +80,8 @@ export class HocrPreviewComponent extends React.Component<HocrPreviewProps, Hocr
     if (!shift) return;
 
     const {x, y} = shift;
-    const scrollLeft = this.viewportRef.scrollWidth * x - (this.viewportRef.clientWidth / 2); 
-    const scrollTop = this.viewportRef.scrollHeight * y - (this.viewportRef.clientHeight / 2);
+    const scrollLeft = this.viewportRef.scrollWidth * x - (this.viewportRef.clientWidth * 0.5); 
+    const scrollTop = this.viewportRef.scrollHeight * y - (this.viewportRef.clientHeight * 0.3);
     
     // Workd around Edge Bug
     // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/15534521/
