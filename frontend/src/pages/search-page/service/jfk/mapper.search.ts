@@ -40,7 +40,8 @@ const mapResultToItem = (result: any): Item => {
     metadata: result.metadata,
     demoInitialPage: Boolean(result.demoInitialPage) ?
       result.demoInitialPage :
-      undefined
+      undefined,
+    type: result.type,
   } : null;
 };
 

@@ -47,8 +47,9 @@ const ItemMediaThumbnail: React.StatelessComponent<ItemProps> = ({ item, onClick
 }
 
 const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activeSearch, targetWords, onClick }) => {
+  const isPhoto = item.type && item.type.toLowerCase() === "photo";
   return (
-    <div className={style.media}
+    <div className={isPhoto ? style.mediaExtended : style.media}
      onClick={handleOnClick({ item, onClick })}
     >
       <HocrPreviewComponent

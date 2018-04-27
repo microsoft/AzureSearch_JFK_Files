@@ -77,8 +77,18 @@ $colorTranslucent: transparentize($colorGrey, 0.85);
     }
   }
 
+  .media-extended {
+    @extend .media;
+
+    height: 27rem;
+
+    @include respond-to-desktop {
+      height: 36rem;
+    }
+  }
+
   .caption {
-    height: 0rem;
+    height: 0;
   }
 }
 
