@@ -55,7 +55,7 @@ const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activ
       <HocrPreviewComponent
         hocr={item.metadata}
         pageIndex={item.demoInitialPage}
-        zoomMode="original"
+        zoomMode={isPhoto ? "original" : "page-width"}
         targetWords={targetWords}
         renderOnlyTargetWords={true}
         disabelScroll={true}
