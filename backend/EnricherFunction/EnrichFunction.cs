@@ -37,7 +37,7 @@ namespace EnricherFunction
             visionClient = new Vision(Config.VISION_API_KEY, Config.VISION_API_REGION);
             var serviceClient = new SearchServiceClient(Config.AZURE_SEARCH_SERVICE_NAME, new SearchCredentials(Config.AZURE_SEARCH_ADMIN_KEY));
             indexClient = serviceClient.Indexes.GetClient(Config.AZURE_SEARCH_INDEX_NAME);
-            linkedEntityClient = new EntityLinkingServiceClient(Config.ENTITY_LINKING_API_KEY);
+            linkedEntityClient = new EntityLinkingServiceClient(Config.ENTITY_LINKING_API_KEY, "https://api.labs.cognitive.microsoft.com");
             cosmosDb = new AnnotationStore();
 
             // read the list of cia-cryptonymns
