@@ -1,5 +1,5 @@
 export interface Filter {
-  fieldId: string;
+  fieldId: string;  
   store: any;
 }
 

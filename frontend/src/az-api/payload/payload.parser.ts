@@ -29,6 +29,7 @@ export const parsePayloadGET = (p: AzPayload): string => {
     p.fuzzy ? `fuzzy=true` : "",
     p.suggesterName ? `suggesterName=${p.suggesterName}` : "",
     p.autocompleteMode ? `autocompleteMode=${p.autocompleteMode}` : "",
+    p.scoringProfile ? `scoringProfile=${p.scoringProfile}` : ""
   ]
     .filter(i => i)
     .join("&");

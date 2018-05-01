@@ -1,11 +1,13 @@
-import { jfkService, StateReducer  } from "./service";
+import { jfkService, StateReducer } from "./service";
 import { State, SuggestionCollection, FilterCollection, ResultViewMode } from "./view-model";
+import { buildTargetWords } from "./search-page.container.business";
 
 export const CreateInitialState = (): State => ({
   searchValue: null,
-  resultViewMode: "grid",
+  resultViewMode: "list",
   itemCollection: null,
   activeSearch: null,
+  targetWords: [],
   facetCollection: null,
   filterCollection: null,
   suggestionCollection: null,
@@ -14,7 +16,7 @@ export const CreateInitialState = (): State => ({
   pageSize: 10,
   pageIndex: 0,
   // Override with user config initial state (if exists).
-  ...jfkService.config.initialState
+  ...jfkService.config.initialState,
 });
 
 export const searchValueUpdate = (searchValue: string) => (prevState: State): State => {
@@ -39,14 +41,14 @@ export const resultViewModeUpdate = (resultViewMode: ResultViewMode) => (prevSta
 };
 
 export const receivedSearchValueUpdate = (searchValue: string, showDrawer: boolean, resultViewMode: ResultViewMode) =>
-(prevState: State): State => {
-  return {
-    ...prevState,
-    searchValue,
-    showDrawer,
-    resultViewMode,
-  }
-};
+  (prevState: State): State => {
+    return {
+      ...prevState,
+      searchValue,
+      showDrawer,
+      resultViewMode,
+    }
+  };
 
 export const suggestionsUpdate = (suggestionCollection: SuggestionCollection) => (prevState: State): State => {
   return {
@@ -65,14 +67,21 @@ export const preSearchUpdate = (filters: FilterCollection, pageIndex?: number) =
 };
 
 export const postSearchSuccessUpdate = (stateReducer: StateReducer) => (prevState: State): State => {
+  const activeSearch = prevState.searchValue ?
+    prevState.searchValue :
+    null;
+
+  const targetWords = buildTargetWords(activeSearch);
+
   return {
     ...stateReducer<State>(prevState),
     suggestionCollection: null,
-    activeSearch: prevState.searchValue ? prevState.searchValue : null,
+    activeSearch,
+    targetWords,
   }
 };
 
-export const postSearchMoreSuccessUpdate =  (stateReducer: StateReducer) => (prevState: State): State => {
+export const postSearchMoreSuccessUpdate = (stateReducer: StateReducer) => (prevState: State): State => {
   const reducedState = stateReducer<State>(prevState);
   return {
     ...reducedState,
@@ -85,12 +94,13 @@ export const postSearchErrorReset = (rejectValue) => (prevState: State): State =
   return {
     ...prevState,
     resultCount: null,
-    itemCollection: null,          
+    itemCollection: null,
     facetCollection: null,
     filterCollection: null,
     suggestionCollection: null,
     pageIndex: 0,
     activeSearch: null,
+    targetWords: [],
   }
 };
 

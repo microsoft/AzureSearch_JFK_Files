@@ -10,6 +10,8 @@
   .checkbox {
     color: $colorWhite;
     font-size: inherit;
+    width: 2rem;
+    height: 2rem;
 
     &-checked {
       color: $colorPrimary;
@@ -19,6 +21,10 @@
   .label {
     color: $colorWhite;
     font-size: inherit;
+
+    .highlight {
+      color: $colorPrimary;
+    }
   }
 }
 

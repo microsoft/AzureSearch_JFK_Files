@@ -3,13 +3,15 @@ import { GraphResponse, GraphEdge, GraphNode } from "../../../../graph-api";
 import { Theme } from "material-ui/styles";
 import { createDragBehaviour } from "./graph-view.handlers";
 
+const style = require("./graph-view.style.scss");
+
 
 /**
  * Graph configuration parameters.
  */
 const nodeRadius = 15;
 const nodeSeparationFactor = 1;
-const nodeChargeStrength = -250; // Being negative Charge = Repulsion.
+const nodeChargeStrength = -950; // Being negative Charge = Repulsion.
 const nodeChargeAccuracy = 0.4;
 
 const colorizeNode = (theme: Theme) => (d, i) => 
@@ -42,9 +44,11 @@ const createSvg = (containerNodeId: string, theme: Theme) => {
       .style("font-family", theme.typography.fontFamily);
 }
 
-const createArrowDef = (svg) => {
-  return svg
-    .append("defs").append("marker")
+const createDefs = (svg) => {
+  const defs = svg.append("defs");
+
+  const arrow = defs
+    .append("marker")
       .attr("id", "arrowhead")
       .attr("viewBox", "-0 -5 10 10")
       .attr("refX", 25)
@@ -54,22 +58,30 @@ const createArrowDef = (svg) => {
       .attr("markerHeight", 10)
       .attr("xoverflow", "visible")
     .append("svg:path")
-      .attr("d", "M 0,-5 L 10 ,0 L 0,5")
-      .attr("fill", "#ccc")
-      .attr("stroke", "#ccc");
+      .attr("class", style.arrow)      
+      .attr("d", "M 0,-5 L 10 ,0 L 0,5");
+
+  const dragFilter = defs
+    .append("filter")
+      .attr("id", "dragFilter")
+    .append("feColorMatrix")
+      .attr("type", "saturate")
+      .attr("values", 10);
+      
+    return defs;
+  
 }
 
 const createEdges = (svg, graphDescriptor: GraphResponse) => {
   return svg
     .append("g")
       .attr("class", "edges")
-    .selectAll("line")
+    .selectAll(style.edge)
     .data(graphDescriptor.edges)
     .enter().append("line")
+      .attr("class", style.edge)
       .attr("id", function (d, i) { return "edge" + i })
-      .attr("marker-end", "url(#arrowhead)")
-      .style("stroke", "#ccc")
-      .style("pointer-events", "none");
+      .attr("marker-end", "url(#arrowhead)");
 }
 
 const createNodes = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: (string) => void, theme: Theme) => {
@@ -79,50 +91,55 @@ const createNodes = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: (
     .selectAll("circle")
     .data(graphDescriptor.nodes)
     .enter().append("circle")
+      .attr("class", style.node)
+      .attr("node", d => d.name)
       .attr("r", nodeRadius)
       .style("fill", colorizeNode(theme))
-      .style("cursor", "pointer")
       .on("dblclick", navigateToSelectedTerm(onGraphNodeDblClick));
-  
-  const nodetitles = nodes
-    .append("title")
-      .text(d => d.name);
 
   return nodes;
 }
 
-const createNodeLabels = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: (string) => void, theme: Theme) => {
-  const ellipticalArc = `M${-5*nodeRadius},${0} A${5*nodeRadius},${2*nodeRadius} 0, 0,0 ${5*nodeRadius},${0}`;
+const createLabels = (svg, graphDescriptor: GraphResponse, onGraphNodeDblClick: (string) => void, theme: Theme) => {
+  const ellipticalArc = `M${-6*nodeRadius},0 A${6*nodeRadius},${2*nodeRadius} 0, 0,0 ${6*nodeRadius},0`;
   
-  const nodeLabelArcs = svg
+  const labelArcs = svg
     .append("g")
-      .attr("class", "nodelabelarcs")  
-    .selectAll(".nodelabelarc")
+      .attr("class", style.labelarc)  
+    .selectAll(style.labelarc)
     .data(graphDescriptor.nodes)
     .enter().append("path")
-      .attr("id", (d, i) => `nodelabelarc${i}`)
-      .attr("d", ellipticalArc)
-      .attr("fill", "none");
+      .attr("id", (d, i) => `labelarc${i}`)
+      .attr("d", ellipticalArc);
 
-  const nodeLabels = svg
+  const labelGroup = svg
     .append("g")
-      .attr("class", "nodelabel")  
-    .selectAll(".nodelabel")
+      .attr("class", "labels");
+  
+  const labelTexts = labelGroup
+    .selectAll(style.label)
     .data(graphDescriptor.nodes)
     .enter()
     .append("text")
-      .attr("class", "nodelabel")
-      .style("cursor", "pointer")
-      .on("dblclick", navigateToSelectedTerm(onGraphNodeDblClick))
-    .append("textPath")
-      .attr("xlink:href", (d, i) => `#nodelabelarc${i}`)
-      .attr("startOffset", "50%")
-      .text(d => d.name)
-      .style("text-anchor", "middle")
-      .style("alignment-baseline", "hanging")
-      .style("fill", theme.palette.common.white);
+      .attr("class", style.label)
+      .attr("node", d => d.name)
+      .on("dblclick", navigateToSelectedTerm(onGraphNodeDblClick));
   
-  return {nodeLabels, nodeLabelArcs};
+  const labelStrokes = labelTexts
+    .append("textPath") 
+      .attr("class", style.labelStroke)
+      .attr("xlink:href", (d, i) => `#labelarc${i}`)
+      .attr("startOffset", "50%")
+      .text(d => d.name);
+
+  const labelInners = labelTexts
+    .append("textPath")
+      .attr("class", style.labelInner)
+      .attr("xlink:href", (d, i) => `#labelarc${i}`)
+      .attr("startOffset", "50%")
+      .text(d => d.name);
+  
+  return {labelStrokes, labelInners, labelArcs};
 }
 
 
@@ -138,10 +155,10 @@ export const loadGraph = (containerNodeId: string, graphDescriptor: GraphRespons
   resetGraph(containerNodeId);
   
   const svg = createSvg(containerNodeId, theme);
-  const arrowDef = createArrowDef(svg);
+  const defs = createDefs(svg);
   const edges = createEdges(svg, graphDescriptor);
   const nodes = createNodes(svg, graphDescriptor, onGraphNodeDblClick, theme);
-  const {nodeLabels, nodeLabelArcs} = createNodeLabels(svg, graphDescriptor, onGraphNodeDblClick, theme);
+  const {labelStrokes, labelInners, labelArcs} = createLabels(svg, graphDescriptor, onGraphNodeDblClick, theme);
 
   const svgRect = getSvgBbox(svg);
   const nodeDistance = nodeSeparationFactor * Math.min(svgRect.width, svgRect.height) / 5;
@@ -156,11 +173,14 @@ export const loadGraph = (containerNodeId: string, graphDescriptor: GraphRespons
       .attr("y1", (d: any) => keepCoordInCanvas(d.source.y, "Y", nodeRadius))
       .attr("x2", (d: any) => keepCoordInCanvas(d.target.x, "X", nodeRadius))
       .attr("y2", (d: any) => keepCoordInCanvas(d.target.y, "Y", nodeRadius));
-    nodeLabelArcs
+    labelArcs
       .attr("transform", (d: any) => `translate(
           ${keepCoordInCanvas(d.x, "X", nodeRadius)},
           ${keepCoordInCanvas(d.y, "Y", nodeRadius)})`);
-    nodeLabels
+    labelStrokes
+      .attr("x", (d: any) => keepCoordInCanvas(d.x, "X", nodeRadius))
+      .attr("y", (d: any) => keepCoordInCanvas(d.y, "Y", nodeRadius));
+    labelInners
       .attr("x", (d: any) => keepCoordInCanvas(d.x, "X", nodeRadius))
       .attr("y", (d: any) => keepCoordInCanvas(d.y, "Y", nodeRadius));
   }
@@ -184,6 +204,8 @@ export const loadGraph = (containerNodeId: string, graphDescriptor: GraphRespons
   
   nodes
     .call(dragBehaviour);
-  nodeLabels
+  labelInners
+    .call(dragBehaviour);
+  labelStrokes
     .call(dragBehaviour);
 };
