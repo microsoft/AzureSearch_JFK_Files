@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HocrProofreaderComponent } from "../../common/components/hocr";
+import { HocrProofreaderComponent, PageIndex } from "../../common/components/hocr";
 import { ZoomMode } from "../../common/components/hocr";
 import { ToolbarComponent } from "./components/toolbar";
 import { HorizontalSeparator } from "../../common/components/horizontal-separator";
@@ -11,6 +11,7 @@ interface DetailPageProps {
   hocr: string;
   targetWords: string[];
   zoomMode?: ZoomMode;
+  pageIndex: PageIndex;
   showText?: boolean;
   onToggleTextClick: () => void;
   onZoomChange: (zoomMode: ZoomMode) => void;
@@ -37,6 +38,7 @@ export class DetailPageComponent extends React.Component<DetailPageProps, {}> {
           hocr={this.props.hocr}
           targetWords={this.props.targetWords}
           zoomMode={this.props.zoomMode}
+          pageIndex={this.props.pageIndex}
           showText={this.props.showText}
         />
       </div>

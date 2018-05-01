@@ -18,7 +18,7 @@ const isComparingEquality = (operator, logic) => {
 
 const parseFilterSingle = (f: AzFilterSingle): string => {
   if (f.value.length) { // Compare against multiple values.
-    const values = f.value as string[];
+    const values = f.value;
     if (isComparingEquality(f.operator, f.logic)) {
       return `${f.operator==="ne" ? "not " : ""}search.in(${f.fieldName},'${values.join("|")}', '|')`;
     } else {

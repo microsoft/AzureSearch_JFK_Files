@@ -8,13 +8,16 @@ import Collapse from "material-ui/transitions/Collapse";
 import Typography from "material-ui/Typography";
 import Chip from 'material-ui/Chip';
 import StarIcon from "material-ui-icons/Star";
+import { cnc } from "../../../../util";
 
 const style = require("./item.style.scss");
 
 
 interface ItemProps {
   item: Item;
+  listMode?: boolean;
   activeSearch?: string;
+  targetWords?: string[];
   onClick?: (item: Item) => void;
   simplePreview?: boolean;
 }
@@ -43,16 +46,17 @@ const ItemMediaThumbnail: React.StatelessComponent<ItemProps> = ({ item, onClick
   );
 }
 
-const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activeSearch, onClick }) => {
+const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activeSearch, targetWords, onClick }) => {
+  const isPhoto = item.type && item.type.toLowerCase() === "photo";
   return (
-    <div className={style.media}
+    <div className={isPhoto ? style.mediaExtended : style.media}
      onClick={handleOnClick({ item, onClick })}
     >
       <HocrPreviewComponent
         hocr={item.metadata}
-        pageIndex="auto"
-        zoomMode="original"
-        targetWords={activeSearch && activeSearch.split(" ")}
+        pageIndex={item.demoInitialPage}
+        zoomMode={isPhoto ? "original" : "page-width"}
+        targetWords={targetWords}
         renderOnlyTargetWords={true}
         disabelScroll={true}
       />
@@ -61,7 +65,7 @@ const ItemMediaHocrPreview: React.StatelessComponent<ItemProps> = ({ item, activ
 }
 
 const ItemMedia: React.StatelessComponent<ItemProps> = (
-  { item, activeSearch, onClick, simplePreview }) => {
+  { item, activeSearch, targetWords, onClick, simplePreview }) => {
   return (
     simplePreview ? 
       <ItemMediaThumbnail
@@ -71,6 +75,7 @@ const ItemMedia: React.StatelessComponent<ItemProps> = (
       <ItemMediaHocrPreview
         item={item}
         activeSearch={activeSearch}
+        targetWords={targetWords}
         onClick={onClick}
       />
   );
@@ -152,14 +157,15 @@ export class ItemComponent extends React.Component<ItemProps, State> {
   }
     
   public render() {
-    const {item, activeSearch, onClick } = this.props;
+    const {item, activeSearch, targetWords, onClick } = this.props;
 
     return (
-      <Card classes={{root: style.card}}
+      <Card classes={{root: cnc(style.card, this.props.listMode && style.listMode)}}
         elevation={8}>
         <ItemMedia
           item={item}
           activeSearch={activeSearch}
+          targetWords={targetWords}
           onClick={onClick}
         />
         <ItemCaption item={item} onClick={onClick} />

@@ -12,8 +12,8 @@
     margin: 0.75rem;
 
     @include respond-to-desktop {
-      height: 7.8rem;
-      margin: 0 1.75rem;
+      height: 5rem;
+      margin: 0.75 1.75rem;
     }
 
     .menu-button {
@@ -28,7 +28,7 @@
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      margin-left: 3rem;
+      margin-left: 6rem;
 
       @include respond-to-desktop {
         margin-left: 6rem;
@@ -41,7 +41,7 @@
         max-width: 100%;
 
         @include respond-to-desktop {
-          max-height: 4.5rem;
+          max-height: 3.5rem;
         }
       }
     }

@@ -31,7 +31,8 @@ interface SearchPageProps {
   resultViewMode: ResultViewMode;
   searchValue: string;
   itemCollection: ItemCollection;
-  activeSearch?: string
+  activeSearch?: string;
+  targetWords: string[];
   facetCollection: FacetCollection;
   filterCollection: FilterCollection;
   suggestionCollection?: SuggestionCollection;
@@ -108,11 +109,17 @@ class ResultAreaComponent extends React.PureComponent<Partial<SearchPageProps>> 
         <PlaceholderComponent />
         <SpacerComponent>
           {
-            this.props.resultViewMode === "grid" ?
+            this.props.resultViewMode === "graph" ?
+              <GraphViewComponent
+                searchValue={this.props.activeSearch}
+                onGraphNodeDblClick={this.props.onGraphNodeDblClick}
+              /> :
               <div>
                 <ItemCollectionViewComponent
                   items={this.props.itemCollection}
+                  listMode={this.props.resultViewMode === "list"}
                   activeSearch={this.props.activeSearch}
+                  targetWords={this.props.targetWords}
                   onClick={this.props.onItemClick}
                 />
                 <Paginator
@@ -121,11 +128,7 @@ class ResultAreaComponent extends React.PureComponent<Partial<SearchPageProps>> 
                   resultCount={this.props.resultCount}
                   onLoadMore={this.props.onLoadMore}
                 />
-              </div> :
-              <GraphViewComponent
-                searchValue={this.props.activeSearch}
-                onGraphNodeDblClick={this.props.onGraphNodeDblClick}
-              />
+              </div>
           }
         </SpacerComponent>
       </>
@@ -146,6 +149,7 @@ const SearchPageComponent = (props: SearchPageProps) => (
       <ResultAreaComponent
         itemCollection={props.itemCollection}
         activeSearch={props.activeSearch}
+        targetWords={props.targetWords}
         pageIndex={props.pageIndex}
         resultsPerPage={props.resultsPerPage}
         resultCount={props.resultCount}

@@ -10,6 +10,7 @@ import {
   bboxToPosSize,  
 } from "../util/common-util";
 import { cnc } from "../../../../util";
+import { RectangleProps } from "./rectangleProps";
 
 
 /**
@@ -28,7 +29,7 @@ export interface HocrNodeProps {
   idSuffix: string;
   renderOnlyTargetWords?: boolean;
   userStyle?: HocrPreviewStyleMap;
-  onWordHover?: (wordId: string) => void;
+  onWordHover?: (rectangleProps: RectangleProps) => void;
 }
 
 interface HocrGroupProps extends HocrNodeProps {
