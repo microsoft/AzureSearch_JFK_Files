@@ -1,4 +1,4 @@
-import { defaultAzPayload } from "../../../../az-api";
+import { defaultAzPayload, defaultAzResponseConfig } from "../../../../az-api";
 import { ServiceConfig } from "../../service";
 import { mapStateToSuggestionPayload, mapSuggestionResponseToState } from "./mapper.suggestion";
 import { mapStateToSearchPayload, mapSearchResponseToState } from "./mapper.search";
@@ -19,6 +19,7 @@ export const jfkServiceConfig: ServiceConfig = {
       method: "GET",
     },
     defaultPayload: defaultAzPayload,
+    responseConfig: defaultAzResponseConfig,
     mapStateToPayload: mapStateToSearchPayload,
     mapResponseToState: mapSearchResponseToState,
   },

@@ -13,3 +13,7 @@ export const addValueToArray = (array: any[], value) => {
 export const removeValueFromArray = (array: any[], value) => {
   return isValueInArray(array, value) ? array.filter(v => v !== value) : array;
 };
+
+export const getUniqueStrings = (array: string[]) => ([
+  ...new Set(array),
+]);
