@@ -3,7 +3,7 @@ export interface RectangleProps {
   left: number;
   top: number;
   height: number;
-  word: string;
+  tooltipMessage: string;
   isHover: boolean;
 }
 
@@ -13,5 +13,5 @@ export const createEmptyRectangleProps = (): RectangleProps => ({
   height: 0,
   left: 0,
   top: 0,
-  word: '',
+  tooltipMessage: '',
 });
