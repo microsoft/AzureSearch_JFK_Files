@@ -1,4 +1,4 @@
-import { isArrayEmpty, isValueInArray } from "../../../../util";
+import { isArrayEmpty, isValueInArray, getUniqueStrings } from "../../../../util";
 import { ServiceConfig } from "../../service";
 import {
   AzResponse,
@@ -9,7 +9,8 @@ import {
   AzFilter,
   AzFilterGroup,
   AzFilterCollection,
-  AzFilterSingle
+  AzFilterSingle,
+  AzResponseConfig,
 } from "../../../../az-api";
 import {
   Item,
@@ -22,6 +23,7 @@ import {
   Filter,
 } from "../../view-model";
 
+
 // [Search] FROM AzApi response TO view model.
 
 const mapImgUrlInMetadata = (metadata: string) => {
@@ -29,7 +31,27 @@ const mapImgUrlInMetadata = (metadata: string) => {
   return captures && captures.length ? captures[1] : "";
 };
 
-const mapResultToItem = (result: any): Item => {
+const mapHighlightWords = (rawHighlights: string[]): string[] => {
+  const regexp = new RegExp('<em>(.+?)</em>','g');
+  const highlightWords = rawHighlights.reduce((extractedWords, line) => ([
+    ...extractedWords,
+    ...regexp.exec(line)
+  ]), []);
+  return getUniqueStrings(highlightWords);
+}
+
+const getHighlightWords = (result: any, responseConfig: AzResponseConfig): string[] => {
+  const highlightAvailable = result && responseConfig && result[responseConfig.highlightAccessor] &&
+  result[responseConfig.highlightAccessor][responseConfig.highlightTextAccessor];
+  if (highlightAvailable) {
+    const rawHightlights = result[responseConfig.highlightAccessor][responseConfig.highlightTextAccessor];
+    return mapHighlightWords(rawHightlights);
+  } else {
+    return [];
+  }
+}
+
+const mapResultToItem = (result: any, responseConfig: AzResponseConfig): Item => {
   return result ? {
     title: result.id,
     subtitle: "",
@@ -42,11 +64,12 @@ const mapResultToItem = (result: any): Item => {
       result.demoInitialPage :
       undefined,
     type: result.type,
+    highlightWords: getHighlightWords(result, responseConfig),
   } : null;
 };
 
-const mapSearchResponseForResults = (response: AzResponse): ItemCollection => {
-  return isArrayEmpty(response.value) ? null : response.value.map(r => mapResultToItem(r));
+const mapSearchResponseForResults = (response: AzResponse, responseConfig: AzResponseConfig): ItemCollection => {
+  return isArrayEmpty(response.value) ? null : response.value.map(r => mapResultToItem(r, responseConfig));
 };
 
 const mapResponseFacetValueToViewFacetValue = (responseFacetValue: AzResponseFacetValue): FacetValue => {
@@ -83,7 +106,7 @@ export const mapSearchResponseToState = (state: State, response: AzResponse, con
   return {
     ...state,
     resultCount: response.count,
-    itemCollection: mapSearchResponseForResults(response),
+    itemCollection: mapSearchResponseForResults(response, config.searchConfig.responseConfig),
     facetCollection: mapSearchResponseForFacets(response, viewFacets),
   }
 };

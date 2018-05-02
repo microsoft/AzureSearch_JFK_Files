@@ -35,6 +35,7 @@ export interface AzPayload {
   suggesterName?: string;
   autocompleteMode?: string;
   scoringProfile?: string;
+  highlight?: string;
 }
 
 export const defaultAzPayload: AzPayload = {
@@ -43,4 +44,5 @@ export const defaultAzPayload: AzPayload = {
   searchMode: "all",
   top: 10,
   scoringProfile: "demoBooster",
+  highlight: "text",
 }
