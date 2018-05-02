@@ -161,7 +161,7 @@ export const calculateNodeShiftInContainer = (target: PosSize, container: PosSiz
 }
 
 export const getAnnotationMessage = (node: Element): string => (
-  Boolean(node[hocrAttributes.dataAnnotation]) ?
-    node[hocrAttributes.dataAnnotation] :
+  Boolean(node.attributes[hocrAttributes.dataAnnotation]) ?
+    node.attributes[hocrAttributes.dataAnnotation].value :
     null
 );
