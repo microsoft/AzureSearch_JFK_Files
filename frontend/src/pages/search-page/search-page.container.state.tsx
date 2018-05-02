@@ -77,6 +77,7 @@ export const postSearchSuccessUpdate = (stateReducer: StateReducer) => (prevStat
     ...stateReducer<State>(prevState),
     suggestionCollection: null,
     activeSearch,
+    targetWords,
   }
 };
 
@@ -99,6 +100,7 @@ export const postSearchErrorReset = (rejectValue) => (prevState: State): State =
     suggestionCollection: null,
     pageIndex: 0,
     activeSearch: null,
+    targetWords: [],
   }
 };
 

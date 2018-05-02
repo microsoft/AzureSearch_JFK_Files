@@ -31,19 +31,37 @@ const mapImgUrlInMetadata = (metadata: string) => {
   return captures && captures.length ? captures[1] : "";
 };
 
+const extractHighlightWords = (accumulator: string[], line: string): string[] => {
+  const regexp = new RegExp('<em>(.+?)<\/em>','g');
+  return regexp.test(line) ? 
+    [
+      ...accumulator,
+      ...line.match(regexp)
+    ] :
+    accumulator;
+};
+
+const cleanHighlightWords = (words: string[]): string[] => {
+  return words.map(word => (
+    word.replace('<em>', '').replace('</em>', '').toLowerCase()
+  ));
+};
+
 const mapHighlightWords = (rawHighlights: string[]): string[] => {
-  const regexp = new RegExp('<em>(.+?)</em>','g');
-  const highlightWords = rawHighlights.reduce((extractedWords, line) => ([
-    ...extractedWords,
-    ...regexp.exec(line)
-  ]), []);
-  return getUniqueStrings(highlightWords);
+  const highlightWords = rawHighlights.reduce(extractHighlightWords, []);
+  const cleanedHighlightWords = cleanHighlightWords(highlightWords);
+  return getUniqueStrings(cleanedHighlightWords);
 }
 
+const checkHightlightWordsAvailable = (result: any, responseConfig: AzResponseConfig) => (
+  Boolean(result) &&
+  Boolean(responseConfig) &&
+  Boolean(result[responseConfig.highlightAccessor]) &&
+  Boolean(result[responseConfig.highlightAccessor][responseConfig.highlightTextAccessor])
+)
+
 const getHighlightWords = (result: any, responseConfig: AzResponseConfig): string[] => {
-  const highlightAvailable = result && responseConfig && result[responseConfig.highlightAccessor] &&
-  result[responseConfig.highlightAccessor][responseConfig.highlightTextAccessor];
-  if (highlightAvailable) {
+  if (checkHightlightWordsAvailable(result, responseConfig)) {
     const rawHightlights = result[responseConfig.highlightAccessor][responseConfig.highlightTextAccessor];
     return mapHighlightWords(rawHightlights);
   } else {
