@@ -20,15 +20,17 @@
   padding: 1rem;
   border-radius: 0.5rem;
   background-color: white;
+  transition: box-shadow 0.3s ease-out;
+
+  &:hover,
+  &.highlight {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  }
 }
 
 .area {
   padding-left: 10px;
   border-left: 3px solid transparent;
-
-  &:hover {
-    border-left: 3px solid #39f;
-  }
 }
 
 .paragraph {

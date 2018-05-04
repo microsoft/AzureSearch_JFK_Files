@@ -27,7 +27,6 @@ interface HocrProofreaderProps {
 interface HocrProofreaderState {
   docIdHighlighted: string;
   previewIdHightlighted: string;
-  previewPageIndex: PageIndex;
 }
 
 export class HocrProofreaderComponent extends React.PureComponent<HocrProofreaderProps, HocrProofreaderState> {
@@ -35,9 +34,8 @@ export class HocrProofreaderComponent extends React.PureComponent<HocrProofreade
     super(props);
 
     this.state = {
-      docIdHighlighted: null,
+      docIdHighlighted: `page_${this.props.pageIndex}`, // Start focusing initial page also in document view.
       previewIdHightlighted: null,
-      previewPageIndex: this.props.pageIndex,
     };
     this.fixIndex = this.props.pageIndex;
   }
@@ -53,10 +51,6 @@ export class HocrProofreaderComponent extends React.PureComponent<HocrProofreade
 
   private handleDocumentPageHover = (index: number) => {
     this.fixIndex = index;  // **FIX. Read below.
-    this.setState({
-      ...this.state,
-      previewPageIndex: index,
-    });
   }
 
   private handlePreviewWordHover = (id: string) => {
@@ -73,7 +67,7 @@ export class HocrProofreaderComponent extends React.PureComponent<HocrProofreade
           className={style.hocrPreview}
           hocr={this.props.hocr}
           zoomMode={this.props.zoomMode}
-          pageIndex={/*this.state.previewPageIndex*/this.fixIndex}
+          pageIndex={this.fixIndex}
           autoFocusId={this.state.previewIdHightlighted}
           targetWords={this.props.targetWords}
           onWordHover={this.handlePreviewWordHover}
@@ -83,6 +77,7 @@ export class HocrProofreaderComponent extends React.PureComponent<HocrProofreade
           className={this.props.showText ? style.hocrDocument : style.hocrDocumentHidden}
           hocr={this.props.hocr}
           targetWords={this.props.targetWords}
+          hightlightPageIndex={Number(this.fixIndex)}
           autoFocusId={this.state.docIdHighlighted}
           onWordHover={this.handleDocumentWordHover}
           onPageHover={this.handleDocumentPageHover}

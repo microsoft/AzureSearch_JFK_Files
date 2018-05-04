@@ -1,3 +1,5 @@
+import { hocrClasses, hocrAttributes } from "../constants";
+
 export type PageIndex = number | "auto";
 export type WordComparator = (word: string) => boolean;
 
@@ -8,11 +10,11 @@ export interface WordPosition {
 
 
 const hocrEntityMap = {
-  page: "ocr_page",
-  area: "ocr_carea",
-  paragraph: "ocr_par",
-  line: "ocr_line",
-  word: "ocrx_word",
+  page: hocrClasses.page,
+  area: hocrClasses.area,
+  paragraph: hocrClasses.paragraph,
+  line: hocrClasses.line,
+  word: hocrClasses.word,
 }
 
 export const resolveNodeEntity = (node: Element): string => {
@@ -43,13 +45,13 @@ export const parseWordPosition = (doc: Document, pageIndex: PageIndex,
   if (typeof pageIndex === "number") {
     const validatedPageIndex = (pageIndex < 0 || !checkPageIndexInRange(doc, pageIndex)) ? 0 : pageIndex;
     const firstOcurrenceNode = wordIdInPage(doc.body.children[validatedPageIndex], wordComparator);
-    return { 
+    return {
       pageIndex: validatedPageIndex,
       firstOcurrenceNode,
     };
   } else {  // Auto page index based on the first ocurrence of a target word.
     return findFirstOcurrencePosition(doc, wordComparator);
-  }  
+  }
 };
 
 const checkPageIndexInRange = (doc: Document, pageIndex: number) => {
@@ -57,7 +59,7 @@ const checkPageIndexInRange = (doc: Document, pageIndex: number) => {
 };
 
 const findFirstOcurrencePosition = (doc: Document, wordComparator: WordComparator): WordPosition => {
-  let pos: WordPosition = {pageIndex: 0, firstOcurrenceNode: null};
+  let pos: WordPosition = { pageIndex: 0, firstOcurrenceNode: null };
   if (wordComparator) {
     Array.from(doc.body.children).some((page, index) => {
       const foundNode = wordIdInPage(page, wordComparator);
@@ -67,7 +69,7 @@ const findFirstOcurrencePosition = (doc: Document, wordComparator: WordComparato
       }
       return Boolean(foundNode);
     });
-  }  
+  }
   return pos;
 };
 
@@ -100,7 +102,7 @@ export const getNodeOptions = (node: Element): any => {
   const optionsStr = node["title"] ? node["title"] : "";
   const regex = /(?:^|;)\s*(\w+)\s+(?:([^;"']+?)|"((?:\\"|[^"])+?)"|'((?:\\'|[^'])+?)')\s*(?=;|$)/g;
   let match;
-  
+
   let options = {};
   while (match = regex.exec(optionsStr)) {
     const name = match[1];
@@ -155,5 +157,11 @@ export const calculateNodeShiftInContainer = (target: PosSize, container: PosSiz
   const shiftCentroidXPercentage = shiftCentroidX / container.width;
   const shiftCentroidYPercentage = shiftCentroidY / container.height;
 
-  return {x: shiftCentroidXPercentage, y: shiftCentroidYPercentage};
+  return { x: shiftCentroidXPercentage, y: shiftCentroidYPercentage };
 }
+
+export const getAnnotationMessage = (node: Element): string => (
+  Boolean(node.attributes[hocrAttributes.dataAnnotation]) ?
+    node.attributes[hocrAttributes.dataAnnotation].value :
+    null
+);

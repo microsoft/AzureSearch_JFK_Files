@@ -26,7 +26,7 @@ export interface HocrDocumentProps {
   targetWords?: string[];
   caseSensitiveComparison?: boolean;
   autoFocusId?: string;
-  hightlightId?: string;
+  hightlightPageIndex?: number;
   userStyle?: HocrDocumentStyleMap;
   onWordHover?: (wordId: string) => void;
   onPageHover?: (pageIndex: number) => void;
@@ -37,6 +37,7 @@ interface HocrDocumentState {
   docBody: Element;
   wordCompare: WordComparator;
   autoFocusNode: Element;
+  hightlightedPageNode: Element;
   safeStyle: HocrDocumentStyleMap;
 }
 
@@ -49,6 +50,7 @@ export class HocrDocumentComponent extends React.Component<HocrDocumentProps, Ho
       wordCompare: CreateWordComparator(props.targetWords, props.caseSensitiveComparison),
       safeStyle: injectDefaultDocumentStyle(props.userStyle),
       autoFocusNode: null,
+      hightlightedPageNode: null,
     }
   }
 
@@ -87,11 +89,24 @@ export class HocrDocumentComponent extends React.Component<HocrDocumentProps, Ho
     }
   }
 
+  private hightlightPage = (pageIndex: number) => {
+    this.resetHighlight(this.state.hightlightedPageNode);
+    if (pageIndex) {
+      const pageNode = getNodeById(this.viewportRef, `page_${pageIndex}`);
+      this.setHighlight(pageNode);
+      this.setState({
+        ...this.state,
+        hightlightedPageNode: pageNode,
+      });
+    }
+  }
+
   // *** Lifecycle ***
 
   public componentDidMount() {
-    if (this.props.autoFocusId) {
-      this.scrollTo(getNodeById(this.viewportRef, this.props.autoFocusId));
+    if ( this.viewportRef) {
+      this.props.autoFocusId && this.scrollTo(getNodeById(this.viewportRef, this.props.autoFocusId));
+      this.props.hightlightPageIndex && this.hightlightPage(this.props.hightlightPageIndex);
     }
   }
 
@@ -114,8 +129,13 @@ export class HocrDocumentComponent extends React.Component<HocrDocumentProps, Ho
         ...this.state,
         safeStyle: injectDefaultDocumentStyle(nextProps.userStyle),
       });
-    } else if (this.props.autoFocusId !== nextProps.autoFocusId) {
+    } 
+    
+    if (this.props.autoFocusId !== nextProps.autoFocusId) {
       this.autoFocusToNode(nextProps.autoFocusId);
+    }
+    if (this.props.hightlightPageIndex !== nextProps.hightlightPageIndex) {
+      this.hightlightPage(nextProps.hightlightPageIndex);
     }
   }
 
