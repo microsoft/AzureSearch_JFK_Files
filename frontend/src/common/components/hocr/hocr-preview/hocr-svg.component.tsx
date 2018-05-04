@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getNodeOptions, bboxToPosSize, getNodeId, composeId, PosSize } from "../util/common-util";
+import { getNodeOptions, bboxToPosSize, getNodeId, composeId, PosSize, getAnnotationMessage } from "../util/common-util";
 import { RectangleProps } from "./rectangleProps";
 
 /**
@@ -29,13 +29,13 @@ export const SvgRectComponent: React.StatelessComponent<SvgRectProps> = (props) 
       y={nodePosSize.y}
       width={nodePosSize.width}
       height={nodePosSize.height}
-      onMouseEnter={onHover(props, true, id, props.node.textContent, nodePosSize.height)}
+      onMouseEnter={onHover(props, true, id, getAnnotationMessage(props.node), nodePosSize.height)}
       onMouseLeave={onHover(props, false, null, null)}
     />
   );
 };
 
-const onHover = (props: SvgRectProps, isHover: boolean, id?: string, word?: string, height?: number) => (e) => {
+const onHover = (props: SvgRectProps, isHover: boolean, id?: string, tooltipMessage?: string, height?: number) => (e) => {
   const reactangle = e.target.getBoundingClientRect();
   if (props.onHover) {
     props.onHover({
@@ -43,7 +43,7 @@ const onHover = (props: SvgRectProps, isHover: boolean, id?: string, word?: stri
       left: reactangle.left,
       top: reactangle.top,
       height,
-      word,
+      tooltipMessage,
       isHover,
     });
   }

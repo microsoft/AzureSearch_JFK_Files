@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Tooltip } from "material-ui";
-import { cryptonyms } from "../../../constants/cryptonyms";
 import { RectangleProps } from "./rectangleProps";
 import { TooltipComponent } from "../tooltip";
 
@@ -38,7 +37,7 @@ export class HocrTooltipComponent extends React.PureComponent<Props, State> {
       isOpen: rectangleProps.isHover,
       left: rectangleProps.left,
       top: rectangleProps.top + rectangleProps.height + topOffset,
-      message: getTooltipMessage(rectangleProps.word),
+      message: rectangleProps.tooltipMessage,
     });
   }
 
@@ -54,17 +53,6 @@ export class HocrTooltipComponent extends React.PureComponent<Props, State> {
     );
   }
 }
-
-const getTooltipMessage = (word: string): string => {
-  const cryptonym = Object.keys(cryptonyms).find((key) => (
-    Boolean(word) &&
-    key.toLowerCase() === word.toLowerCase()
-  ));
-
-  return Boolean(cryptonym) ?
-    cryptonyms[cryptonym] :
-    '';
-};
 
 const getBodyOverflow = (isHover: boolean) => (
   isHover ?

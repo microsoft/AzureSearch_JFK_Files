@@ -6,7 +6,7 @@ import { SearchPageComponent } from "./search-page.component";
 import { State, FilterCollection, Filter, Item, ResultViewMode } from "./view-model";
 import { Service, StateReducer } from "./service";
 import { jfkService } from "./service";
-import { isArrayEmpty } from "../../util";
+import { isArrayEmpty, getUniqueStrings } from "../../util";
 import {
   CreateInitialState,
   searchValueUpdate,
@@ -149,7 +149,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
 
     setDetailState({
       hocr: item.metadata,
-      targetWords: this.state.targetWords,
+      targetWords: getUniqueStrings([...this.state.targetWords, ...item.highlightWords]),
     } as DetailRouteState);
 
     const route = buildRoute(detailPath, { pageIndex: item.demoInitialPage });
