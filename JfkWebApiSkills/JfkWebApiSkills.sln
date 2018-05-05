@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JfkInitializer", "JfkInitializer\JfkInitializer.csproj", "{3D7A0B3E-F8B3-46F4-9E62-D31209562049}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JfkWebApiSkills", "JfkWebApiSkills\JfkWebApiSkills.csproj", "{84D246E3-B083-4CF1-8843-FAE2461669EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JfkInitializer", "JfkInitializer\JfkInitializer.csproj", "{3D7A0B3E-F8B3-46F4-9E62-D31209562049}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
