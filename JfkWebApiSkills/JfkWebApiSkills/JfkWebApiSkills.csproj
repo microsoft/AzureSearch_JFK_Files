@@ -19,7 +19,4 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RedactionClassifer\" />
-  </ItemGroup>
 </Project>

@@ -59,15 +59,6 @@
             "facetable": true
         },
         {
-            "name": "redactions",
-            "type": "Collection(Edm.Double)",
-            "searchable": false,
-            "filterable": true,
-            "retrievable": true,
-            "sortable": false,
-            "facetable": true
-        },
-        {
             "name": "demoBoost",
             "type": "Edm.Int32",
             "searchable": false,

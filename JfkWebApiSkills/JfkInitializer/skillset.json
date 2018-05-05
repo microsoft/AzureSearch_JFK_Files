@@ -351,25 +351,6 @@
                     "targetName": "cryptonym"
                 }
             ]
-        },
-        {
-            "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
-            "description": "Detect redacted images",
-            "uri": "[AzureFunctionEndpointUrl]/api/redaction-classifer?code=[AzureFunctionDefaultHostKey]",
-            "batchSize": 1,
-            "context": "/document/normalized_images/*",
-            "inputs": [
-                {
-                    "name": "imageData",
-                    "source": "/document/normalized_images/*/data"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "redactionScore",
-                    "targetName": "redactionScore"
-                }
-            ]
         }
     ]
 }

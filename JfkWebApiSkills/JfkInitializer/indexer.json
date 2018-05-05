@@ -44,10 +44,6 @@
         {
             "sourceFieldName": "/document/normalized_images/*/layoutText/words/*/text/cryptonym/value",
             "targetFieldName": "cryptonyms"
-        },
-        {
-            "sourceFieldName": "/document/normalized_images/*/redactionScore",
-            "targetFieldName": "redactions"
         }
     ]
 }

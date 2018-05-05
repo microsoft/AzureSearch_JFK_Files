@@ -7,7 +7,6 @@ using Microsoft.CognitiveSearch.Search;
 using Microsoft.CognitiveSearch.Skills.Cryptonyms;
 using Microsoft.CognitiveSearch.Skills.Hocr;
 using Microsoft.CognitiveSearch.Skills.Image;
-using Microsoft.CognitiveSearch.Skills.Redaction;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -123,27 +122,6 @@ namespace Microsoft.CognitiveSearch.WebApiSkills
                     }
                     HocrDocument hocrDocument = new HocrDocument(pages);
                     outRecord.Data["hocrDocument"] = hocrDocument;
-                    return outRecord;
-                });
-
-            return (ActionResult)new OkObjectResult(response);
-        }
-
-        [FunctionName("redaction-classifer")]
-        public static async Task<IActionResult> RunRedactionClassifier([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req, TraceWriter log, ExecutionContext executionContext)
-        {
-            string skillName = executionContext.FunctionName;
-            IEnumerable<WebApiRequestRecord> requestRecords = WebApiSkillHelpers.GetRequestRecords(req);
-            if (requestRecords == null || requestRecords.Count() != 1)
-            {
-                return new BadRequestObjectResult($"{skillName} - Invalid request record array: Skill requires exactly 1 image per request.");
-            }
-
-            RedactionClassifier redactionClassifier = new RedactionClassifier();
-            WebApiSkillResponse response = await WebApiSkillHelpers.ProcessRequestRecordsAsync(skillName, requestRecords,
-                async (inRecord, outRecord) => {
-                    string imageData = inRecord.Data["imageData"] as string;
-                    outRecord.Data["redactionScore"] = await redactionClassifier.ClassifyImage(imageData);
                     return outRecord;
                 });
 
