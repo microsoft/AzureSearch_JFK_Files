@@ -1,5 +1,6 @@
 import { FacetCollection } from "../view-model";
 import { AzConfig, AzPayload, AzResponse, AzResponseConfig } from "../../../az-api";
+import { GraphConfig } from "../../../graph-api";
 
 export type MapperToPayload = (state: any, config: ServiceConfig) => AzPayload;
 export type MapperToState = (state: any, response: AzResponse, config: ServiceConfig) => any;
@@ -19,6 +20,7 @@ export interface ServiceConfig {
   searchConfig: ActionConfig;
   suggestionConfig: ActionConfig;
   initialState?: any;
+  graphConfig: GraphConfig;
 }
 
 export type StateReducer = <S>(state: S) => S;
