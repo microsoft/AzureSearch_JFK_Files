@@ -1,34 +1,37 @@
 # The JFK Files
-Explore the JFK Assassination files using Azure Search and Microsoft Cognitive Services.
+Explore the JFK Assassination files using the new Cognitive Search features of Azure Search.
 You can watch the demo in action in a short [online video](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents)
 or explore the JFK files yourself with our [online demo](https://aka.ms/jfkfiles-demo).
 
-## Cognitive Search Pattern
-This project demonstrates the Cognitive Search pattern in AzureSearch using the JFK files.
+## Cognitive Search - An AI-first approach to content understanding
+This project demonstrates how you can use both the built-in and custom AI in Cognitive Search. Cognitive Search ingests your data from almost any datasource and enriches it using a set of cognitive skills that extracts knowledge and then lets you explore the data using Search.
 
-![Cognitive Search Pattern](images/cognitive-search-pattern.jpg)
+![JFK files Cognitive Search](images/jfk-cognitive-search.jpg)
 
-This pattern feeds data into the cloud, applies a set of cognitive skills which extracts knowledge and stores it as annotations and creates new experiences exploring the data using Cognitive Search.
+
+
 
 ## JFK Files Architecture
+The JFK files example leverages the built-in Cognitive Skills inside of Azure Search and combines it with custom skills using extensibility.  The architecture below showcases how the new Cognitive Search capabilities of Azure enable easily create structure from almost any datasource.
+
+![Architecture](images/jfk-files-architecture.jpg)
 Note: This diagram of visuals are inspired by the [CIA's JFK document management system in 1997](https://www.archives.gov/files/research/jfk/releases/docid-32404466.pdf) included in the JFK files.
 
-![Architecture](images/overview.jpg)
-
+This project includes the following capabilities for you to build your own version of the JFK files.
 1. We have provided a subset of the [JFK PDF documents](https://www.archives.gov/research/jfk/2017-release) and images that have been uploaded to the cloud into Azure Blob Storage.
 2. An [Azure Search](https://azure.microsoft.com/en-us/services/search/) service is used to take advantage of Cognitive Search capabilities, and an [Azure Function](https://azure.microsoft.com/en-us/services/functions/) is used to create skills for the Cognitive Search skillset.
     1. Uses the [Cognitive Services Vision API](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) to extract text information from the image via OCR, handwriting, and image captioning,
-    2. Applies the [Azure Machine Learning Named Entity Recognition Service](https://docs.microsoft.com/en-us/azure/machine-learning/studio-module-reference/named-entity-recognition) to extract named entities from the documents,
+    2. Applies Named Entity Recognitition to extract named entities from the documents,
     3. Annotates text using a custom [CIA Cryptonyms](https://www.maryferrell.org/php/cryptdb.php) skill,
     4. Generates [HOCR content](https://en.wikipedia.org/wiki/HOCR) based on results.
-3. A simple Web App uses the [AzSearch.js library](https://github.com/Yahnoosh/AzSearch.js) to search the index and explore the documents
+3. A standalone website to search the index and explore the documents
 
 ## Limitations and Considerations
 1. This is a demo to showcase a Cognitive Search use case.  It is not intended to be a framework or scalable architecture for all scenarios, though it can give you an idea of what your scenario might end up looking like.
 2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
-3. The code currently only processes images and will support most scanned PDFs. Native PDFs and some scanned PDF formats may not be parsed correctly.
+3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
 4. Cognitive Search is currently only available in public preview in the South Central US and West Europe Azure regions, so the Azure Search service you use with this demo must be provisioned in one of these two regions.
-5. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  It is not suitable for using with non-public data.**
+5. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
 ## Setting up your own JFK files library
 
@@ -50,7 +53,7 @@ These instructions will help you have your own version of the JFK files demo run
     5. An Azure Function instance, using the storage account from # 2 and the plan from # 3.  The Azure Function will be prepublished with the code provided in this repository as part of the template deployment.
 
     </br>
-    <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2Fmagottei%2Fjfk%2Fazuredeploy.json" target="_blank">
+    <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2Fazuredeploy.json" target="_blank">
         <img src="http://azuredeploy.net/deploybutton.png"/>
     </a>
 
