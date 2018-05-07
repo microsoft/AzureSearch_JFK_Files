@@ -12,14 +12,15 @@ This project demonstrates how you can use both the built-in and custom AI in Cog
 
 
 ## JFK Files Architecture
-The JFK files example leverages the built-in Cognitive Skills inside of Azure Search and combines it with custom skills using extensibility.  The architecture below showcases how the new Cognitive Search capabilities of Azure enable easily create structure from almost any datasource.
+The JFK files example leverages the built-in Cognitive Skills inside of Azure Search and combines it with custom skills using extensibility.  The architecture below showcases how the new Cognitive Search capabilities of Azure enable you to easily create structure from almost any datasource.
 
-![Architecture](images/jfk-files-architecture.jpg)
+![Architecture](images/jfk-files-architecture.JPG)
+
 Note: This diagram of visuals are inspired by the [CIA's JFK document management system in 1997](https://www.archives.gov/files/research/jfk/releases/docid-32404466.pdf) included in the JFK files.
 
 This project includes the following capabilities for you to build your own version of the JFK files.
 1. We have provided a subset of the [JFK PDF documents](https://www.archives.gov/research/jfk/2017-release) and images that have been uploaded to the cloud into Azure Blob Storage.
-2. An [Azure Search](https://azure.microsoft.com/en-us/services/search/) service is used to take advantage of Cognitive Search capabilities, and an [Azure Function](https://azure.microsoft.com/en-us/services/functions/) is used to create skills for the Cognitive Search skillset.
+2. An [Azure Search](https://azure.microsoft.com/en-us/services/search/) service is used to index the content and power the UX experience. We use the new Cognitive Search capabilities to apply pre-built cognitive skills to the content, and we also use the extensibility mechanism to add custom skills using [Azure Functions](https://azure.microsoft.com/en-us/services/functions/).
     1. Uses the [Cognitive Services Vision API](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) to extract text information from the image via OCR, handwriting, and image captioning,
     2. Applies Named Entity Recognitition to extract named entities from the documents,
     3. Annotates text using a custom [CIA Cryptonyms](https://www.maryferrell.org/php/cryptdb.php) skill,
@@ -39,7 +40,7 @@ This project includes the following capabilities for you to build your own versi
 These instructions will help you have your own version of the JFK files demo running in Azure in about 20 minutes, with most of that time being provisioning/deployment time.
 
 ### Prerequisites
-1. An Azure Subscription you can access and deploy resources too.
+1. An Azure Subscription you can access and deploy resources to.
     1. Note that this demo does not work properly on the free tier of these resources, and you will incur charges for resources provisioned during this demo for as long as they are provisioned.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).
 2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.  The free community edition will work fine.
 3. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
@@ -54,7 +55,7 @@ These instructions will help you have your own version of the JFK files demo run
     5. An Azure Function instance, using the storage account from # 2 and the plan from # 3.  The Azure Function will be prepublished with the code provided in this repository as part of the template deployment.
 
     </br>
-    <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2Fazuredeploy.json" target="_blank">
+    <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2Fmaster%2Fazuredeploy.json" target="_blank">
         <img src="http://azuredeploy.net/deploybutton.png"/>
     </a>
 
