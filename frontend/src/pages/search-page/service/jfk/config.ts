@@ -65,17 +65,7 @@ export const jfkServiceConfig: ServiceConfig = {
         config: {
           count: 20,
         }
-      },
-      {
-        fieldId: "redactions",
-        displayName: "Redactions",
-        iconName: null,
-        selectionControl: "checkboxList",
-        values: null,
-        config: {
-          values: [50],
-        }
-      },
+      }
     ]
   }  
 }

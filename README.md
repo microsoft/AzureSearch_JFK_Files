@@ -31,7 +31,8 @@ This project includes the following capabilities for you to build your own versi
 2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
 3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
 4. Cognitive Search is currently only available in public preview in the South Central US and West Europe Azure regions, so the Azure Search service you use with this demo must be provisioned in one of these two regions.
-5. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
+5. The Redaction Classifier skill is not currently included in this sample, we'll be publishing an update soon including this skill and instructions on how to deploy your own Redaction Classifier using Azure ML
+6. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
 ## Setting up your own JFK files library
 
