@@ -63,7 +63,7 @@
         },
         "branch": {
             "type": "string",
-            "defaultValue": "magottei/jfk",
+            "defaultValue": "master",
             "metadata": {
                 "description": "The branch of the GitHub repository to use."
             }
