@@ -11,8 +11,10 @@
         },
         "hostingPlanSku": {
             "type": "string",
-            "defaultValue": "B1",
+            "defaultValue": "F1",
             "allowedValues": [
+                "F1",
+                "D1",
                 "B1",
                 "B2",
                 "B3",
@@ -30,8 +32,9 @@
         },
         "searchServiceSku": {
             "type": "string",
-            "defaultValue": "standard",
+            "defaultValue": "free",
             "allowedValues": [
+                "free",
                 "basic",
                 "standard",
                 "standard2",
@@ -63,7 +66,7 @@
         },
         "branch": {
             "type": "string",
-            "defaultValue": "master",
+            "defaultValue": "free",
             "metadata": {
                 "description": "The branch of the GitHub repository to use."
             }
@@ -165,8 +168,7 @@
                         "allowedOrigins": [
                             "[concat('https://', variables('websiteName'), '.azurewebsites.net')]"
                         ]
-                    },
-                    "AlwaysOn": true
+                    }
                 }
             },
             "resources": [
