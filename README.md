@@ -59,7 +59,7 @@ These instructions will help you have your own version of the JFK files demo run
         <img src="http://azuredeploy.net/deploybutton.png"/>
     </a>
 
-2. Be sure to select the appropriate subscription to deploy to, and create a new resource group for these resources.
+2. Be sure to select the appropriate subscription to deploy to, and create a new resource group for these resources. Only use alphanumeric lowercase characters for the Resource Prefix field.
 3. Review the rest of the parameters as well as the terms and conditions, select the checkbox for "I agree to the terms and conditions stated above", and press "Purchase".
 4. Monitor the status of the deployment by following the link that appears in the Azure portal notifications.  It takes about 5 minutes for the resources to be fully provisioned and deployed.
 
