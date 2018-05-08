@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const basePath = __dirname;
 
@@ -161,6 +162,9 @@ module.exports = {
         'SUGGESTION_CONFIG_API_VER': JSON.stringify(process.env.SUGGESTION_CONFIG_API_VER),
         'SUGGESTION_CONFIG_API_KEY': JSON.stringify(process.env.SUGGESTION_CONFIG_API_KEY),
       }
-    })
+    }),
+    new CopyWebpackPlugin([
+      {context: "assets/favicon", from: "**/*"}
+    ])
   ]
 }
