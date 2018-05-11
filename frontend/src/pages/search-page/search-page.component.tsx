@@ -21,6 +21,7 @@ import {
 import { Service } from "./service";
 import { Pagination } from "../../common/components/pagination/pagination";
 import { PlaceholderComponent } from "./components/placeholder";
+import { FooterComponent } from "./components/footer";
 
 const style = require("./search-page.style.scss");
 
@@ -158,6 +159,8 @@ const SearchPageComponent = (props: SearchPageProps) => (
         onGraphNodeDblClick={props.onGraphNodeDblClick}
         resultViewMode={props.resultViewMode}
       />
+      <HorizontalSeparator />
+      <FooterComponent />
     </main>
   </div>
 )

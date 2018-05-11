@@ -13,7 +13,7 @@ export class HomePageContainer extends React.Component<RouteComponentProps<any>,
     super(props);
 
     this.state = {
-      searchValue: "",
+      searchValue: "oswald",
     }
   }
   
