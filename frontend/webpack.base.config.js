@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const basePath = __dirname;
 
@@ -166,6 +167,9 @@ module.exports = {
         'FUNCTION_CONFIG_SERVICE_PATH': JSON.stringify(process.env.FUNCTION_CONFIG_SERVICE_PATH),
         'FUNCTION_CONFIG_SERVICE_AUTH_CODE_PARAM': JSON.stringify(process.env.FUNCTION_CONFIG_SERVICE_AUTH_CODE_PARAM)
       }
-    })
+    }),
+    new CopyWebpackPlugin([
+      {context: "assets/favicon", from: "**/*"}
+    ])
   ]
 }
