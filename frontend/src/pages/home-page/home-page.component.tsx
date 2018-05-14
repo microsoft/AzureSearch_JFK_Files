@@ -1,9 +1,10 @@
 import * as React from "react";
 import { searchPath } from "../search-page";
-import { LogoComponent } from "../../common/components/logo";
+import { LogoJFKComponent } from "../../common/components/logo-jfk";
 import { SearchButton } from "./components/search";
 import { CaptionComponent } from "./components/caption";
 import { SearchInput } from "./components/search";
+import { FooterComponent } from "../../common/components/footer";
 
 const style = require("./home-page.style.scss");
 
@@ -17,7 +18,7 @@ interface HomePageProps {
 export const HomePageComponent: React.StatelessComponent<HomePageProps> = (props) => {
   return (
     <div className={style.container}>
-      <LogoComponent classes={{container: style.logoContainer, object: style.logoObject}} />
+      <LogoJFKComponent classes={{container: style.logoContainer, svg: style.logoSvg}} />
       <div className={style.main}>
         <CaptionComponent />
         <SearchInput         
@@ -27,6 +28,7 @@ export const HomePageComponent: React.StatelessComponent<HomePageProps> = (props
         />
         <SearchButton onClick={props.onSearchSubmit}/>
       </div>
+      <FooterComponent className={style.footer}/>
     </div>
   )
 };

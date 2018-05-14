@@ -15,6 +15,7 @@ export const CreateInitialState = (): State => ({
   showDrawer: true, // TODO: Hide it by default.
   pageSize: 10,
   pageIndex: 0,
+  pulseToggle: null,
   // Override with user config initial state (if exists).
   ...jfkService.config.initialState,
 });
@@ -40,13 +41,15 @@ export const resultViewModeUpdate = (resultViewMode: ResultViewMode) => (prevSta
   }
 };
 
-export const receivedSearchValueUpdate = (searchValue: string, showDrawer: boolean, resultViewMode: ResultViewMode) =>
+export const receivedSearchValueUpdate = (searchValue: string, showDrawer: boolean, resultViewMode: ResultViewMode,
+  pulseToggle: ResultViewMode = null) =>
   (prevState: State): State => {
     return {
       ...prevState,
       searchValue,
       showDrawer,
       resultViewMode,
+      pulseToggle,
     }
   };
 

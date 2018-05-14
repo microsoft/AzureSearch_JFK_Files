@@ -21,6 +21,7 @@ import {
 import { Service } from "./service";
 import { Pagination } from "../../common/components/pagination/pagination";
 import { PlaceholderComponent } from "./components/placeholder";
+import { FooterComponent } from "../../common/components/footer";
 
 const style = require("./search-page.style.scss");
 
@@ -39,6 +40,7 @@ interface SearchPageProps {
   resultCount: number;
   resultsPerPage: number;
   pageIndex: number;
+  pulseToggle?: ResultViewMode;
   onSearchSubmit: () => void;
   onSearchUpdate: (value: string) => void;
   onFilterUpdate: (newFilter: Filter) => void;
@@ -142,6 +144,7 @@ const SearchPageComponent = (props: SearchPageProps) => (
     <main className={style.mainContainer}>
       <PageBarComponent
         resultViewMode={props.resultViewMode}
+        pulseToggle={props.pulseToggle}
         onChangeResultViewMode={props.onChangeResultViewMode}
         onMenuClick={props.onMenuClick}
       />
@@ -158,6 +161,8 @@ const SearchPageComponent = (props: SearchPageProps) => (
         onGraphNodeDblClick={props.onGraphNodeDblClick}
         resultViewMode={props.resultViewMode}
       />
+      <HorizontalSeparator />
+      <FooterComponent />
     </main>
   </div>
 )
