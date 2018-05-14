@@ -1,5 +1,5 @@
-@import "./../../../../theme/_breakpoints.scss";
-@import "./../../../../theme/_palette.scss";
+@import "./../../../theme/_breakpoints.scss";
+@import "./../../../theme/_palette.scss";
 
 @mixin footer-text {
   color: $colorWhite;
@@ -17,11 +17,11 @@
   align-items: center;
   flex-shrink: 0;
   height: 2rem;
-  margin: 0 1.75rem;
+  padding: 0 1.75rem;
 
   @include respond-to-desktop {
-    height: 3rem;
-    margin: 0.25rem 2.75rem;
+    height: 3.5rem;
+    padding: 0.25rem 2.75rem;
   }
 
   .logo-container {

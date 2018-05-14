@@ -1,5 +1,6 @@
 import * as React from "react";
-import { LogoMicrosoftComponent } from "../../../../common/components/logo-microsoft";
+import { LogoMicrosoftComponent } from "../logo-microsoft";
+import { cnc } from "../../../util";
 
 const style = require("./footer.style.scss");
 
@@ -16,9 +17,9 @@ const Statement = () => (
   </div>
 );
 
-export const FooterComponent = (props) => {
+export const FooterComponent = ({className = null}) => {
   return (
-    <footer className={style.footer}>
+    <footer className={cnc(style.footer, className)}>
       <Statement />
       <a href="https:\\www.microsoft.com" target="__blank">
         <LogoMicrosoftComponent colorful={false} classes={{container: style.logoContainer, svg: style.logoSvg }} />

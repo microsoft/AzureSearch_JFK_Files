@@ -21,7 +21,7 @@ import {
 import { Service } from "./service";
 import { Pagination } from "../../common/components/pagination/pagination";
 import { PlaceholderComponent } from "./components/placeholder";
-import { FooterComponent } from "./components/footer";
+import { FooterComponent } from "../../common/components/footer";
 
 const style = require("./search-page.style.scss");
 

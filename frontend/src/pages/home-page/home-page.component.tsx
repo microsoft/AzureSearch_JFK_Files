@@ -4,6 +4,7 @@ import { LogoJFKComponent } from "../../common/components/logo-jfk";
 import { SearchButton } from "./components/search";
 import { CaptionComponent } from "./components/caption";
 import { SearchInput } from "./components/search";
+import { FooterComponent } from "../../common/components/footer";
 
 const style = require("./home-page.style.scss");
 
@@ -27,6 +28,7 @@ export const HomePageComponent: React.StatelessComponent<HomePageProps> = (props
         />
         <SearchButton onClick={props.onSearchSubmit}/>
       </div>
+      <FooterComponent className={style.footer}/>
     </div>
   )
 };
