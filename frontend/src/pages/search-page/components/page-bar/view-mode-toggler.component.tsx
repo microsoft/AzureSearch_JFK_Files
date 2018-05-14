@@ -17,7 +17,7 @@ const toggleColor = (props: ViewModeTogglerProps) => (viewMode: ResultViewMode) 
 }
 
 const pulseToggle = (props: ViewModeTogglerProps, toggle: ResultViewMode) => {
-  return Boolean(toggle === props.pulseToggle)
+  return Boolean((toggle === props.pulseToggle) && (toggle !== props.resultViewMode));
 }
 
 const notifyModeChanged = (props: ViewModeTogglerProps) => (newMode: ResultViewMode) => () =>{
