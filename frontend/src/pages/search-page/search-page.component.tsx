@@ -40,6 +40,7 @@ interface SearchPageProps {
   resultCount: number;
   resultsPerPage: number;
   pageIndex: number;
+  pulseToggle?: ResultViewMode;
   onSearchSubmit: () => void;
   onSearchUpdate: (value: string) => void;
   onFilterUpdate: (newFilter: Filter) => void;
@@ -143,6 +144,7 @@ const SearchPageComponent = (props: SearchPageProps) => (
     <main className={style.mainContainer}>
       <PageBarComponent
         resultViewMode={props.resultViewMode}
+        pulseToggle={props.pulseToggle}
         onChangeResultViewMode={props.onChangeResultViewMode}
         onMenuClick={props.onMenuClick}
       />

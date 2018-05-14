@@ -11,6 +11,7 @@ const style = require("./page-bar.style.scss");
 
 interface BarProps{
   resultViewMode: ResultViewMode;
+  pulseToggle?: ResultViewMode;
   onChangeResultViewMode: (newMode: ResultViewMode) => void;
   onMenuClick: () => void;
 }
