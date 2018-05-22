@@ -29,7 +29,8 @@ export const SearchInput = (props: SearchInputProps) => (
       value={props.searchValue}
       onChange={handleOnChange(props.onSearchUpdate)}
       onKeyPress={captureEnter(props.onSearchSubmit)}
-      autoFocus      
+      spellCheck={false}
+      autoFocus
     />
   </div>
 );

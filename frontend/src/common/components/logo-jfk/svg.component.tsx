@@ -1,11 +1,11 @@
 import * as React from 'react';
-const styles = require('./logo.scss');
+const styles = require('./style.scss');
 
 interface Props {
   className: string;
 }
 
-export const Logo: React.StatelessComponent<Props> = (props) => (
+export const JFKSvg: React.StatelessComponent<Props> = (props) => (
   <svg
     className={`${styles.logo} ${props.className}`}
     xmlns="http://www.w3.org/2000/svg"
