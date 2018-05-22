@@ -34,7 +34,7 @@
             "targetFieldName": "text"
         },
         {
-            "sourceFieldName": "/document/hocrDocument/metadata",
+            "sourceFieldName": "/document/hocrDocument/Metadata",
             "targetFieldName": "metadata"
         },
         {
