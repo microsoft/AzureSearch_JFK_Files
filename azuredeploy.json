@@ -66,7 +66,7 @@
         },
         "branch": {
             "type": "string",
-            "defaultValue": "free",
+            "defaultValue": "master",
             "metadata": {
                 "description": "The branch of the GitHub repository to use."
             }
