@@ -168,8 +168,7 @@
                         "allowedOrigins": [
                             "[concat('https://', variables('websiteName'), '.azurewebsites.net')]"
                         ]
-                    },
-                    "AlwaysOn": true
+                    }
                 }
             },
             "resources": [
