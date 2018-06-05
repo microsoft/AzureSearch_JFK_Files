@@ -43,17 +43,27 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
 
   // *** Search Value received through query string ***
 
-  handleReceivedSearchValue = (searchValue: string) => {
+  private handleReceivedSearchValue = (searchValue: string) => {
     this.setState(
-      receivedSearchValueUpdate(searchValue, true, "list"),
+      receivedSearchValueUpdate(searchValue, true, "list", "graph"),
       this.handleSearchSubmit
     );
+    this.schedulePulseOff();
   }
 
-  onGraphNodeDblClick = (value: string) => {
+  private onGraphNodeDblClick = (value: string) => {
     const searchValue = `${this.state.searchValue} ${value}`;
     this.handleReceivedSearchValue(searchValue);
   }
+
+  private schedulePulseOff = () => {
+    setTimeout(() => {
+      this.setState({
+        ...this.state,
+        pulseToggle: null,
+      })
+    }, 5100);
+  } 
 
   // *** DRAWER LOGIC ***
 
@@ -181,6 +191,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
           resultCount={this.state.resultCount}
           resultsPerPage={this.state.pageSize}
           pageIndex={this.state.pageIndex}
+          pulseToggle={this.state.pulseToggle}
           facetCollection={this.state.facetCollection}
           onMenuClick={this.handleMenuClick}
           showDrawer={this.state.showDrawer}
