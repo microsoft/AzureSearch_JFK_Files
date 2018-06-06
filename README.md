@@ -32,7 +32,7 @@ This project includes the following capabilities for you to build your own versi
 2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
 3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
 4. Cognitive Search is currently only available in public preview in the South Central US and West Europe Azure regions, so the Azure Search service you use with this demo must be provisioned in one of these two regions.
-5. The Redaction Classifier skill is not currently included in this sample, we'll be publishing an update soon including this skill and instructions on how to deploy your own Redaction Classifier using Azure ML
+5. The Redaction Classifier skill is not currently included in this sample, we'll be publishing an update soon including this skill and instructions on how to deploy your own Redaction Classifier using Azure ML.
 6. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
 ## Setting up your own JFK files library
@@ -41,16 +41,17 @@ These instructions will help you have your own version of the JFK files demo run
 
 ### Prerequisites
 1. An Azure Subscription you can access and deploy resources to.
-    1. Note that this demo does not work properly on the free tier of these resources, and you will incur charges for resources provisioned during this demo for as long as they are provisioned.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).
+    1. Note that this demo requires writing to an Azure Storage Account, which you will be billed monthly for the storage written to, and by default provisions a Basic Azure Search service with will also be billed monthly.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).
 2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.  The free community edition will work fine.
-3. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
+3. [Node.js](https://nodejs.org/) must be installed on your computer.
+4. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
 
 ### Deploy Required Resources
 
 1. Click the below button to upload the provided ARM template to the Azure portal, which is written to automatically deploy and configure the following resources:
-    1. An Azure Search service, default set to [Standard S1](https://azure.microsoft.com/en-us/pricing/details/search/) tier, and deployed to South Central US (regardless of the resource group location you select).
+    1. An Azure Search service, default set to [Basic](https://azure.microsoft.com/en-us/pricing/details/search/) tier, and deployed to South Central US (regardless of the resource group location you select).
     2. An Azure Blob Storage Account, default set to [Standard LRS](https://azure.microsoft.com/en-us/pricing/details/storage/) tier.
-    3. An Azure App Service plan, default set to [Basic B1](https://azure.microsoft.com/en-us/pricing/details/app-service/) tier.
+    3. An Azure App Service plan, default set to [Free F1](https://azure.microsoft.com/en-us/pricing/details/app-service/plans/) tier.
     4. An Azure Web App Service, using the plan from # 3.
     5. An Azure Function instance, using the storage account from # 2 and the plan from # 3.  The Azure Function will be prepublished with the code provided in this repository as part of the template deployment.
 
@@ -92,7 +93,17 @@ These instructions will help you have your own version of the JFK files demo run
 
     ![Run initializer](images/runInitializer.JPG)
 
-13. It will take about 10 minutes for the appropriate search resources to be created, as well as for the website to be deployed.  Once the website is deployed, a URL will appear in the console.  Copy and paste this URL into a browser to start interacting with what you have created!
+13. After a few seconds, the message "Website keys have been set.  Please build the website and then return here and press any key to continue." will be output to the console app.  At this point, open a separate cmd window and cd into the directory of where you cloned or downloaded the repo.  Then run the following commands:
+
+    ```
+    cd frontend
+    npm install
+    npm run build:prod
+    ```
+
+14. After the commands finish running, return to the console app and press any key to continue.
+
+15. Once the website is deployed, a URL will appear in the console.  Copy and paste this URL into a browser to start interacting with what you have created!
 
     ![URL in console](images/urlInConsole.JPG)
 

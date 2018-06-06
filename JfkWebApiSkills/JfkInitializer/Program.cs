@@ -306,9 +306,9 @@ namespace JfkInitializer
 
         private static async Task<bool> DeployWebsite()
         {
-            Console.WriteLine("Deploying Website...");
             try
             {
+                Console.WriteLine("Setting Website Keys...");
                 string searchQueryKey = ConfigurationManager.AppSettings["SearchServiceQueryKey"];
                 if (_azureFunctionHostKey == null)
                 {
@@ -322,11 +322,16 @@ namespace JfkInitializer
                 envText = envText.Replace("[AzureFunctionName]", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
                 envText = envText.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
                 File.WriteAllText("../../../../frontend/.env", envText);
+
+                Console.WriteLine("Website keys have been set.  Please build the website and then return here and press any key to continue.");
+                Console.ReadKey();
+
+                Console.WriteLine("Deploying Website...");
                 if (File.Exists("website.zip"))
                 {
                     File.Delete("website.zip");
                 }
-                ZipFile.CreateFromDirectory("../../../../frontend", "website.zip");
+                ZipFile.CreateFromDirectory("../../../../frontend/dist", "website.zip");
                 byte[] websiteZip = File.ReadAllBytes("website.zip");
                 HttpContent content = new ByteArrayContent(websiteZip);
                 string uri = String.Format("https://{0}.scm.azurewebsites.net/api/zipdeploy?isAsync=true", ConfigurationManager.AppSettings["AzureWebAppSiteName"]);
