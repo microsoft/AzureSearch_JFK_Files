@@ -71,12 +71,12 @@ const getHighlightWords = (result: any, responseConfig: AzResponseConfig): strin
 
 const mapResultToItem = (result: any, responseConfig: AzResponseConfig): Item => {
   return result ? {
-    title: result.id,
+    title: result.fileName,
     subtitle: "",
     thumbnail: mapImgUrlInMetadata(result.metadata),
     excerpt: "",
     rating: 0,
-    extraFields: [result.tags],
+    extraFields: [result.entities],
     metadata: result.metadata,
     demoInitialPage: Boolean(result.demoInitialPage) ?
       result.demoInitialPage :

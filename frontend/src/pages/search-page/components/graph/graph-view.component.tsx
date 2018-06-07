@@ -5,9 +5,9 @@ import {
   GraphApi,
   CreateGraphApi,
   GraphConfig,
-  defaultGraphConfig,
   GraphResponse
 } from "../../../../graph-api";
+import { jfkServiceConfig } from "../../service/jfk";
 import { cnc } from "../../../../util";
 
 const style = require("./graph-view.style.scss");
@@ -32,7 +32,7 @@ class GraphView extends React.Component<GraphViewProps, GraphViewState> {
     super(props);
   
     this.state = {
-      graphApi: CreateGraphApi(defaultGraphConfig),
+      graphApi: CreateGraphApi(jfkServiceConfig.graphConfig),
       graphDescriptor: null,
     }
   }
@@ -60,7 +60,7 @@ class GraphView extends React.Component<GraphViewProps, GraphViewState> {
   private updateGraphApiAndDescriptor = (graphConfig: GraphConfig, searchValue: string) => {
     this.setState({
       ...this.state,
-      graphApi: CreateGraphApi(graphConfig || defaultGraphConfig),
+      graphApi: CreateGraphApi(graphConfig || jfkServiceConfig.graphConfig),
     }, () => this.updateGraphDescriptor(searchValue));
   }
 

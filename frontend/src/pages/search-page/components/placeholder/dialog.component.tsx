@@ -14,7 +14,7 @@ const Dialog: React.StatelessComponent<DialogProps> = ({ ...props }) => {
     <MuiDialog {...props} className={cnc(props.className, styles.dialog)} classes={{ paper: styles.content }}>
       <DialogTitle>
         <div className={styles.titleContainer}>
-          <Typography variant="title" classes={{ title: styles.title }}>JFKFiles Cognitive Search Pattern</Typography>
+          <Typography variant="title" classes={{ title: styles.title }}>Explore the JFK Files using Cognitive Search</Typography>
           <IconButton onClick={props.onClose}>
             <CloseIcon />
           </IconButton>
@@ -23,20 +23,19 @@ const Dialog: React.StatelessComponent<DialogProps> = ({ ...props }) => {
       <DialogContent>
         <DialogContentText>
           <span className={styles.block}>
-            In this JFK Files scenario demo, you will explore how you can leverage Azure Cognitive Services and Search to
-            implement the Cognitive Search pattern in an application, using the released documents from
-            The President John F. Kennedy Assassination Records Collection.
+            In this JFK Files scenario demo, you will explore how you can use both built-in and custom Cognitive Skills inside of Azure Search to explore the documents released from the John F. Kennedy Assassination Records Collection. 
+            The Cognitive Search capabilities of Azure Search ingest your data from almost any datasource and enriches it using a set of cognitive skills that extracts knowledge and then lets you explore the data using Search.
           </span>
           <span className={styles.block}>
-            <span>You can find more information </span>
-            <LinkComponent to="//azure-scenarios-experience.azurewebsites.net/search-ai.html">here</LinkComponent>
+            <span>You can find more information about the project : </span>
+            <LinkComponent to="//aka.ms/jfk-files-ai-lab">here</LinkComponent>
           </span>
-          <span className={styles.block}>Here's the architecture used for JFK files scenario:</span>
+          <span className={styles.block}>
+            <span>You can find the source code : </span>
+            <LinkComponent to="//aka.ms/jfk-files-code">here</LinkComponent>
+          </span>
+          <span className={styles.block}>Below is the architecture used for JFK files Cognitive Search demo:</span>
           <img src={jfkFilesScenario} alt="JFK scenario" className={styles.img} />
-          <span className={styles.block}>
-            <span>You can find the source code </span>
-            <LinkComponent to="//github.com/Microsoft/AzureSearch_JFK_Files">here</LinkComponent>
-          </span>
         </DialogContentText>
       </DialogContent>
     </MuiDialog>

@@ -1,113 +1,112 @@
 # The JFK Files
-Explore the JFK Assassination files using Azure Search and Microsoft Cognitive Services.
+Explore the JFK Assassination files using the new Cognitive Search features of Azure Search.
 You can watch the demo in action in a short [online video](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents)
-or explore the JFK files youself with our [online demo](https://aka.ms/jfkfiles-demo).
+or explore the JFK files yourself with our [online demo](https://aka.ms/jfkfiles-demo).
 
-## Cognitive Search Pattern
-This project demonstrates the Cognitive Search pattern in Azure using the JFK files.
-![Cognitive Search Pattern](images/cognitive-search-pattern.jpg)
+## Cognitive Search - An AI-first approach to content understanding
+This project demonstrates how you can use both the built-in and custom AI in Cognitive Search. Cognitive Search ingests your data from almost any datasource and enriches it using a set of cognitive skills that extracts knowledge and then lets you explore the data using Search.
 
-This pattern feeds data into the cloud, applies a set of cognitive skills
- which extracts knowledge and stores it as annotations
- and creates new experiences exploring the data using Search.
+![JFK files Cognitive Search](images/jfk-cognitive-search.jpg)
+
+
+
 
 ## JFK Files Architecture
+The JFK files example leverages the built-in Cognitive Skills inside of Azure Search and combines it with custom skills using extensibility.  The architecture below showcases how the new Cognitive Search capabilities of Azure enable you to easily create structure from almost any datasource.
+
+![Architecture](images/jfk-files-architecture.JPG)
+
 Note: This diagram of visuals are inspired by the [CIA's JFK document management system in 1997](https://www.archives.gov/files/research/jfk/releases/docid-32404466.pdf) included in the JFK files.
-![Architecture](images/overview.jpg)
 
-1. The [JFK PDF documents](https://www.archives.gov/research/jfk/2017-release) and images are uploaded to the cloud into Azure Blob Storage
-2. An [Azure Function](https://azure.microsoft.com/en-us/services/functions/) triggered by the blog store and
-    1. uses the [Cognitive Services Vision API](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) extract text information from the image via OCR, handwriting, and image captioning
-    2. applies the [Entity Linking Intelligence Service](https://azure.microsoft.com/en-us/services/cognitive-services/entity-linking-intelligence-service/) to extract entities from the document linked to wikipedia topics
-    3. Annotates text using a custom [CIA Cryptonyms](https://www.maryferrell.org/php/cryptdb.php) skill
-    4. then adds the data to an [Azure Search](https://azure.microsoft.com/en-us/services/search/) index
-    5. and saves the annotationed data to [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/)
-6. Azure Machine learning reads all the data from Cosmos DB, ranks terms, extracts topics, and adds them to the index
-5. A simple Web App uses the [AzSearch.js library](https://github.com/Yahnoosh/AzSearch.js) to search to index and explore the documents
+This project includes the following capabilities for you to build your own version of the JFK files.
+1. We have provided a subset of the [JFK PDF documents](https://www.archives.gov/research/jfk/2017-release) and images that have been uploaded to the cloud into Azure Blob Storage.
+2. An [Azure Search](https://azure.microsoft.com/en-us/services/search/) service is used to index the content and power the UX experience. We use the new Cognitive Search capabilities to apply pre-built cognitive skills to the content, and we also use the extensibility mechanism to add custom skills using [Azure Functions](https://azure.microsoft.com/en-us/services/functions/).
+    1. Uses the [Cognitive Services Vision API](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) to extract text information from the image via OCR, handwriting, and image captioning,
+    2. Applies Named Entity Recognitition to extract named entities from the documents,
+    3. Annotates text using a custom [CIA Cryptonyms](https://www.maryferrell.org/php/cryptdb.php) skill,
+    4. Generates [HOCR content](https://en.wikipedia.org/wiki/HOCR) based on results.
+3. A standalone website to search the index and explore the documents
 
-## Limitations
-1. This is a demo to showcase a congnitive search pattern.  It is not intended to be a framework or scalable architecture for all scenarios.
-2. The code implementing storing the data in Cosmos DB and extracting topics in Azure ML is not yet included in this codebase.
-   If you are interested in this contact [Azure Search on the MSDN forums](https://social.msdn.microsoft.com/Forums/azure/en-US/home?forum=azuresearch).
-3. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
-4. The code currenly only processes images and will support most scanned PDFs. Native PDFs and some scanned PDF formats may not be parsed correctly.
+## Limitations and Considerations
+1. This is a demo to showcase a Cognitive Search use case.  It is not intended to be a framework or scalable architecture for all scenarios, though it can give you an idea of what your scenario might end up looking like.
+2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
+3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
+4. Cognitive Search is currently only available in public preview in the South Central US and West Europe Azure regions, so the Azure Search service you use with this demo must be provisioned in one of these two regions.
+5. The Redaction Classifier skill is not currently included in this sample, we'll be publishing an update soon including this skill and instructions on how to deploy your own Redaction Classifier using Azure ML.
+6. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
-## Setting up your own library
+## Setting up your own JFK files library
+
+These instructions will help you have your own version of the JFK files demo running in Azure in about 20 minutes, with most of that time being provisioning/deployment time.
 
 ### Prerequisites
-1. Azure Subscription you can access. All services can use the free teirs for this demo
-2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.
-3. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github
+1. An Azure Subscription you can access and deploy resources to.
+    1. Note that this demo requires writing to an Azure Storage Account, which you will be billed monthly for the storage written to, and by default provisions a Basic Azure Search service with will also be billed monthly.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).
+2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.  The free community edition will work fine.
+3. [Node.js](https://nodejs.org/) must be installed on your computer.
+4. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
 
-### Download the JFK Files
-1. You should [download a few JFK files](https://www.archives.gov/research/jfk/2017-release) to experiment with, or [bulk download all of them](https://www.archives.gov/research/jfk/jfkbulkdownload).
-   Alternativly, you can experiment with your own scanned PDF or image documents as well.
+### Deploy Required Resources
 
-### Create Azure Services
-> TIP: create all your Azure services in the same Resource Group and Region for best performance and managability
+1. Click the below button to upload the provided ARM template to the Azure portal, which is written to automatically deploy and configure the following resources:
+    1. An Azure Search service, default set to [Basic](https://azure.microsoft.com/en-us/pricing/details/search/) tier, and deployed to South Central US (regardless of the resource group location you select).
+    2. An Azure Blob Storage Account, default set to [Standard LRS](https://azure.microsoft.com/en-us/pricing/details/storage/) tier.
+    3. An Azure App Service plan, default set to [Free F1](https://azure.microsoft.com/en-us/pricing/details/app-service/plans/) tier.
+    4. An Azure Web App Service, using the plan from # 3.
+    5. An Azure Function instance, using the storage account from # 2 and the plan from # 3.  The Azure Function will be prepublished with the code provided in this repository as part of the template deployment.
 
-2. [Create Azure Search service](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal) for your library.
-   The free teir works well. Copy these settings that you will use later.
-   1.  __Service Name__ (under the "Properties" section)
-   2.  __Admin key__ (PRIMARY ADMIN KEY under "Keys" section)
+    </br>
+    <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2Fmaster%2Fazuredeploy.json" target="_blank">
+        <img src="http://azuredeploy.net/deploybutton.png"/>
+    </a>
 
-3. [Create Azure Blob Storage account](https://docs.microsoft.com/en-us/azure/storage/storage-create-storage-account#create-a-storage-account) for your documents.
-   The default values work well. Copy these settings that you will use later.
-   1.  __Account Name__ (Storage account name under the "Access Keys" section)
-   2.  __Account Key__ (key1 under the "Access Keys" section)
+2. Be sure to select the appropriate subscription to deploy to, and create a new resource group for these resources. Only use alphanumeric lowercase characters for the Resource Prefix field.
+3. Review the rest of the parameters as well as the terms and conditions, select the checkbox for "I agree to the terms and conditions stated above", and press "Purchase".
+4. Monitor the status of the deployment by following the link that appears in the Azure portal notifications.  It takes about 5 minutes for the resources to be fully provisioned and deployed.
 
-4. Get a 30 day Cognitive Services Trial Key for the [Computer Vision API](https://azure.microsoft.com/en-us/try/cognitive-services/?api=computer-vision) and [Entity Linking Intelligent Service API](https://labs.cognitive.microsoft.com/en-us/project-entity-linking)  or [purchase one in the Azure Portal](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account). 
-   Keep in mind that the trial key limites to 20 calls per minute which is equivilent to about 6 scanned pages per minute.  For more capacity sign up for a S1 or higher pay tier in Azure.
-   Copy these settings that you will use later.
-   1.  __API Key__ (key1 on the "your APIs" page)
+    ![Deployment in progress](images/deploymentInProgress.JPG)
 
-### Update Code
+### Initialize the code
 
-5. Git clone or download this codebase and open the jfk-files.sln in Visual Studio.  The free community edition will work fine.
-   Update the configuation settings constants in the *EnricherFunction\Config.cs* file where indicated with comments near the top of the file.  
-   Set DataEnricher is as the default project and hit F5 to run it.  It should run without errors and create the search indexes, blob containers,
-   and test your settings.  If it fails check your settings to ensure they are correct.
-   
+5. While you are waiting for the resources to finish provisioning, either git clone or download this repo, and open the provided solution file *JfkWebApiSkills/JfkWebApiSkills.sln* using Visual Studio 2017.
+6. In the root of the *JfkInitializer* project, open the *App.config* file.  You will be copying and pasting some secrets into this file momentarily.
+7. Make sure that the *JfkInitializer* project is set as your default project if it isn't already.
 
-6. You can test the UI by running the DataEnricher project with a command line argument that points to a folder that contains some images to upload.
-   >*DataEnricher.exe c:\myimages*
-   
-   To run the UI set the EnrichFunction as the startup project and press F5.
-   In the UI Hit enter in the search box to see all content uploaded to the library.
+### Run the initializer
 
-### Setup an Automated Pipline
+8. Once your resources are finished deploying (you should get a notification in the Azure portal), navigate to the *Outputs* section of the deployment.
 
-7. [Create Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function#create-a-function-app) for your enricher.
-   Choose a consumption plan to pay only for what you use, or create a free App Service plan that you will share with your web UI.
-   Right click the EnricherFunction Project in Visual Studio and select *Publish...* then publish to the Function app you created.
-   Now go to the function app in the Azure Portal and you should see a few different functions.
-   * __index-document-blob-trigger__ - Blob trigger that will index all documents uploaded to a blob container.  (to enable see step below)   
-   * __index-document__ - Http function that given a document will process it and put it in the index. (useful for pushing documents or integrating with MS flow)
-   * __get-annotated-document__ - Http function that given a document will return the annoations for each page as JSON. (useful for debugging)
-   * __get-search-document__ - Http function that given a document will return the fully processed Search Document without inserting into the index. (useful for debugging)
+    ![Deployment completed](images/deploymentCompleted.JPG)
 
-   To enable the blob trigger function you must add the blob connection string as an *Application Settings* for the function by clicking below:
-  ![Cognitive Search Pattern](images/click-app-settings.jpg)
-  Then add a new setting called "IMAGE_BLOB_CONNECTION_STRING" with the blob connection string as indicated below and click Click *Save*.
-  ![Cognitive Search Pattern](images/app-settings-add.jpg)
+    ![Outputs of deployment](images/outputs.JPG)
 
-   > You can test the function by using the [Azure Storage explorer](http://storageexplorer.com/) to upload images to the *library* blob container on your storage account.
+9. Copy and paste each of the provided outputs from this interface into their corresponding value location in the *App.config* file from before.  Note that one value will be missing from the outputs, the *SearchServiceQueryKey*.
+10. In order to obtain the *SearchServiceQueryKey*, navigate back to the *Overview* section of the deployment and find your newly created Azure Search service in the list (Its type will be *Microsoft.Search/searchServices*).  Select it.
 
-   You can also use the http functions by getting the function url below and doing an HTTP post to the url with *&name=filename.pdf* in the URL and the document contents in the body.
-   ![Cognitive Search Pattern](images/get-function-url.jpg)
-   
-   > You can use fiddler, postman, curl, or powershell to call the http apis.  Here is a powershell example to index a local document<br>
-   > `wget "https://jfk-function-test.azurewebsites.net/api/index-document?code=qabwDWxS8GZfV==&name=test.pdf" -Method Post -InFile "C:\data\test.pdf"`
+    ![Search service in deployment](images/searchServiceInDeployment.JPG)
 
-8. Upload your documents to the *jfk* container in your blob storage account or use [Azure Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) to trigger the function.
+11. Select the *Keys* section, followed by *Manage query keys*.  Copy and paste the key value shown into the *SearchServiceQueryKey* value of your *App.config* file.
 
+    ![Search service keys](images/searchServiceKeys.JPG)
 
-### Publish your Web Application
+12. Now you should have filled in all of the required configurations in the *App.config* file.  Save your changes, and press the start button at the top of Visual Studio in order to run the initializer.
 
-9. In Visual Studio right click the SearchUI project and select publish.  You can create a new Azure Web App from Visual
-   studio or you can do it in the Azure portal.  This application will work well on a free app service plan,
-   or you can use the same app service plan as your function app if you created one earlier.
+    ![Run initializer](images/runInitializer.JPG)
 
-10. You can easily customize the UI by modifying the index.html to meet your needs.  The UI is generated using the
-    [AzSearch.js](https://github.com/Yahnoosh/AzSearch.js) library and it takes [very little code](https://github.com/Yahnoosh/AzSearch.js#basic-usage)
-    to change what is shown in the search interface.
+13. After a few seconds, the message "Website keys have been set.  Please build the website and then return here and press any key to continue." will be output to the console app.  At this point, open a separate cmd window and cd into the directory of where you cloned or downloaded the repo.  Then run the following commands:
+
+    ```
+    cd frontend
+    npm install
+    npm run build:prod
+    ```
+
+14. After the commands finish running, return to the console app and press any key to continue.
+
+15. Once the website is deployed, a URL will appear in the console.  Copy and paste this URL into a browser to start interacting with what you have created!
+
+    ![URL in console](images/urlInConsole.JPG)
+
+### Results
+
+This project will create several things for you.  It will deploy an Azure Function using the code provided in the *JfkWebApiSkills* project, as well as create an Azure Search data source, skillset, synonym map, index, and indexer.  It will also create a blob storage container that the images will be reuploaded to, as well as deploys the JFK Files frontend to an Azure web app that you can immediately interact with.  Feel free to play with the code to see how all of these things are accomplished so that you can start using Cognitive Search for your data enrichment scenario today.

@@ -7,7 +7,7 @@ export const jfkServiceConfig: ServiceConfig = {
   serviceId: "jfk-docs",
   serviceName: "JFK Documents",
   serviceIcon: "fingerprint",
-  
+
   searchConfig: {
     apiConfig: {
       protocol: process.env.SEARCH_CONFIG_PROTOCOL,
@@ -45,28 +45,27 @@ export const jfkServiceConfig: ServiceConfig = {
     mapResponseToState: mapSuggestionResponseToState,
   },
 
+  graphConfig: {
+    protocol: process.env.FUNCTION_CONFIG_PROTOCOL,
+    serviceName: process.env.FUNCTION_CONFIG_SERVICE_NAME,
+    serviceDomain: process.env.FUNCTION_CONFIG_SERVICE_DOMAIN,
+    servicePath: process.env.FUNCTION_CONFIG_SERVICE_PATH,
+    method: "GET",
+    authCodeParam: process.env.FUNCTION_CONFIG_SERVICE_AUTH_CODE_PARAM
+  },
+
   initialState: {
     facetCollection: [
       {
-        fieldId: "tags",
-        displayName: "Tags",
+        fieldId: "entities",
+        displayName: "Entities",
         iconName: null,
         selectionControl: "checkboxList",
         values: null,
         config: {
           count: 20,
         }
-      },
-      {
-        fieldId: "redactions",
-        displayName: "Redactions",
-        iconName: null,
-        selectionControl: "checkboxList",
-        values: null,
-        config: {
-          values: [50],
-        }
-      },
+      }
     ]
   }  
 }
