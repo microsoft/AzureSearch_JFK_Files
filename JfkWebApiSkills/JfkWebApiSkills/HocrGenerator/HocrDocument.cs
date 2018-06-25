@@ -41,7 +41,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
         public HocrPage(OcrImageMetadata imageMetadata, int pageNumber, Dictionary<string,string> wordAnnotations = null)
         {
             // page
-            metadata.WriteLine($"<div class='ocr_page' id='page_{pageNumber}' title='image \"{imageMetadata.ImageStoreUri}\"; bbox 0 0 {imageMetadata.Width} {imageMetadata.Height}; ppageno {pageNumber}'>");
+            metadata.WriteLine($"<div class='ocr_page' id='page_{pageNumber}' data-bbox='image \"{imageMetadata.ImageStoreUri}\"; bbox 0 0 {imageMetadata.Width} {imageMetadata.Height}; ppageno {pageNumber}'>");
             metadata.WriteLine($"<div class='ocr_carea' id='block_{pageNumber}_1'>");
 
             IEnumerable<IEnumerable<NormalizedWord>> wordGroups;
@@ -66,7 +66,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
             int wi = 0;
             foreach (IEnumerable<NormalizedWord> words in wordGroups)
             {
-                metadata.WriteLine($"<span class='ocr_line' id='line_{pageNumber}_{li}' title='baseline -0.002 -5; x_size 30; x_descenders 6; x_ascenders 6'>");
+                metadata.WriteLine($"<span class='ocr_line' id='line_{pageNumber}_{li}' data-bbox='baseline -0.002 -5; x_size 30; x_descenders 6; x_ascenders 6'>");
                 
                 foreach (NormalizedWord word in words)
                 {
@@ -76,7 +76,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
                         annotation = $"data-annotation='{wordAnnotation}'";
                     }
                     string bbox = word.BoundingBox != null && word.BoundingBox.Count == 4 ? $"bbox {word.BoundingBox[0].X} {word.BoundingBox[0].Y} {word.BoundingBox[2].X} {word.BoundingBox[2].Y}" : "";
-                    metadata.WriteLine($"<span class='ocrx_word' id='word_{pageNumber}_{li}_{wi}' title='{bbox}' {annotation}>{word.Text}</span>");
+                    metadata.WriteLine($"<span class='ocrx_word' id='word_{pageNumber}_{li}_{wi}' data-bbox='{bbox}' {annotation}>{word.Text}</span>");
                     text.WriteLine(word.Text);
                     wi++;
                 }
