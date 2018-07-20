@@ -27,10 +27,6 @@ const Dialog: React.StatelessComponent<DialogProps> = ({ ...props }) => {
             The Cognitive Search capabilities of Azure Search ingest your data from almost any datasource and enriches it using a set of cognitive skills that extracts knowledge and then lets you explore the data using Search.
           </span>
           <span className={styles.block}>
-            <span>You can find more information about the project : </span>
-            <LinkComponent to="//aka.ms/jfk-files-ai-lab">here</LinkComponent>
-          </span>
-          <span className={styles.block}>
             <span>You can find the source code : </span>
             <LinkComponent to="//aka.ms/jfk-files-code">here</LinkComponent>
           </span>
