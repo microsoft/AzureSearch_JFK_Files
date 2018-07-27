@@ -169,7 +169,8 @@
                             "[concat('https://', variables('websiteName'), '.azurewebsites.net')]"
                         ]
                     }
-                }
+                },
+                "minTlsVersion": "1.0"
             },
             "resources": [
                 {
