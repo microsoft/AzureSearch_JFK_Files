@@ -8,29 +8,33 @@ import { FooterComponent } from "../../common/components/footer";
 
 const style = require("./home-page.style.scss");
 
-
 interface HomePageProps {
-  searchValue: string;
-  onSearchSubmit: () => void;
-  onSearchUpdate: (newValue: string) => void;
+    searchValue: string;
+    onSearchSubmit: () => void;
+    onSearchUpdate: (newValue: string) => void;
 }
 
-export const HomePageComponent: React.StatelessComponent<HomePageProps> = (props) => {
-  return (
-    <div className={style.container}>
-      <LogoJFKComponent classes={{container: style.logoContainer, svg: style.logoSvg}} />
-      <div className={style.main}>
-        <CaptionComponent />
-        <SearchInput         
-          searchValue={props.searchValue}
-          onSearchSubmit={props.onSearchSubmit}
-          onSearchUpdate={props.onSearchUpdate}
-        />
-        <SearchButton onClick={props.onSearchSubmit}/>
-      </div>
-      <FooterComponent className={style.footer}/>
-    </div>
-  )
+export const HomePageComponent: React.StatelessComponent<HomePageProps> = props => {
+    return (
+        <div className={style.container}>
+            <div id="disclaimer" className={style.disclaimer} aria-hidden="true">
+                This site uses cookies for analytics, personalized content and ads. By continuing to
+                browse this site, you agree to this use.
+                <a className={style.learnMore} href="https://privacy.microsoft.com/" target="_blank" rel="noopener noreferrer">Learn more</a>
+                <button className={style.close} aria-label="Close">X</button>
+            </div>
+
+            <LogoJFKComponent classes={{ container: style.logoContainer, svg: style.logoSvg }} />
+            <div className={style.main}>
+                <CaptionComponent />
+                <SearchInput
+                    searchValue={props.searchValue}
+                    onSearchSubmit={props.onSearchSubmit}
+                    onSearchUpdate={props.onSearchUpdate}
+                />
+                <SearchButton onClick={props.onSearchSubmit} />
+            </div>
+            <FooterComponent className={style.footer} />
+        </div>
+    );
 };
-
-

@@ -59,3 +59,33 @@
     width: 100%;
   }
 }
+
+.disclaimer {
+    background-color: #ffffff;
+    color: #000000;
+    left: 0;
+    padding: 1rem 4.8rem 1rem 2rem;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+}
+
+.learn-more {
+    color: #000000;
+    font-weight: 800;
+    margin-left: 0.5rem;
+}
+
+.close {
+    background-color: #ffffff;
+    border: none;
+    color: #000000;
+    cursor: pointer;
+    float: right;
+    height: 1.8em;
+    padding: 0;
+    text-align: center;
+    width: 1.1em;
+}
