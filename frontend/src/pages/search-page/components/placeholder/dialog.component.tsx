@@ -42,4 +42,4 @@ const Dialog: React.StatelessComponent<DialogProps> = ({ ...props }) => {
   );
 }
 
-export const DialogComponent = withTheme()(Dialog);
+export const DialogComponent = Dialog;
