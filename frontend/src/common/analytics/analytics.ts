@@ -92,12 +92,14 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
                 hide(disclaimer);
 
                 if (!window.ga) {
+                    window.loadGoogleAnalytics();
+
                     let gaID = 'UA-121469252-5';
                     if (window.document.domain == 'https://jfk-demo.azurewebsites.net/#/') {
                         gaID = 'UA-121469252-5';
                     }
                     window.gaTracking(gaID);
-                    if (!consent) {
+                    if (consent) {
                         window.ga('send', 'pageview');
                     }
                 }
@@ -110,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
                 window.facebookTracking();
                 window.twitterTracking();
                 window.linkedinTracking();
-
             }
 
             const consentCookiesOnClickElement = function () {
