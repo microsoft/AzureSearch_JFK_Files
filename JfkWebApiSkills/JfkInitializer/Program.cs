@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -10,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
@@ -38,10 +38,18 @@ namespace JfkInitializer
         private static string _searchServiceEndpoint;
         private static string _azureFunctionHostKey;
 
+        // Configuration
+        private static IConfiguration _configuration;
+
         static void Main(string[] args)
         {
-            string searchServiceName = ConfigurationManager.AppSettings["SearchServiceName"];
-            string apiKey = ConfigurationManager.AppSettings["SearchServiceApiKey"];
+            _configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            string searchServiceName = _configuration["searchServiceName"];
+            string apiKey = _configuration["searchServiceApiKey"];
 
             _searchClient = new SearchServiceClient(searchServiceName, new SearchCredentials(apiKey));
             _httpClient.DefaultRequestHeaders.Add("api-key", apiKey);
@@ -80,7 +88,7 @@ namespace JfkInitializer
                 return result;
             result = await CreateSynonyms();
             if (!result)
-                return result;
+                return result;    
             result = await CreateIndex();
             if (!result)
                 return result;
@@ -124,14 +132,15 @@ namespace JfkInitializer
             Console.WriteLine("Creating Blob Container for Image Store Skill...");
             try
             {
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["BlobStorageAccountConnectionString"]);
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_configuration["blobStorageAccountConnectionString"]);
                 CloudBlobClient client = storageAccount.CreateCloudBlobClient();
                 CloudBlobContainer container = client.GetContainerReference(BlobContainerNameForImageStore);
                 await container.CreateIfNotExistsAsync();
                 // Note that setting this permission means that the container will be publically accessible.  This is necessary for
                 // the website to work properly.  Remove these next 3 lines if you start using this code to process any private or
                 // confidential data, but note that the website will stop working properly if you do.
-                BlobContainerPermissions permissions = container.GetPermissions();
+                BlobContainerPermissions permissions = await container.GetPermissionsAsync();
+
                 permissions.PublicAccess = BlobContainerPublicAccessType.Container;
                 await container.SetPermissionsAsync(permissions);
             }
@@ -153,8 +162,8 @@ namespace JfkInitializer
             {
                 DataSource dataSource = DataSource.AzureBlobStorage(
                     name: DataSourceName,
-                    storageConnectionString: ConfigurationManager.AppSettings["JFKFilesBlobStorageAccountConnectionString"],
-                    containerName: ConfigurationManager.AppSettings["JFKFilesBlobContainerName"],
+                    storageConnectionString: _configuration["jfkFilesBlobStorageAccountConnectionString"],
+                    containerName: _configuration["jfkFilesBlobContainerName"],
                     description: "Data source for cognitive search example"
                 );
                 await _searchClient.DataSources.CreateAsync(dataSource);
@@ -176,13 +185,13 @@ namespace JfkInitializer
             try
             {
                 if (_azureFunctionHostKey == null)
-                {
-                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKey(_httpClient);
+                { 
+                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKeyAsync(_configuration, _httpClient);
                 }
                 using (StreamReader r = new StreamReader("skillset.json"))
                 {
                     string json = r.ReadToEnd();
-                    json = json.Replace("[AzureFunctionEndpointUrl]", String.Format("https://{0}.azurewebsites.net", ConfigurationManager.AppSettings["AzureFunctionSiteName"]));
+                    json = json.Replace("[AzureFunctionEndpointUrl]", String.Format("https://{0}.azurewebsites.net", _configuration["azureFunctionSiteName"]));
                     json = json.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
                     json = json.Replace("[BlobContainerName]", BlobContainerNameForImageStore);
                     string uri = String.Format("{0}/skillsets/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, SkillSetName);
@@ -309,17 +318,17 @@ namespace JfkInitializer
             try
             {
                 Console.WriteLine("Setting Website Keys...");
-                string searchQueryKey = ConfigurationManager.AppSettings["SearchServiceQueryKey"];
+                string searchQueryKey = _configuration["searchServiceQueryKey"];
                 if (_azureFunctionHostKey == null)
                 {
-                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKey(_httpClient);
+                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKeyAsync(_configuration, _httpClient);
                 }
                 string envText = File.ReadAllText("../../../../frontend/.env");
-                envText = envText.Replace("[SearchServiceName]", ConfigurationManager.AppSettings["SearchServiceName"]);
+                envText = envText.Replace("[SearchServiceName]", _configuration["searchServiceName"]);
                 envText = envText.Replace("[SearchServiceDomain]", _searchClient.SearchDnsSuffix);
                 envText = envText.Replace("[IndexName]", IndexName);
                 envText = envText.Replace("[SearchServiceApiKey]", searchQueryKey);
-                envText = envText.Replace("[AzureFunctionName]", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
+                envText = envText.Replace("[AzureFunctionName]", _configuration["azureFunctionSiteName"]);
                 envText = envText.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
                 File.WriteAllText("../../../../frontend/.env", envText);
 
@@ -334,9 +343,9 @@ namespace JfkInitializer
                 ZipFile.CreateFromDirectory("../../../../frontend/dist", "website.zip");
                 byte[] websiteZip = File.ReadAllBytes("website.zip");
                 HttpContent content = new ByteArrayContent(websiteZip);
-                string uri = String.Format("https://{0}.scm.azurewebsites.net/api/zipdeploy?isAsync=true", ConfigurationManager.AppSettings["AzureWebAppSiteName"]);
+                string uri = String.Format("https://{0}.scm.azurewebsites.net/api/zipdeploy?isAsync=true", _configuration["azureWebAppSiteName"]);
 
-                byte[] credentials = Encoding.ASCII.GetBytes(String.Format("{0}:{1}", ConfigurationManager.AppSettings["AzureWebAppUsername"], ConfigurationManager.AppSettings["AzureWebAppPassword"]));
+                byte[] credentials = Encoding.ASCII.GetBytes(String.Format("{0}:{1}", _configuration["azureWebAppUsername"], _configuration["azureWebAppPassword"]));
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(credentials));
 
                 HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
@@ -373,7 +382,7 @@ namespace JfkInitializer
                 {
                     Console.WriteLine("Could not find polling url from response.");
                 }
-                Console.WriteLine("Website url: https://{0}.azurewebsites.net/", ConfigurationManager.AppSettings["AzureWebAppSiteName"]);
+                Console.WriteLine("Website url: https://{0}.azurewebsites.net/", _configuration["azureWebAppSiteName"]);
             }
             catch (Exception ex)
             {

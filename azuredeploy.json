@@ -190,41 +190,53 @@
         }
     ],
     "outputs": {
-        "Search Service Name": {
+        "searchServiceName": {
             "type": "string",
             "value": "[variables('searchServiceName')]"
         },
-        "Search Service Api Key": {
+        "searchServiceApiKey": {
             "type": "string",
             "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]"
         },
-        "Blob Storage Account Connection String": {
+        "searchServiceQueryKey": {
+            "type": "string",
+            "value": ""
+        },
+        "blobStorageAccountConnectionString": {
             "type": "string",
             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
         },
-        "Azure Web App Site Name": {
+        "azureWebAppSiteName": {
             "type": "string",
             "value": "[variables('websiteName')]"
         },
-        "Azure Web App Username": {
+        "azureWebAppUsername": {
             "type": "string",
             "value": "[list(concat('Microsoft.Web/sites/', variables('websiteName'), '/config/publishingcredentials'), '2016-08-01').properties.publishingUserName]"
         },
-        "Azure Web App Password": {
+        "azureWebAppPassword": {
             "type": "string",
             "value": "[list(concat('Microsoft.Web/sites/', variables('websiteName'), '/config/publishingcredentials'), '2016-08-01').properties.publishingPassword]"
         },
-        "Azure Function Site Name": {
+        "azureFunctionSiteName": {
             "type": "string",
             "value": "[variables('functionAppName')]"
         },
-        "Azure Function Username": {
+        "azureFunctionUsername": {
             "type": "string",
             "value": "[list(concat('Microsoft.Web/sites/', variables('functionAppName'), '/config/publishingcredentials'), '2016-08-01').properties.publishingUserName]"
         },
-        "Azure Function Password": {
+        "azureFunctionPassword": {
             "type": "string",
             "value": "[list(concat('Microsoft.Web/sites/', variables('functionAppName'), '/config/publishingcredentials'), '2016-08-01').properties.publishingPassword]"
+        },
+        "jfkFilesBlobStorageAccountConnectionString": {
+            "type": "string",
+            "value": "SharedAccessSignature=st=2018-05-01T17%3A30%3A00Z&se=2019-05-01T17%3A30%3A00Z&sp=rl&sv=2017-04-17&sr=c&sig=yoU5d8mK6AamgqHjUkIMx4qTN%2BhHnL9%2BSfcdrICg%2BI4%3D;BlobEndpoint=https://azsjfkfiles.blob.core.windows.net/"
+        },
+        "jfkFilesBlobContainerName": {
+            "type": "string", 
+            "value": "jfkfiles"
         }
     }
 }

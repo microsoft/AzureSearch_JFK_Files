@@ -48,6 +48,8 @@ These instructions will help you have your own version of the JFK files demo run
 
 ### Deploy Required Resources
 
+#### Via Azure Portal
+
 1. Click the below button to upload the provided ARM template to the Azure portal, which is written to automatically deploy and configure the following resources:
     1. An Azure Search service, default set to [Basic](https://azure.microsoft.com/en-us/pricing/details/search/) tier, and deployed to South Central US (regardless of the resource group location you select).
     2. An Azure Blob Storage Account, default set to [Standard LRS](https://azure.microsoft.com/en-us/pricing/details/storage/) tier.
@@ -66,10 +68,34 @@ These instructions will help you have your own version of the JFK files demo run
 
     ![Deployment in progress](images/deploymentInProgress.JPG)
 
+#### Via Azure CLI
+
+1. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
+2. Login to the Azure CLI:
+```
+az login
+# Double check your subscription
+az account show
+# Set the correct subscription ID if necessary
+az account set <subscription-id>
+```
+3. Create a resource group to deploy the resources to:
+```
+az group create -l <location> -n <resource-group-name>
+```
+4. Run the ARM deployment command:
+```
+az group deployment create -g <resource-group-name> --template-file ./azuredeploy.json > deployment.json
+```
+5. (Optional) To save yourself a few steps later on, we've added a simple script to convert the deployment output into the required *appsettings.json* file you'll need for the *JfkInitializer* project below:
+```
+node scripts/deploymentOutput.js < deployment.json > ./JfkWebApiSkills/JfkInitializer/appsettings.json
+```
+
 ### Initialize the code
 
 5. While you are waiting for the resources to finish provisioning, either git clone or download this repo, and open the provided solution file *JfkWebApiSkills/JfkWebApiSkills.sln* using Visual Studio 2017.
-6. In the root of the *JfkInitializer* project, open the *App.config* file.  You will be copying and pasting some secrets into this file momentarily.
+6. In the root of the *JfkInitializer* project, open the *appsettings.json* file.  You will be copying and pasting some secrets into this file momentarily.
 7. Make sure that the *JfkInitializer* project is set as your default project if it isn't already.
 
 ### Run the initializer
@@ -80,16 +106,17 @@ These instructions will help you have your own version of the JFK files demo run
 
     ![Outputs of deployment](images/outputs.JPG)
 
-9. Copy and paste each of the provided outputs from this interface into their corresponding value location in the *App.config* file from before.  Note that one value will be missing from the outputs, the *SearchServiceQueryKey*.
+9. Copy and paste each of the provided outputs from this interface into their corresponding value location in the *appsettings.json* file from before.  Note that one value will be missing from the outputs, the *SearchServiceQueryKey*. Note, if you followed the instructions above to deploy with the Azure CLI and completed step 5, then you won't need to copy-paste these values.
+
 10. In order to obtain the *SearchServiceQueryKey*, navigate back to the *Overview* section of the deployment and find your newly created Azure Search service in the list (Its type will be *Microsoft.Search/searchServices*).  Select it.
 
     ![Search service in deployment](images/searchServiceInDeployment.JPG)
 
-11. Select the *Keys* section, followed by *Manage query keys*.  Copy and paste the key value shown into the *SearchServiceQueryKey* value of your *App.config* file.
+11. Select the *Keys* section, followed by *Manage query keys*.  Copy and paste the key value shown into the *SearchServiceQueryKey* value of your *appsettings.json* file.
 
     ![Search service keys](images/searchServiceKeys.JPG)
 
-12. Now you should have filled in all of the required configurations in the *App.config* file.  Save your changes, and press the start button at the top of Visual Studio in order to run the initializer.
+12. Now you should have filled in all of the required configurations in the *appsettings.json* file.  Save your changes, and press the start button at the top of Visual Studio in order to run the initializer.
 
     ![Run initializer](images/runInitializer.JPG)
 
