@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
                         scroll: true
                     },
                     coreData: {
-                        appId: 'JS:AI_Lab',
+                        appId: 'JFK_Files',
                         env: 'prod',
                         market: 'en-us',
                         pageName: 'JFK Files demo',
@@ -92,9 +92,9 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
                 hide(disclaimer);
 
                 if (!window.ga) {
-                    let gaID = 'UA-121479144-2';
-                    if (window.document.domain == 'www.ailab.microsoft.com') {
-                        gaID = 'UA-121469252-1';
+                    let gaID = 'UA-121469252-5';
+                    if (window.document.domain == 'https://jfk-demo.azurewebsites.net/#/') {
+                        gaID = 'UA-121469252-5';
                     }
                     window.gaTracking(gaID);
                     if (!consent) {
