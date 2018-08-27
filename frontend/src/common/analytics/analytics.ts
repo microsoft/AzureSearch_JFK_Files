@@ -93,12 +93,6 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
 
                 if (!window.ga) {
                     window.loadGoogleAnalytics();
-
-                    let gaID = 'UA-121469252-5';
-                    if (window.document.domain == 'https://jfk-demo.azurewebsites.net/#/') {
-                        gaID = 'UA-121469252-5';
-                    }
-                    window.gaTracking(gaID);
                     if (consent) {
                         window.ga('send', 'pageview');
                     }
