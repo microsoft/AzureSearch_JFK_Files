@@ -22,6 +22,7 @@ import { Service } from "./service";
 import { Pagination } from "../../common/components/pagination/pagination";
 import { PlaceholderComponent } from "./components/placeholder";
 import { FooterComponent } from "../../common/components/footer";
+import analytics from "../../common/analytics/analytics";
 
 const style = require("./search-page.style.scss");
 
@@ -138,34 +139,43 @@ class ResultAreaComponent extends React.PureComponent<Partial<SearchPageProps>> 
   }
 }
 
-const SearchPageComponent = (props: SearchPageProps) => (
-  <div className={style.pageContainer}>
-    <DrawerAreaComponent {...props} />
-    <main className={style.mainContainer}>
-      <PageBarComponent
-        resultViewMode={props.resultViewMode}
-        pulseToggle={props.pulseToggle}
-        onChangeResultViewMode={props.onChangeResultViewMode}
-        onMenuClick={props.onMenuClick}
-      />
-      <HorizontalSeparator />
-      <ResultAreaComponent
-        itemCollection={props.itemCollection}
-        activeSearch={props.activeSearch}
-        targetWords={props.targetWords}
-        pageIndex={props.pageIndex}
-        resultsPerPage={props.resultsPerPage}
-        resultCount={props.resultCount}
-        onItemClick={props.onItemClick}
-        onLoadMore={props.onLoadMore}
-        onGraphNodeDblClick={props.onGraphNodeDblClick}
-        resultViewMode={props.resultViewMode}
-      />
-      <HorizontalSeparator />
-      <FooterComponent />
-    </main>
-  </div>
-)
+class SearchPageComponent extends React.Component<SearchPageProps> {
 
+    private analyticsFunction = analytics;
+
+    public componentWillMount() {
+        this.analyticsFunction();
+    }
+
+    public render() {
+        return (
+            <div className={style.pageContainer}>
+                <DrawerAreaComponent {...this.props} />
+                <main className={style.mainContainer}>
+                    <PageBarComponent
+                        resultViewMode={this.props.resultViewMode}
+                        pulseToggle={this.props.pulseToggle}
+                        onChangeResultViewMode={this.props.onChangeResultViewMode}
+                        onMenuClick={this.props.onMenuClick}
+                    />
+                    <HorizontalSeparator />
+                    <ResultAreaComponent
+                        itemCollection={this.props.itemCollection}
+                        activeSearch={this.props.activeSearch}
+                        targetWords={this.props.targetWords}
+                        pageIndex={this.props.pageIndex}
+                        resultsPerPage={this.props.resultsPerPage}
+                        resultCount={this.props.resultCount}
+                        onItemClick={this.props.onItemClick}
+                        onLoadMore={this.props.onLoadMore}
+                        onGraphNodeDblClick={this.props.onGraphNodeDblClick}
+                        resultViewMode={this.props.resultViewMode}
+                    />
+                    <HorizontalSeparator />
+                    <FooterComponent />
+                </main>
+            </div>);
+    }
+}
 
 export { SearchPageComponent };

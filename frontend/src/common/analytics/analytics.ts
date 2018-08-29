@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
             function consentCookies() {
                 hide(disclaimer);
 
+                consent = true;
                 if (!window.ga) {
                     window.loadGoogleAnalytics();
                     if (consent) {
@@ -98,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
                     }
                 }
 
-                consent = true;
                 createCookie('jsll', 'on', 30);
                 if (window.awa) {
                     initAdobeAnalytics();
@@ -107,6 +107,9 @@ document.addEventListener('DOMContentLoaded', () => { analytics(); }, false);
                 window.twitterTracking();
                 window.linkedinTracking();
             }
+
+
+
 
             const consentCookiesOnClickElement = function () {
                 /** User interacting means consent */
