@@ -46,14 +46,10 @@
         {
             "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
             "visualFeatures": [
-                "Categories",
                 "Tags",
-                "Description",
-                "Faces",
-                "ImageType",
-                "Adult"
+                "Description"
             ],
-            "details": [ "Celebrities", "Landmarks" ],
+            "details": [ "Celebrities" ],
             "context": "/document/normalized_images/*",
             "defaultLanguageCode": "en",
             "inputs": [
@@ -64,28 +60,12 @@
             ],
             "outputs": [
                 {
-                    "name": "categories",
-                    "targetName": "Categories"
-                },
-                {
                     "name": "tags",
                     "targetName": "Tags"
                 },
                 {
                     "name": "description",
                     "targetName": "Description"
-                },
-                {
-                    "name": "faces",
-                    "targetName": "Faces"
-                },
-                {
-                    "name": "imageType",
-                    "targetName": "ImageType"
-                },
-                {
-                    "name": "adult",
-                    "targetName": "AdultCategory"
                 }
             ]
         },
@@ -324,7 +304,7 @@
                 },
                 {
                     "name": "wordAnnotations",
-                    "source": "/document/normalized_images/*/layoutText/words/*/text/cryptonym"
+                    "source": "/document/cryptonyms"
                 }
             ],
             "outputs": [
@@ -337,18 +317,19 @@
         {
             "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
             "description": "Cryptonym linker",
-            "uri": "[AzureFunctionEndpointUrl]/api/link-cryptonyms?code=[AzureFunctionDefaultHostKey]",
-            "context": "/document/normalized_images/*/layoutText/words/*/text",
+            "uri": "[AzureFunctionEndpointUrl]/api/link-cryptonyms-list?code=[AzureFunctionDefaultHostKey]",
+            "batchSize": 1,
+            "context": "/document",
             "inputs": [
                 {
-                    "name": "word",
+                    "name": "words",
                     "source": "/document/normalized_images/*/layoutText/words/*/text"
                 }
             ],
             "outputs": [
                 {
-                    "name": "cryptonym",
-                    "targetName": "cryptonym"
+                    "name": "cryptonyms",
+                    "targetName": "cryptonyms"
                 }
             ]
         }
