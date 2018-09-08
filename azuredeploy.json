@@ -118,7 +118,7 @@
             "apiVersion": "2015-08-19",
             "name": "[variables('searchServiceName')]",
             "type": "Microsoft.Search/searchServices",
-            "location": "southcentralus",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }
