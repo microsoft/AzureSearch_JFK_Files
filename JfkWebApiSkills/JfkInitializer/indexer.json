@@ -38,7 +38,7 @@
             "targetFieldName": "metadata"
         },
         {
-            "sourceFieldName": "/document/entities/*/value",
+            "sourceFieldName": "/document/finalText/pages/*/entities/*/value",
             "targetFieldName": "entities"
         },
         {
