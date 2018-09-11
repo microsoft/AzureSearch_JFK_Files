@@ -42,7 +42,7 @@
             "targetFieldName": "entities"
         },
         {
-            "sourceFieldName": "/document/normalized_images/*/layoutText/words/*/text/cryptonym/value",
+            "sourceFieldName": "/document/cryptonyms",
             "targetFieldName": "cryptonyms"
         }
     ]
