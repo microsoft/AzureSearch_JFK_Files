@@ -31,6 +31,15 @@ namespace Microsoft.CognitiveSearch.Skills.Image
             return blockBlob.Uri.ToString();
         }
 
+        public string GetSharedAccessSignature(DateTimeOffset expiry)
+        {
+            return libraryContainer.GetSharedAccessSignature(new SharedAccessBlobPolicy
+            {
+                Permissions = SharedAccessBlobPermissions.Read,
+                SharedAccessExpiryTime = expiry,
+            });
+        }
+
         public Task<string> UploadToBlob(byte[] data, string name, bool overwrite = false)
         {
             return UploadImageToLibrary(new MemoryStream(data), name, overwrite);

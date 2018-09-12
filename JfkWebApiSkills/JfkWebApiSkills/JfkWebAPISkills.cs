@@ -18,6 +18,9 @@ namespace Microsoft.CognitiveSearch.WebApiSkills
 {
     public static class JfkWebApiSkills
     {
+        // Configure duration of SAS token for image store blobs here
+        private static readonly TimeSpan s_imageBlobSASDuration = TimeSpan.FromDays(365);
+
         [FunctionName("facet-graph-nodes")]
         public static IActionResult GetFacetGraphNodes([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, TraceWriter log, ExecutionContext executionContext)
         {
@@ -138,6 +141,16 @@ namespace Microsoft.CognitiveSearch.WebApiSkills
                 return new BadRequestObjectResult($"{skillName} - Invalid request record array: Skill requires exactly 1 image per request.");
             }
 
+            var blobStorageConnectionString = GetAppSetting("BlobStorageAccountConnectionString");
+            var blobContainerName = String.IsNullOrEmpty(req.Headers["BlobContainerName"]) ? Config.AZURE_STORAGE_CONTAINER_NAME : (string)req.Headers["BlobContainerName"];
+            if (String.IsNullOrEmpty(blobStorageConnectionString) || String.IsNullOrEmpty(blobContainerName))
+            {
+                return new BadRequestObjectResult($"{skillName} - Information for the blob storage account is missing");
+            }
+            var imageStore = new ImageStore(blobStorageConnectionString, blobContainerName);
+            var expiry = DateTimeOffset.UtcNow.Add(s_imageBlobSASDuration);
+            var imageBlobSAS = imageStore.GetSharedAccessSignature(expiry);
+
             WebApiSkillResponse response = WebApiSkillHelpers.ProcessRequestRecords(skillName, requestRecords,
                 (inRecord, outRecord) => {
                     List<OcrImageMetadata> imageMetadataList = JsonConvert.DeserializeObject<List<OcrImageMetadata>>(JsonConvert.SerializeObject(inRecord.Data["ocrImageMetadataList"]));
@@ -150,7 +163,7 @@ namespace Microsoft.CognitiveSearch.WebApiSkills
                     List<HocrPage> pages = new List<HocrPage>();
                     for(int i = 0; i < imageMetadataList.Count; i++)
                     {
-                        pages.Add(new HocrPage(imageMetadataList[i], i, annotations));
+                        pages.Add(new HocrPage(imageMetadataList[i], i, imageBlobSAS, annotations));
                     }
                     HocrDocument hocrDocument = new HocrDocument(pages);
                     outRecord.Data["hocrDocument"] = hocrDocument;
