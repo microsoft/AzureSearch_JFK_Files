@@ -11,7 +11,7 @@
         },
         "location": {
             "type": "string",
-            "defaultValue": "[resourceGroup().location]",
+            "defaultValue": "South Central US",
             "allowedValues": [
                 "East Asia",
                 "Southeast Asia",
@@ -108,7 +108,7 @@
             "apiVersion": "2016-09-01",
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
-            "location": "parameters('location')",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('hostingPlanSku')]"
             },
@@ -120,7 +120,7 @@
             "apiVersion": "2017-10-01",
             "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "location": "parameters('location')",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('storageAccountType')]"
             },
@@ -130,7 +130,7 @@
             "apiVersion": "2016-08-01",
             "name": "[variables('websiteName')]",
             "type": "Microsoft.Web/sites",
-            "location": "parameters('location')",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             ],
@@ -142,7 +142,7 @@
             "apiVersion": "2015-08-19",
             "name": "[variables('searchServiceName')]",
             "type": "Microsoft.Search/searchServices",
-            "location": "parameters('location')",
+            "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }
@@ -152,7 +152,7 @@
             "name": "[variables('functionAppName')]",
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
-            "location": "parameters('location')",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
