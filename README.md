@@ -31,7 +31,7 @@ This project includes the following capabilities for you to build your own versi
 1. This is a demo to showcase a Cognitive Search use case.  It is not intended to be a framework or scalable architecture for all scenarios, though it can give you an idea of what your scenario might end up looking like.
 2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
 3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
-4. Cognitive Search is currently only available in public preview in the South Central US and West Europe Azure regions, so the Azure Search service you use with this demo must be provisioned in one of these two regions.
+4. Cognitive Search is currently only available in public preview in select regions, so the Azure Search service you use with this demo must be provisioned in one of the provided region options.
 5. The Redaction Classifier skill is not currently included in this sample, we'll be publishing an update soon including this skill and instructions on how to deploy your own Redaction Classifier using Azure ML.
 6. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
@@ -49,14 +49,14 @@ These instructions will help you have your own version of the JFK files demo run
 ### Deploy Required Resources
 
 1. Click the below button to upload the provided ARM template to the Azure portal, which is written to automatically deploy and configure the following resources:
-    1. An Azure Search service, default set to [Basic](https://azure.microsoft.com/en-us/pricing/details/search/) tier, and deployed to South Central US (regardless of the resource group location you select).
+    1. An Azure Search service, default set to [Basic](https://azure.microsoft.com/en-us/pricing/details/search/) tier.
     2. An Azure Blob Storage Account, default set to [Standard LRS](https://azure.microsoft.com/en-us/pricing/details/storage/) tier.
     3. An Azure App Service plan, default set to [Free F1](https://azure.microsoft.com/en-us/pricing/details/app-service/plans/) tier.
     4. An Azure Web App Service, using the plan from # 3.
     5. An Azure Function instance, using the storage account from # 2 and the plan from # 3.  The Azure Function will be prepublished with the code provided in this repository as part of the template deployment.
 
     </br>
-    <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2Fmaster%2Fazuredeploy.json" target="_blank">
+    <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2FfeatureUpdates%2Fazuredeploy.json" target="_blank">
         <img src="http://azuredeploy.net/deploybutton.png"/>
     </a>
 
