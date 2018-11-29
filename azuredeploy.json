@@ -44,6 +44,30 @@
                 "description": "The SKU of the search service you want to create"
             }
         },
+        "searchServiceLocation": {
+            "type": "string",
+            "defaultValue": "South Central US",
+            "allowedValues": [
+                "East Asia",
+                "Southeast Asia",
+                "Australia East",
+                "Brazil South",
+                "Canada Central",
+                "North Europe",
+                "West Europe",
+                "Central India",
+                "UK South",
+                "East US",
+                "East US 2",
+                "South Central US",
+                "West Central US",
+                "West US",
+                "West US 2"
+            ],
+            "metadata": {
+                "description": "Location where the Azure Search service will be deployed."
+            }
+        },
         "storageAccountType": {
             "type": "string",
             "defaultValue": "Standard_LRS",
@@ -118,7 +142,7 @@
             "apiVersion": "2015-08-19",
             "name": "[variables('searchServiceName')]",
             "type": "Microsoft.Search/searchServices",
-            "location": "southcentralus",
+            "location": "[parameters('searchServiceLocation')]",
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }

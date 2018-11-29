@@ -201,7 +201,7 @@
             ]
         },
         {
-            "@odata.type": "#Microsoft.Skills.Text.NamedEntityRecognitionSkill",
+            "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
             "categories": [
                 "Person",
                 "Location",
@@ -232,7 +232,7 @@
                     "targetName": "organizations"
                 },
                 {
-                    "name": "entities",
+                    "name": "namedEntities",
                     "targetName": "entities"
                 }
             ]
