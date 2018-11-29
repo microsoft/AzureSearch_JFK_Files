@@ -9,30 +9,6 @@
                 "description": "Prefix for all resources created by this template"
             }
         },
-        "location": {
-            "type": "string",
-            "defaultValue": "South Central US",
-            "allowedValues": [
-                "East Asia",
-                "Southeast Asia",
-                "Australia East",
-                "Brazil South",
-                "Canada Central",
-                "North Europe",
-                "West Europe",
-                "Central India",
-                "UK South",
-                "East US",
-                "East US 2",
-                "South Central US",
-                "West Central US",
-                "West US",
-                "West US 2"
-            ],
-            "metadata": {
-                "description": "Location where all resources will be deployed."
-            }
-        },
         "hostingPlanSku": {
             "type": "string",
             "defaultValue": "F1",
@@ -66,6 +42,30 @@
             ],
             "metadata": {
                 "description": "The SKU of the search service you want to create"
+            }
+        },
+        "searchServiceLocation": {
+            "type": "string",
+            "defaultValue": "South Central US",
+            "allowedValues": [
+                "East Asia",
+                "Southeast Asia",
+                "Australia East",
+                "Brazil South",
+                "Canada Central",
+                "North Europe",
+                "West Europe",
+                "Central India",
+                "UK South",
+                "East US",
+                "East US 2",
+                "South Central US",
+                "West Central US",
+                "West US",
+                "West US 2"
+            ],
+            "metadata": {
+                "description": "Location where the Azure Search service will be deployed."
             }
         },
         "storageAccountType": {
@@ -108,7 +108,7 @@
             "apiVersion": "2016-09-01",
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('hostingPlanSku')]"
             },
@@ -120,7 +120,7 @@
             "apiVersion": "2017-10-01",
             "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('storageAccountType')]"
             },
@@ -130,7 +130,7 @@
             "apiVersion": "2016-08-01",
             "name": "[variables('websiteName')]",
             "type": "Microsoft.Web/sites",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             ],
@@ -142,7 +142,7 @@
             "apiVersion": "2015-08-19",
             "name": "[variables('searchServiceName')]",
             "type": "Microsoft.Search/searchServices",
-            "location": "[parameters('location')]",
+            "location": "[parameters('searchServiceLocation')]",
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }
@@ -152,7 +152,7 @@
             "name": "[variables('functionAppName')]",
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
