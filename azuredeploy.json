@@ -44,7 +44,7 @@
                 "description": "The SKU of the search service you want to create"
             }
         },
-        "searchServiceLocation": {
+        "searchServiceAndCognitiveServicesLocation": {
             "type": "string",
             "defaultValue": "South Central US",
             "allowedValues": [
@@ -65,7 +65,7 @@
                 "West US 2"
             ],
             "metadata": {
-                "description": "Location where the Azure Search service will be deployed."
+                "description": "Location where the Azure Search service and Cognitive Services account will be deployed."
             }
         },
         "storageAccountType": {
@@ -143,7 +143,7 @@
             "apiVersion": "2015-08-19",
             "name": "[variables('searchServiceName')]",
             "type": "Microsoft.Search/searchServices",
-            "location": "[parameters('searchServiceLocation')]",
+            "location": "[parameters('searchServiceAndCognitiveServicesLocation')]",
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }
@@ -156,7 +156,7 @@
               "name": "S0"
             },
             "kind": "CognitiveServices",
-            "location": "[parameters('searchServiceLocation')]",
+            "location": "[parameters('searchServiceAndCognitiveServicesLocation')]",
             "properties": {}
         },
         {
@@ -237,6 +237,10 @@
         "Search Service Api Key": {
             "type": "string",
             "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]"
+        },
+        "Search Service Query Key": {
+            "type": "string",
+            "value": "[listQueryKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').value[0].key]"
         },
         "Cognitive Services Account Key": {
             "type": "string",
