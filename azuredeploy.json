@@ -101,7 +101,8 @@
         "storageAccountName": "[concat(parameters('resourcePrefix'), 'storage', uniqueString(resourceGroup().id, deployment().name))]",
         "searchServiceName": "[concat(parameters('resourcePrefix'), '-search-service-', uniqueString(resourceGroup().id, deployment().name))]",
         "hostingPlanName": "[concat(parameters('resourcePrefix'), '-plan-', uniqueString(resourceGroup().id, deployment().name))]",
-        "functionAppName": "[concat(parameters('resourcePrefix'), '-function-app-', uniqueString(resourceGroup().id, deployment().name))]"
+        "functionAppName": "[concat(parameters('resourcePrefix'), '-function-app-', uniqueString(resourceGroup().id, deployment().name))]",
+        "cognitiveServicesAccountName": "[concat(parameters('resourcePrefix'), '-cognitive-services-', uniqueString(resourceGroup().id, deployment().name))]"
     },
     "resources": [
         {
@@ -146,6 +147,17 @@
             "sku": {
                 "name": "[parameters('searchServiceSku')]"
             }
+        },
+        {
+            "name": "[variables('cognitiveServicesAccountName')]",
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "sku": {
+              "name": "S0"
+            },
+            "kind": "CognitiveServices",
+            "location": "[parameters('searchServiceLocation')]",
+            "properties": {}
         },
         {
             "apiVersion": "2016-08-01",
@@ -225,6 +237,10 @@
         "Search Service Api Key": {
             "type": "string",
             "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]"
+        },
+        "Cognitive Services Account Key": {
+            "type": "string",
+            "value": "[listkeys(resourceId('Microsoft.CognitiveServices/accounts', variables('cognitiveServicesAccountName')), '2017-04-18').key1]"
         },
         "Blob Storage Account Connection String": {
             "type": "string",
