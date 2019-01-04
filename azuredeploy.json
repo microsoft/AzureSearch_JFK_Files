@@ -238,10 +238,6 @@
             "type": "string",
             "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]"
         },
-        "Search Service Query Key": {
-            "type": "string",
-            "value": "[listQueryKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').value[0].key]"
-        },
         "Cognitive Services Account Key": {
             "type": "string",
             "value": "[listkeys(resourceId('Microsoft.CognitiveServices/accounts', variables('cognitiveServicesAccountName')), '2017-04-18').key1]"
