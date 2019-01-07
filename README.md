@@ -32,8 +32,7 @@ This project includes the following capabilities for you to build your own versi
 2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
 3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
 4. Cognitive Search is currently only available in public preview in select regions, so the Azure Search service you use with this demo must be provisioned in one of the provided region options.
-5. The Redaction Classifier skill is not currently included in this sample, we'll be publishing an update soon including this skill and instructions on how to deploy your own Redaction Classifier using Azure ML.
-6. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
+5. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
 ## Setting up your own JFK files library
 
@@ -41,7 +40,7 @@ These instructions will help you have your own version of the JFK files demo run
 
 ### Prerequisites
 1. An Azure Subscription you can access and deploy resources to.
-    1. Note that this demo requires writing to an Azure Storage Account, which you will be billed monthly for the storage written to, and by default provisions a Basic Azure Search service with will also be billed monthly.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).
+    1. Note that this demo requires writing to an Azure Storage Account, which you will be billed monthly for the storage written to, and by default provisions a Basic Azure Search service which is billed hourly.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).  In addition, you will be charged for the Cognitive Search part of the demo, which is transaction based.  These charges used with the provided files should be about $15 USD.  [See here for details](https://docs.microsoft.com/en-us/azure/search/cognitive-search-attach-cognitive-services) on what costs may look like if you choose to use Cognitive Search with your own dataset.
 2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.  The free community edition will work fine.
 3. [Node.js](https://nodejs.org/) must be installed on your computer.
 4. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
@@ -54,6 +53,7 @@ These instructions will help you have your own version of the JFK files demo run
     3. An Azure App Service plan, default set to [Free F1](https://azure.microsoft.com/en-us/pricing/details/app-service/plans/) tier.
     4. An Azure Web App Service, using the plan from # 3.
     5. An Azure Function instance, using the storage account from # 2 and the plan from # 3.  The Azure Function will be prepublished with the code provided in this repository as part of the template deployment.
+    6. A Cognitive Services account, of type [CognitiveServices](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/), that will be used for billing your Cognitive Search skills usage.
 
     </br>
     <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FAzureSearch_JFK_Files%2Fmaster%2Fazuredeploy.json" target="_blank">

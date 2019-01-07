@@ -185,6 +185,7 @@ namespace JfkInitializer
                     json = json.Replace("[AzureFunctionEndpointUrl]", String.Format("https://{0}.azurewebsites.net", ConfigurationManager.AppSettings["AzureFunctionSiteName"]));
                     json = json.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
                     json = json.Replace("[BlobContainerName]", BlobContainerNameForImageStore);
+                    json = json.Replace("[CognitiveServicesKey]", ConfigurationManager.AppSettings["CognitiveServicesAccountKey"]);
                     string uri = String.Format("{0}/skillsets/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, SkillSetName);
                     HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
