@@ -59,10 +59,16 @@
                 "UK South",
                 "East US",
                 "East US 2",
+                "Central US",
+                "North Central US",
                 "South Central US",
                 "West Central US",
                 "West US",
-                "West US 2"
+                "West US 2",
+                "Japan East",
+                "Japan West",
+                "Korea Central",
+                "France Central"
             ],
             "metadata": {
                 "description": "Location where the Azure Search service and Cognitive Services account will be deployed."

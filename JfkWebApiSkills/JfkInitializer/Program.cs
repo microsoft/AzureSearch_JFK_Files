@@ -18,13 +18,13 @@ namespace JfkInitializer
 {
     class Program
     {
-        // Configurable names, feel free to change these if you like
-        private const string DataSourceName = "jfkdatasource";
-        private const string IndexName = "jfkindex";
-        private const string SkillSetName = "jfkskillset";
-        private const string IndexerName = "jfkindexer";
-        private const string SynonymMapName = "cryptonyms";
-        private const string BlobContainerNameForImageStore = "imagestoreblob";
+        // Configurable names, these can be changed in the App.config file if you like
+        private static string DataSourceName;
+        private static string IndexName;
+        private static string SkillsetName;
+        private static string IndexerName;
+        private static string SynonymMapName;
+        private static string BlobContainerNameForImageStore;
 
         // Set this to true to see additional debugging information in the console.
         private static bool DebugMode = false;
@@ -40,6 +40,13 @@ namespace JfkInitializer
 
         static void Main(string[] args)
         {
+            DataSourceName = ConfigurationManager.AppSettings["DataSourceName"];
+            IndexName = ConfigurationManager.AppSettings["IndexName"];
+            SkillsetName = ConfigurationManager.AppSettings["SkillsetName"];
+            IndexerName = ConfigurationManager.AppSettings["IndexerName"];
+            SynonymMapName = ConfigurationManager.AppSettings["SynonymMapName"];
+            BlobContainerNameForImageStore = ConfigurationManager.AppSettings["BlobContainerNameForImageStore"];
+
             string searchServiceName = ConfigurationManager.AppSettings["SearchServiceName"];
             string apiKey = ConfigurationManager.AppSettings["SearchServiceApiKey"];
 
@@ -186,7 +193,7 @@ namespace JfkInitializer
                     json = json.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
                     json = json.Replace("[BlobContainerName]", BlobContainerNameForImageStore);
                     json = json.Replace("[CognitiveServicesKey]", ConfigurationManager.AppSettings["CognitiveServicesAccountKey"]);
-                    string uri = String.Format("{0}/skillsets/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, SkillSetName);
+                    string uri = String.Format("{0}/skillsets/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, SkillsetName);
                     HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
                     if (DebugMode)
@@ -279,7 +286,7 @@ namespace JfkInitializer
                     json = json.Replace("[IndexerName]", IndexerName);
                     json = json.Replace("[DataSourceName]", DataSourceName);
                     json = json.Replace("[IndexName]", IndexName);
-                    json = json.Replace("[SkillSetName]", SkillSetName);
+                    json = json.Replace("[SkillSetName]", SkillsetName);
                     string uri = String.Format("{0}/indexers/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, IndexerName);
                     HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PutAsync(uri, content);

@@ -10,8 +10,8 @@
         "configuration": {
             "dataToExtract": "contentAndMetadata",
             "imageAction": "generateNormalizedImages",
-            "normalizedImageMaxWidth": 3200,
-            "normalizedImageMaxHeight": 3200
+            "normalizedImageMaxWidth": 2000,
+            "normalizedImageMaxHeight": 2000
         }
     },
     "fieldMappings": [
