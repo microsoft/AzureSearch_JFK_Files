@@ -75,15 +75,6 @@
             "retrievable": true,
             "sortable": false,
             "facetable": false
-        },
-        {
-            "name": "enriched",
-            "type": "Edm.String",
-            "searchable": false,
-            "filterable": false,
-            "retrievable": true,
-            "sortable": false,
-            "facetable": false
         }
     ],
     "scoringProfiles": [

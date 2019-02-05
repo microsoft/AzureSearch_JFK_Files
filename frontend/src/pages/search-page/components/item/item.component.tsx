@@ -38,8 +38,7 @@ const ItemMediaThumbnail: React.StatelessComponent<ItemProps> = ({ item, onClick
   return (
     item.thumbnail ? 
     <CardMedia className={style.media}
-      component="img"
-      src={item.thumbnail}        
+      image={item.thumbnail}        
       title={item.title}
       onClick={handleOnClick({ item, onClick })}
     /> : null

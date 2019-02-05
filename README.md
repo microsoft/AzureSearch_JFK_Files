@@ -110,3 +110,11 @@ These instructions will help you have your own version of the JFK files demo run
 ### Results
 
 This project will create several things for you.  It will deploy an Azure Function using the code provided in the *JfkWebApiSkills* project, as well as create an Azure Search data source, skillset, synonym map, index, and indexer.  It will also create a blob storage container that the images will be reuploaded to, as well as deploys the JFK Files frontend to an Azure web app that you can immediately interact with.  Feel free to play with the code to see how all of these things are accomplished so that you can start using Cognitive Search for your data enrichment scenario today.
+
+### Debugging
+
+If you encounter issues running this demo, there are several ways you can debug what may be wrong.
+
+1. In *./JfkWebApiSkills/JfkInitializer/Program.cs*, you can set the "DebugMode" variable to true in order to see the output for REST calls that are made to create resources and why they may be failing.  The Initializer will prompt you to do this if it suspects there is an issue creating anything it needs to create.
+2. You can add the "enriched" field to your index to see detailed output of all skills that are run.  [Details on how to do this can be found here.](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-troubleshooting#tip-4-looking-at-enriched-documents-under-the-hood)  You will be making this change in *./JfkWebApiSkills/JfkInitializer/index.json*.
+3. If all else fails, feel free to [post your problem as a Github issue](https://github.com/Microsoft/AzureSearch_JFK_Files/issues/new), which we monitor and respond to when necessary.
