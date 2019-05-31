@@ -1,5 +1,5 @@
 # The JFK Files
-Explore the JFK Assassination files using the new Cognitive Search features of Azure Search.
+Explore the JFK Assassination files using the Cognitive Search features of Azure Search.
 You can watch the demo in action in a short [online video](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents)
 or explore the JFK files yourself with our [online demo](https://aka.ms/jfkfiles-demo).
 
@@ -31,8 +31,7 @@ This project includes the following capabilities for you to build your own versi
 1. This is a demo to showcase a Cognitive Search use case.  It is not intended to be a framework or scalable architecture for all scenarios, though it can give you an idea of what your scenario might end up looking like.
 2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
 3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
-4. Cognitive Search is currently only available in public preview in select regions, so the Azure Search service you use with this demo must be provisioned in one of the provided region options.
-5. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
+4. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
 ## Setting up your own JFK files library
 

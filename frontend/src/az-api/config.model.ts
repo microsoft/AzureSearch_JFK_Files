@@ -18,7 +18,7 @@ export const defaultAzConfig: AzConfig = {
   serviceName: "",
   serviceDomain: "search.windows.net",
   servicePath: "",
-  apiVer: "2017-11-11",
+  apiVer: "2019-05-06",
   apiKey: "",
   method: "GET",
 }

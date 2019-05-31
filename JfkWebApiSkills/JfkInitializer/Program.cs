@@ -34,6 +34,7 @@ namespace JfkInitializer
 
         // Clients
         private static ISearchServiceClient _searchClient;
+        private static string _searchApiVersion = "2019-05-06";
         private static HttpClient _httpClient = new HttpClient();
         private static string _searchServiceEndpoint;
         private static string _azureFunctionHostKey;
@@ -193,7 +194,7 @@ namespace JfkInitializer
                     json = json.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
                     json = json.Replace("[BlobContainerName]", BlobContainerNameForImageStore);
                     json = json.Replace("[CognitiveServicesKey]", ConfigurationManager.AppSettings["CognitiveServicesAccountKey"]);
-                    string uri = String.Format("{0}/skillsets/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, SkillsetName);
+                    string uri = String.Format("{0}/skillsets/{1}?api-version={2}", _searchServiceEndpoint, SkillsetName, _searchApiVersion);
                     HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
                     if (DebugMode)
@@ -250,7 +251,7 @@ namespace JfkInitializer
                 {
                     string json = r.ReadToEnd();
                     json = json.Replace("[SynonymMapName]", SynonymMapName);
-                    string uri = String.Format("{0}/indexes/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, IndexName);
+                    string uri = String.Format("{0}/indexes/{1}?api-version={2}", _searchServiceEndpoint, IndexName, _searchApiVersion);
                     HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
                     if (DebugMode)
@@ -287,7 +288,7 @@ namespace JfkInitializer
                     json = json.Replace("[DataSourceName]", DataSourceName);
                     json = json.Replace("[IndexName]", IndexName);
                     json = json.Replace("[SkillSetName]", SkillsetName);
-                    string uri = String.Format("{0}/indexers/{1}?api-version=2017-11-11-Preview", _searchServiceEndpoint, IndexerName);
+                    string uri = String.Format("{0}/indexers/{1}?api-version={2}", _searchServiceEndpoint, IndexerName, _searchApiVersion);
                     HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
                     if (DebugMode)
@@ -327,6 +328,7 @@ namespace JfkInitializer
                 envText = envText.Replace("[SearchServiceDomain]", _searchClient.SearchDnsSuffix);
                 envText = envText.Replace("[IndexName]", IndexName);
                 envText = envText.Replace("[SearchServiceApiKey]", searchQueryKey);
+                envText = envText.Replace("[SearchServiceApiVersion]", _searchApiVersion);
                 envText = envText.Replace("[AzureFunctionName]", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
                 envText = envText.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
                 File.WriteAllText("../../../../frontend/.env", envText);
