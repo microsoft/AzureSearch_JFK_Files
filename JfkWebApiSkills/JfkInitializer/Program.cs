@@ -34,10 +34,7 @@ namespace JfkInitializer
 
         // Clients
         private static ISearchServiceClient _searchClient;
-        private static string _searchApiVersion = "2019-05-06";
         private static HttpClient _httpClient = new HttpClient();
-        private static string _searchServiceEndpoint;
-        private static string _azureFunctionHostKey;
 
         static void Main(string[] args)
         {
@@ -52,8 +49,6 @@ namespace JfkInitializer
             string apiKey = ConfigurationManager.AppSettings["SearchServiceApiKey"];
 
             _searchClient = new SearchServiceClient(searchServiceName, new SearchCredentials(apiKey));
-            _httpClient.DefaultRequestHeaders.Add("api-key", apiKey);
-            _searchServiceEndpoint = String.Format("https://{0}.{1}", searchServiceName, _searchClient.SearchDnsSuffix);
 
             bool result = RunAsync().GetAwaiter().GetResult();
             if (!result && !DebugMode)
@@ -108,12 +103,13 @@ namespace JfkInitializer
 
         private static async Task<bool> DeleteIndexingResources()
         {
-            Console.WriteLine("Deleting Data Source, Index, Indexer and SynonymMap if they exist...");
+            Console.WriteLine("Deleting Data Source, Index, Indexer, Skillset and SynonymMap if they exist...");
             try
             {
                 await _searchClient.DataSources.DeleteAsync(DataSourceName);
                 await _searchClient.Indexes.DeleteAsync(IndexName);
                 await _searchClient.Indexers.DeleteAsync(IndexerName);
+                await _searchClient.Skillsets.DeleteAsync(SkillsetName);
                 await _searchClient.SynonymMaps.DeleteAsync(SynonymMapName);
             }
             catch (Exception ex)
@@ -159,12 +155,7 @@ namespace JfkInitializer
             Console.WriteLine("Creating Data Source...");
             try
             {
-                DataSource dataSource = DataSource.AzureBlobStorage(
-                    name: DataSourceName,
-                    storageConnectionString: ConfigurationManager.AppSettings["JFKFilesBlobStorageAccountConnectionString"],
-                    containerName: ConfigurationManager.AppSettings["JFKFilesBlobContainerName"],
-                    description: "Data source for cognitive search example"
-                );
+                DataSource dataSource = SearchResources.GetDataSource(DataSourceName);
                 await _searchClient.DataSources.CreateAsync(dataSource);
             }
             catch (Exception ex)
@@ -183,30 +174,8 @@ namespace JfkInitializer
             Console.WriteLine("Creating Skill Set...");
             try
             {
-                if (_azureFunctionHostKey == null)
-                {
-                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKey(_httpClient);
-                }
-                using (StreamReader r = new StreamReader("skillset.json"))
-                {
-                    string json = r.ReadToEnd();
-                    json = json.Replace("[AzureFunctionEndpointUrl]", String.Format("https://{0}.azurewebsites.net", ConfigurationManager.AppSettings["AzureFunctionSiteName"]));
-                    json = json.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
-                    json = json.Replace("[BlobContainerName]", BlobContainerNameForImageStore);
-                    json = json.Replace("[CognitiveServicesKey]", ConfigurationManager.AppSettings["CognitiveServicesAccountKey"]);
-                    string uri = String.Format("{0}/skillsets/{1}?api-version={2}", _searchServiceEndpoint, SkillsetName, _searchApiVersion);
-                    HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
-                    if (DebugMode)
-                    {
-                        string responseText = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine("Create Skill Set response: \n{0}", responseText);
-                    }
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return false;
-                    }
-                }
+                Skillset skillset = SearchResources.GetSkillset(SkillsetName, await KeyHelper.GetAzureFunctionHostKey(_httpClient), BlobContainerNameForImageStore);
+                await _searchClient.Skillsets.CreateAsync(skillset);
             }
             catch (Exception ex)
             {
@@ -224,11 +193,7 @@ namespace JfkInitializer
             Console.WriteLine("Creating Synonym Map...");
             try
             {
-                SynonymMap synonyms = new SynonymMap(SynonymMapName, SynonymMapFormat.Solr,
-                    @"GPFLOOR,oswold,ozwald,ozwold,oswald
-                      silvia, sylvia
-                      sever, SERVE, SERVR, SERVER
-                      novenko, nosenko, novenco, nosenko");
+                SynonymMap synonyms = SearchResources.GetSynonymMap(SynonymMapName);
                 await _searchClient.SynonymMaps.CreateAsync(synonyms);
             }
             catch (Exception ex)
@@ -247,23 +212,8 @@ namespace JfkInitializer
             Console.WriteLine("Creating Index...");
             try
             {
-                using (StreamReader r = new StreamReader("index.json"))
-                {
-                    string json = r.ReadToEnd();
-                    json = json.Replace("[SynonymMapName]", SynonymMapName);
-                    string uri = String.Format("{0}/indexes/{1}?api-version={2}", _searchServiceEndpoint, IndexName, _searchApiVersion);
-                    HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
-                    if (DebugMode)
-                    {
-                        string responseText = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine("Create Index response: \n{0}", responseText);
-                    }
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return false;
-                    }
-                }
+                Index index = SearchResources.GetIndex(IndexName, SynonymMapName);
+                await _searchClient.Indexes.CreateAsync(index);
             }
             catch (Exception ex)
             {
@@ -281,26 +231,8 @@ namespace JfkInitializer
             Console.WriteLine("Creating Indexer...");
             try
             {
-                using (StreamReader r = new StreamReader("indexer.json"))
-                {
-                    string json = r.ReadToEnd();
-                    json = json.Replace("[IndexerName]", IndexerName);
-                    json = json.Replace("[DataSourceName]", DataSourceName);
-                    json = json.Replace("[IndexName]", IndexName);
-                    json = json.Replace("[SkillSetName]", SkillsetName);
-                    string uri = String.Format("{0}/indexers/{1}?api-version={2}", _searchServiceEndpoint, IndexerName, _searchApiVersion);
-                    HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await _httpClient.PutAsync(uri, content);
-                    if (DebugMode)
-                    {
-                        string responseText = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine("Create Indexer response: \n{0}", responseText);
-                    }
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return false;
-                    }
-                }
+                Indexer indexer = SearchResources.GetIndexer(IndexerName, DataSourceName, IndexName, SkillsetName);
+                await _searchClient.Indexers.CreateAsync(indexer);
             }
             catch (Exception ex)
             {
@@ -319,18 +251,14 @@ namespace JfkInitializer
             {
                 Console.WriteLine("Setting Website Keys...");
                 string searchQueryKey = ConfigurationManager.AppSettings["SearchServiceQueryKey"];
-                if (_azureFunctionHostKey == null)
-                {
-                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKey(_httpClient);
-                }
                 string envText = File.ReadAllText("../../../../frontend/.env");
                 envText = envText.Replace("[SearchServiceName]", ConfigurationManager.AppSettings["SearchServiceName"]);
                 envText = envText.Replace("[SearchServiceDomain]", _searchClient.SearchDnsSuffix);
                 envText = envText.Replace("[IndexName]", IndexName);
                 envText = envText.Replace("[SearchServiceApiKey]", searchQueryKey);
-                envText = envText.Replace("[SearchServiceApiVersion]", _searchApiVersion);
+                envText = envText.Replace("[SearchServiceApiVersion]", _searchClient.ApiVersion);
                 envText = envText.Replace("[AzureFunctionName]", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
-                envText = envText.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
+                envText = envText.Replace("[AzureFunctionDefaultHostKey]", await KeyHelper.GetAzureFunctionHostKey(_httpClient));
                 File.WriteAllText("../../../../frontend/.env", envText);
 
                 Console.WriteLine("Website keys have been set.  Please build the website and then return here and press any key to continue.");
@@ -431,9 +359,9 @@ namespace JfkInitializer
             try
             {
                 ISearchIndexClient indexClient = _searchClient.Indexes.GetClient(IndexName);
-                DocumentSearchResult searchResult = await indexClient.Documents.SearchAsync("*");
+                DocumentSearchResult<Document> searchResult = await indexClient.Documents.SearchAsync("*");
                 Console.WriteLine("Query Results:");
-                foreach (SearchResult result in searchResult.Results)
+                foreach (SearchResult<Document> result in searchResult.Results)
                 {
                     foreach (string key in result.Document.Keys)
                     {
