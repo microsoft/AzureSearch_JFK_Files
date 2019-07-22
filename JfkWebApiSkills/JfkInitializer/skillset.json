@@ -4,7 +4,6 @@
         {
             "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
             "context": "/document/normalized_images/*",
-            "textExtractionAlgorithm": "printed",
             "defaultLanguageCode": "en",
             "inputs": [
                 {
@@ -18,28 +17,6 @@
                 },
                 {
                     "name": "layoutText"
-                }
-            ]
-        },
-        {
-            "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
-            "context": "/document/normalized_images/*",
-            "textExtractionAlgorithm": "handwritten",
-            "defaultLanguageCode": "en",
-            "inputs": [
-                {
-                    "name": "image",
-                    "source": "/document/normalized_images/*"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "text",
-                    "targetName": "handwrittenText"
-                },
-                {
-                    "name": "layoutText",
-                    "targetName": "handwrittenLayoutText"
                 }
             ]
         },
@@ -100,37 +77,12 @@
         },
         {
             "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
-            "description": "Merge native text content and inline OCR content where images were present",
-            "context": "/document",
-            "inputs": [
-                {
-                    "name": "text",
-                    "source": "/document/nativeTextAndOcr"
-                },
-                {
-                    "name": "itemsToInsert",
-                    "source": "/document/normalized_images/*/handwrittenText"
-                },
-                {
-                    "name": "offsets",
-                    "source": "/document/mergedOffsetsAfterOcr"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "mergedText",
-                    "targetName": "nativeTextAndOcrAndHandwriting"
-                }
-            ]
-        },
-        {
-            "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
             "description": "Merge text content with image captions",
             "context": "/document",
             "inputs": [
                 {
                     "name": "text",
-                    "source": "/document/nativeTextAndOcrAndHandwriting"
+                    "source": "/document/nativeTextAndOcr"
                 },
                 {
                     "name": "itemsToInsert",
@@ -242,10 +194,6 @@
             "description": "Create a custom OCR image metadata object used to generate an HOCR document",
             "context": "/document/normalized_images/*",
             "inputs": [
-                {
-                    "name": "handwrittenLayoutText",
-                    "source": "/document/normalized_images/*/handwrittenLayoutText"
-                },
                 {
                     "name": "layoutText",
                     "source": "/document/normalized_images/*/layoutText"

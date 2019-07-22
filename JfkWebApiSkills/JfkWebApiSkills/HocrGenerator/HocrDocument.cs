@@ -44,23 +44,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
             metadata.WriteLine($"<div class='ocr_page' id='page_{pageNumber}' title='image \"{imageMetadata.ImageStoreUri}\"; bbox 0 0 {imageMetadata.Width} {imageMetadata.Height}; ppageno {pageNumber}'>");
             metadata.WriteLine($"<div class='ocr_carea' id='block_{pageNumber}_1'>");
 
-            IEnumerable<IEnumerable<NormalizedWord>> wordGroups;
-            if (imageMetadata.HandwrittenLayoutText != null && imageMetadata.LayoutText != null)
-            {
-                if (imageMetadata.HandwrittenLayoutText.Text.Length > imageMetadata.LayoutText.Text.Length)
-                {
-                    wordGroups = BuildOrderedWordGroupsFromBoundingBoxes(imageMetadata.HandwrittenLayoutText.Lines, imageMetadata.HandwrittenLayoutText.Words);
-                } else
-                {
-                    wordGroups = BuildOrderedWordGroupsFromBoundingBoxes(imageMetadata.LayoutText.Lines, imageMetadata.LayoutText.Words);
-                }
-            } else if (imageMetadata.HandwrittenLayoutText != null)
-            {
-                wordGroups = BuildOrderedWordGroupsFromBoundingBoxes(imageMetadata.HandwrittenLayoutText.Lines, imageMetadata.HandwrittenLayoutText.Words);
-            } else
-            {
-                wordGroups = BuildOrderedWordGroupsFromBoundingBoxes(imageMetadata.LayoutText.Lines, imageMetadata.LayoutText.Words);
-            }
+            IEnumerable<IEnumerable<NormalizedWord>> wordGroups = BuildOrderedWordGroupsFromBoundingBoxes(imageMetadata.LayoutText.Lines, imageMetadata.LayoutText.Words);
 
             int li = 0;
             int wi = 0;

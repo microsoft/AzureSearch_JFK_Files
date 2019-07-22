@@ -21,7 +21,7 @@ Note: This diagram of visuals are inspired by the [CIA's JFK document management
 This project includes the following capabilities for you to build your own version of the JFK files.
 1. We have provided a subset of the [JFK PDF documents](https://www.archives.gov/research/jfk/2017-release) and images that have been uploaded to the cloud into Azure Blob Storage.
 2. An [Azure Search](https://azure.microsoft.com/en-us/services/search/) service is used to index the content and power the UX experience. We use the new Cognitive Search capabilities to apply pre-built cognitive skills to the content, and we also use the extensibility mechanism to add custom skills using [Azure Functions](https://azure.microsoft.com/en-us/services/functions/).
-    1. Uses the [Cognitive Services Vision API](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) to extract text information from the image via OCR, handwriting, and image captioning,
+    1. Uses the [Cognitive Services Vision API](https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/) to extract text information from the image via OCR, and image captioning,
     2. Applies Named Entity Recognitition to extract named entities from the documents,
     3. Annotates text using a custom [CIA Cryptonyms](https://www.maryferrell.org/php/cryptdb.php) skill,
     4. Generates [HOCR content](https://en.wikipedia.org/wiki/HOCR) based on results.
@@ -29,7 +29,7 @@ This project includes the following capabilities for you to build your own versi
 
 ## Limitations and Considerations
 1. This is a demo to showcase a Cognitive Search use case.  It is not intended to be a framework or scalable architecture for all scenarios, though it can give you an idea of what your scenario might end up looking like.
-2. The OCR technology is not perfect and the handwriting capability is in preview.  The results will vary greatly by scan and image quality.
+2. The OCR technology is not perfect; results will vary greatly by scan and image quality.
 3. Most file formats and datasources are supported, however some scanned and native PDF formats may not be parsed correctly.
 4. **IMPORTANT: The JFK Files sample creates a public website and a publicly readable storage container for any extracted images.  As-is, it is not suitable for using with non-public data.**
 
