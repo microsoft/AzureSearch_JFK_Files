@@ -244,3 +244,6 @@ ModelManifest.xml
 
 # custom files
 **/PublishProfiles/*
+
+# VSCode
+.vscode/*
