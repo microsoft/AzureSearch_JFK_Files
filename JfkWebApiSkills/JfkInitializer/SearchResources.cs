@@ -26,7 +26,6 @@ namespace JfkInitializer
                     new OcrSkill()
                     {
                         Context = "/document/normalized_images/*",
-                        TextExtractionAlgorithm = TextExtractionAlgorithm.Printed,
                         DefaultLanguageCode = OcrSkillLanguage.En,
                         Inputs = new List<InputFieldMappingEntry>()
                         {
@@ -36,21 +35,6 @@ namespace JfkInitializer
                         {
                             new OutputFieldMappingEntry(name: "text"),
                             new OutputFieldMappingEntry(name: "layoutText")
-                        }
-                    },
-                    new OcrSkill()
-                    {
-                        Context = "/document/normalized_images/*",
-                        TextExtractionAlgorithm = TextExtractionAlgorithm.Handwritten,
-                        DefaultLanguageCode = OcrSkillLanguage.En,
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "image", source: "/document/normalized_images/*")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "text", targetName: "handwrittenText"),
-                            new OutputFieldMappingEntry(name: "layoutText", targetName: "handwrittenLayoutText")
                         }
                     },
                     new ImageAnalysisSkill()
@@ -81,23 +65,7 @@ namespace JfkInitializer
                         },
                         Outputs = new List<OutputFieldMappingEntry>()
                         {
-                            new OutputFieldMappingEntry(name: "mergedText", targetName: "nativeTextAndOcr"),
-                            new OutputFieldMappingEntry(name: "mergedOffsets", targetName: "mergedOffsetsAfterOcr")
-                        }
-                    },
-                    new MergeSkill()
-                    {
-                        Description = "Merge native text content and inline OCR content where images were present",
-                        Context = "/document",
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "text", source: "/document/nativeTextAndOcr"),
-                            new InputFieldMappingEntry(name: "itemsToInsert", source: "/document/normalized_images/*/handwrittenText"),
-                            new InputFieldMappingEntry(name: "offsets", source: "/document/mergedOffsetsAfterOcr")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "mergedText", targetName: "nativeTextAndOcrAndHandwriting")
+                            new OutputFieldMappingEntry(name: "mergedText", targetName: "nativeTextAndOcr")
                         }
                     },
                     new MergeSkill()
@@ -106,7 +74,7 @@ namespace JfkInitializer
                         Context = "/document",
                         Inputs = new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "text", source: "/document/nativeTextAndOcrAndHandwriting"),
+                            new InputFieldMappingEntry(name: "text", source: "/document/nativeTextAndOcr"),
                             new InputFieldMappingEntry(name: "itemsToInsert", source: "/document/normalized_images/*/Description/captions/*/text")
                         },
                         Outputs = new List<OutputFieldMappingEntry>()
@@ -178,7 +146,6 @@ namespace JfkInitializer
                         Context = "/document/normalized_images/*",
                         Inputs = new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "handwrittenLayoutText", source: "/document/normalized_images/*/handwrittenLayoutText"),
                             new InputFieldMappingEntry(name: "layoutText", source: "/document/normalized_images/*/layoutText"),
                             new InputFieldMappingEntry(name: "imageStoreUri", source: "/document/normalized_images/*/imageStoreUri"),
                             new InputFieldMappingEntry(name: "width", source: "/document/normalized_images/*/width"),
@@ -194,14 +161,11 @@ namespace JfkInitializer
                         Description = "Upload image data to the annotation store",
                         Context = "/document/normalized_images/*",
                         Uri = string.Format("{0}/api/image-store?code={1}", azureFunctionEndpointUri, azureFunctionHostKey),
-                        BatchSize = 1,
-                        HttpHeaders = new WebApiHttpHeaders()
+                        HttpHeaders = new Dictionary<string, string>()
                         {
-                            Headers = new Dictionary<string, string>()
-                            {
-                                ["BlobContainerName"] = blobContainerNameForImageStore
-                            }
+                            ["BlobContainerName"] = blobContainerNameForImageStore
                         },
+                        BatchSize = 1,
                         Inputs = new List<InputFieldMappingEntry>()
                         {
                             new InputFieldMappingEntry(name: "imageData", source: "/document/normalized_images/*/data")
@@ -303,7 +267,6 @@ namespace JfkInitializer
                 {
                     Name = "sg-jfk",
                     SourceFields = new List<string>() { "entities" }
-                    //SearchMode = "analyzingInfixMatching"
                 }
             }
         };
