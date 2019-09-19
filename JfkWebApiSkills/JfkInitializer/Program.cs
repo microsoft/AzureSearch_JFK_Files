@@ -37,7 +37,6 @@ namespace JfkInitializer
         private static string _searchApiVersion = "2019-05-06";
         private static HttpClient _httpClient = new HttpClient();
         private static string _searchServiceEndpoint;
-        private static string _azureFunctionHostKey;
 
         static void Main(string[] args)
         {
@@ -183,15 +182,11 @@ namespace JfkInitializer
             Console.WriteLine("Creating Skill Set...");
             try
             {
-                if (_azureFunctionHostKey == null)
-                {
-                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKey(_httpClient);
-                }
                 using (StreamReader r = new StreamReader("skillset.json"))
                 {
                     string json = r.ReadToEnd();
                     json = json.Replace("[AzureFunctionEndpointUrl]", String.Format("https://{0}.azurewebsites.net", ConfigurationManager.AppSettings["AzureFunctionSiteName"]));
-                    json = json.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
+                    json = json.Replace("[AzureFunctionDefaultHostKey]", await KeyHelper.GetAzureFunctionHostKey(_httpClient));
                     json = json.Replace("[BlobContainerName]", BlobContainerNameForImageStore);
                     json = json.Replace("[CognitiveServicesKey]", ConfigurationManager.AppSettings["CognitiveServicesAccountKey"]);
                     string uri = String.Format("{0}/skillsets/{1}?api-version={2}", _searchServiceEndpoint, SkillsetName, _searchApiVersion);
@@ -224,7 +219,7 @@ namespace JfkInitializer
             Console.WriteLine("Creating Synonym Map...");
             try
             {
-                SynonymMap synonyms = new SynonymMap(SynonymMapName, SynonymMapFormat.Solr,
+                SynonymMap synonyms = new SynonymMap(SynonymMapName,
                     @"GPFLOOR,oswold,ozwald,ozwold,oswald
                       silvia, sylvia
                       sever, SERVE, SERVR, SERVER
@@ -319,10 +314,6 @@ namespace JfkInitializer
             {
                 Console.WriteLine("Setting Website Keys...");
                 string searchQueryKey = ConfigurationManager.AppSettings["SearchServiceQueryKey"];
-                if (_azureFunctionHostKey == null)
-                {
-                    _azureFunctionHostKey = await KeyHelper.GetAzureFunctionHostKey(_httpClient);
-                }
                 string envText = File.ReadAllText("../../../../frontend/.env");
                 envText = envText.Replace("[SearchServiceName]", ConfigurationManager.AppSettings["SearchServiceName"]);
                 envText = envText.Replace("[SearchServiceDomain]", _searchClient.SearchDnsSuffix);
@@ -330,7 +321,7 @@ namespace JfkInitializer
                 envText = envText.Replace("[SearchServiceApiKey]", searchQueryKey);
                 envText = envText.Replace("[SearchServiceApiVersion]", _searchApiVersion);
                 envText = envText.Replace("[AzureFunctionName]", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
-                envText = envText.Replace("[AzureFunctionDefaultHostKey]", _azureFunctionHostKey);
+                envText = envText.Replace("[AzureFunctionDefaultHostKey]", await KeyHelper.GetAzureFunctionHostKey(_httpClient));
                 File.WriteAllText("../../../../frontend/.env", envText);
 
                 Console.WriteLine("Website keys have been set.  Please build the website and then return here and press any key to continue.");
@@ -431,9 +422,9 @@ namespace JfkInitializer
             try
             {
                 ISearchIndexClient indexClient = _searchClient.Indexes.GetClient(IndexName);
-                DocumentSearchResult searchResult = await indexClient.Documents.SearchAsync("*");
+                DocumentSearchResult<Document> searchResult = await indexClient.Documents.SearchAsync("*");
                 Console.WriteLine("Query Results:");
-                foreach (SearchResult result in searchResult.Results)
+                foreach (SearchResult<Document> result in searchResult.Results)
                 {
                     foreach (string key in result.Document.Keys)
                     {
