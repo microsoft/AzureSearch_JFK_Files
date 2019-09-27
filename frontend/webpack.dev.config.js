@@ -44,11 +44,12 @@ module.exports = function () {
             {
               loader: "css-loader",
               options: {
-                modules: true,
-                camelCase: true,
+                modules: {
+                  localIdentName: "[local]__[name]___[hash:base64:5]"
+                },
+                localsConvention: 'camelCase',
                 sourceMap: true,
-                importLoaders: 1,
-                localIdentName: "[local]__[name]___[hash:base64:5]"
+                importLoaders: 1
               }
             },
             { loader: 'resolve-url-loader' },
