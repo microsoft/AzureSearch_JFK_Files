@@ -166,7 +166,7 @@
             "properties": {}
         },
         {
-            "apiVersion": "2016-08-01",
+            "apiVersion": "2019-08-01",
             "name": "[variables('functionAppName')]",
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
@@ -176,48 +176,49 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
             ],
-            "properties": {
-                "name": "[variables('functionAppName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
-                "siteConfig": {
-                    "appSettings": [
-                        {
-                            "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "beta"
-                        },
-                        {
-                            "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
-                        },
-                        {
-                            "name": "AzureWebJobsDashboard",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
-                        },
-                        {
-                            "name": "AzureWebJobsSecretStorageType",
-                            "value": "Files"
-                        },
-                        {
-                            "name": "BlobStorageAccountConnectionString",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
-                        },
-                        {
-                            "name": "SearchServiceName",
-                            "value": "[variables('searchServiceName')]"
-                        },
-                        {
-                            "name": "SearchServiceApiKey",
-                            "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]"
-                        }
-                    ],
-                    "cors": {
-                        "allowedOrigins": [
-                            "[concat('https://', variables('websiteName'), '.azurewebsites.net')]"
-                        ]
-                    },
-                    "minTlsVersion": "1.0"
+          "properties": {
+            "name": "[variables('functionAppName')]",
+            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+            "httpsOnly": true,
+            "siteConfig": {
+              "appSettings": [
+                {
+                  "name": "FUNCTIONS_EXTENSION_VERSION",
+                  "value": "beta"
+                },
+                {
+                  "name": "AzureWebJobsStorage",
+                  "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
+                },
+                {
+                  "name": "AzureWebJobsDashboard",
+                  "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
+                },
+                {
+                  "name": "AzureWebJobsSecretStorageType",
+                  "value": "Files"
+                },
+                {
+                  "name": "BlobStorageAccountConnectionString",
+                  "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1, ';')]"
+                },
+                {
+                  "name": "SearchServiceName",
+                  "value": "[variables('searchServiceName')]"
+                },
+                {
+                  "name": "SearchServiceApiKey",
+                  "value": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]"
                 }
-            },
+              ],
+              "cors": {
+                "allowedOrigins": [
+                  "[concat('https://', variables('websiteName'), '.azurewebsites.net')]"
+                ]
+              },
+              "minTlsVersion": "1.2"
+            }
+          },
             "resources": [
                 {
                     "apiVersion": "2015-08-01",
