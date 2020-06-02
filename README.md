@@ -1,15 +1,10 @@
 # The JFK Files
-Explore the JFK Assassination files using the Cognitive Search features of Azure Search.
-You can watch the demo in action in a short [online video](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents)
-or explore the JFK files yourself with our [online demo](https://aka.ms/jfkfiles-demo).
+Explore the JFK Assassination files using the Cognitive Search features of Azure Search. You can watch the demo in action in a short [online video](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents) or explore the JFK files yourself with our [online demo](https://aka.ms/jfkfiles-demo).
 
 ## Cognitive Search - An AI-first approach to content understanding
 This project demonstrates how you can use both the built-in and custom AI in Cognitive Search. Cognitive Search ingests your data from almost any datasource and enriches it using a set of cognitive skills that extracts knowledge and then lets you explore the data using Search.
 
 ![JFK files Cognitive Search](images/jfk-cognitive-search.jpg)
-
-
-
 
 ## JFK Files Architecture
 The JFK files example leverages the built-in Cognitive Skills inside of Azure Search and combines it with custom skills using extensibility.  The architecture below showcases how the new Cognitive Search capabilities of Azure enable you to easily create structure from almost any datasource.
@@ -94,7 +89,7 @@ These instructions will help you have your own version of the JFK files demo run
 
 13. After a few seconds, the message "Website keys have been set.  Please build the website and then return here and press any key to continue." will be output to the console app.  At this point, open a separate cmd window and cd into the directory of where you cloned or downloaded the repo.  Then run the following commands:
 
-    ```
+    ```shell
     cd frontend
     npm install
     npm run build:prod
@@ -115,5 +110,9 @@ This project will create several things for you.  It will deploy an Azure Functi
 If you encounter issues running this demo, there are several ways you can debug what may be wrong.
 
 1. In *./JfkWebApiSkills/JfkInitializer/Program.cs*, you can set the "DebugMode" variable to true in order to see the output for REST calls that are made to create resources and why they may be failing.  The Initializer will prompt you to do this if it suspects there is an issue creating anything it needs to create.
-2. You can add the "enriched" field to your index to see detailed output of all skills that are run.  [Details on how to do this can be found here.](https://docs.microsoft.com/en-us/azure/search/cognitive-search-concept-troubleshooting#tip-4-looking-at-enriched-documents-under-the-hood)  You will be making this change in *./JfkWebApiSkills/JfkInitializer/SearchResources.cs*.
+2. You can add the "enriched" field to your index to see detailed output of all skills that are run.  [Details on how to do this can be found here.](https://docs.microsoft.com/azure/search/cognitive-search-concept-troubleshooting#tip-4-looking-at-enriched-documents-under-the-hood)  You will be making this change in *./JfkWebApiSkills/JfkInitializer/SearchResources.cs*.
 3. If all else fails, feel free to [post your problem as a Github issue](https://github.com/Microsoft/AzureSearch_JFK_Files/issues/new), which we monitor and respond to when necessary.
+
+## Next Steps
+
+The [Azure Architecture Center](https://aka.ms/architecture) has more content on [this solution](https://docs.microsoft.com/azure/architecture/solution-ideas/articles/cognitive-search-with-skillsets) and [others in the Cognitive Services & AI space](https://docs.microsoft.com/en-us/azure/architecture/data-guide/technology-choices/cognitive-services).
