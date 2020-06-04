@@ -1,5 +1,5 @@
 # The JFK Files
-Explore the JFK Assassination files using the Cognitive Search features of Azure Search. You can watch the demo in action in a short [online video](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents) or explore the JFK files yourself with our [online demo](https://aka.ms/jfkfiles-demo).
+Explore the JFK Assassination files using the AI Enrichment features of Azure Cognitive Search. You can watch the demo in action in a short [online video](https://channel9.msdn.com/Shows/AI-Show/Using-Cognitive-Search-to-Understand-the-JFK-Documents) or explore the JFK files yourself with our [online demo](https://aka.ms/jfkfiles-demo).
 
 ## Cognitive Search - An AI-first approach to content understanding
 This project demonstrates how you can use both the built-in and custom AI in Cognitive Search. Cognitive Search ingests your data from almost any datasource and enriches it using a set of cognitive skills that extracts knowledge and then lets you explore the data using Search.
@@ -7,7 +7,7 @@ This project demonstrates how you can use both the built-in and custom AI in Cog
 ![JFK files Cognitive Search](images/jfk-cognitive-search.jpg)
 
 ## JFK Files Architecture
-The JFK files example leverages the built-in Cognitive Skills inside of Azure Search and combines it with custom skills using extensibility.  The architecture below showcases how the new Cognitive Search capabilities of Azure enable you to easily create structure from almost any datasource.
+The JFK files example leverages the built-in Cognitive Skills inside of Cognitive Search and combines it with custom skills using extensibility.  The architecture below showcases how the new Cognitive Search capabilities of Azure enable you to easily create structure from almost any datasource.
 
 ![Architecture](images/jfk-files-architecture.JPG)
 
@@ -115,4 +115,4 @@ If you encounter issues running this demo, there are several ways you can debug 
 
 ## Next Steps
 
-The [Azure Architecture Center](https://aka.ms/architecture) has more content on [this solution](https://docs.microsoft.com/azure/architecture/solution-ideas/articles/cognitive-search-with-skillsets) and [others in the Cognitive Services & AI space](https://docs.microsoft.com/en-us/azure/architecture/data-guide/technology-choices/cognitive-services).
+The [Azure Architecture Center](https://aka.ms/architecture) has more content on [this solution](https://docs.microsoft.com/azure/architecture/solution-ideas/articles/cognitive-search-with-skillsets) and others in this space.
