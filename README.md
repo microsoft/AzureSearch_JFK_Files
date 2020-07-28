@@ -35,7 +35,7 @@ These instructions will help you have your own version of the JFK files demo run
 ### Prerequisites
 1. An Azure Subscription you can access and deploy resources to.
     1. Note that this demo requires writing to an Azure Storage Account, which you will be billed monthly for the storage written to, and by default provisions a Basic Azure Search service which is billed hourly.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).  In addition, you will be charged for the Cognitive Search part of the demo, which is transaction based.  These charges used with the provided files should be about $15 USD.  [See here for details](https://docs.microsoft.com/en-us/azure/search/cognitive-search-attach-cognitive-services) on what costs may look like if you choose to use Cognitive Search with your own dataset.
-2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.  The free community edition will work fine.
+2. [Visual Studio 2019](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.  The free community edition will work fine.
 3. [Node.js](https://nodejs.org/) must be installed on your computer.
 4. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
 
@@ -62,7 +62,7 @@ These instructions will help you have your own version of the JFK files demo run
 
 ### Initialize the code
 
-5. While you are waiting for the resources to finish provisioning, either git clone or download this repo, and open the provided solution file *JfkWebApiSkills/JfkWebApiSkills.sln* using Visual Studio 2017.
+5. While you are waiting for the resources to finish provisioning, either git clone or download this repo, and open the provided solution file *JfkWebApiSkills/JfkWebApiSkills.sln* using Visual Studio 2019.
 6. In the root of the *JfkInitializer* project, open the *App.config* file.  You will be copying and pasting some secrets into this file momentarily.
 7. Make sure that the *JfkInitializer* project is set as your default project if it isn't already.
 
