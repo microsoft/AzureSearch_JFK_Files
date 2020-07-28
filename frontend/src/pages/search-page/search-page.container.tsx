@@ -37,7 +37,7 @@ class SearchPageInnerContainer extends React.Component<RouteComponentProps<any>,
       this.setState(restoreLastState());
     } else if (this.props.location.search) {
       const receivedSearchValue = parse(this.props.location.search.substring(1));
-      this.handleReceivedSearchValue(receivedSearchValue.term);
+      this.handleReceivedSearchValue(receivedSearchValue.term.toString());
     }
   }
 
