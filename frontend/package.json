@@ -35,7 +35,7 @@
     "react-router-dom": "^4.2.2"
   },
   "devDependencies": {
-    "@types/d3": "4.13.0",
+    "@types/d3": "4.13.12",
     "@types/history": "^4.6.1",
     "@types/node": "^9.6.2",
     "@types/qs": "^6.5.1",
