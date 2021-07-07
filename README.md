@@ -74,20 +74,13 @@ These instructions will help you have your own version of the JFK files demo run
 
     ![Outputs of deployment](images/outputs.JPG)
 
-9. Copy and paste each of the provided outputs from this interface into their corresponding value location in the *App.config* file from before.  Note that one value will be missing from the outputs, the *SearchServiceQueryKey*.
-10. In order to obtain the *SearchServiceQueryKey*, navigate back to the *Overview* section of the deployment and find your newly created Azure Search service in the list (Its type will be *Microsoft.Search/searchServices*).  Select it.
+9. Copy and paste each of the provided outputs from this interface into their corresponding value location in the *App.config* file from before.
 
-    ![Search service in deployment](images/searchServiceInDeployment.JPG)
-
-11. Select the *Keys* section, followed by *Manage query keys*.  Copy and paste the key value shown into the *SearchServiceQueryKey* value of your *App.config* file.
-
-    ![Search service keys](images/searchServiceKeys.JPG)
-
-12. Now you should have filled in all of the required configurations in the *App.config* file.  Save your changes, and press the start button at the top of Visual Studio in order to run the initializer.
+10. Save your changes to the *App.config* file, and press the start button at the top of Visual Studio in order to run the initializer.
 
     ![Run initializer](images/runInitializer.JPG)
 
-13. After a few seconds, the message "Website keys have been set.  Please build the website and then return here and press any key to continue." will be output to the console app.  At this point, open a separate cmd window and cd into the directory of where you cloned or downloaded the repo.  Then run the following commands:
+11. After a few seconds, the message "Website keys have been set.  Please build the website and then return here and press any key to continue." will be output to the console app.  At this point, open a separate cmd window and cd into the directory of where you cloned or downloaded the repo.  Then run the following commands:
 
     ```shell
     cd frontend
@@ -95,9 +88,9 @@ These instructions will help you have your own version of the JFK files demo run
     npm run build:prod
     ```
 
-14. After the commands finish running, return to the console app and press any key to continue.
+12. After the commands finish running, return to the console app and press any key to continue.
 
-15. Once the website is deployed, a URL will appear in the console.  Copy and paste this URL into a browser to start interacting with what you have created!
+13. Once the website is deployed, a URL will appear in the console.  Copy and paste this URL into a browser to start interacting with what you have created!
 
     ![URL in console](images/urlInConsole.JPG)
 

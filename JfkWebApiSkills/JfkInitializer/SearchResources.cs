@@ -14,7 +14,7 @@ namespace JfkInitializer
                 description: "Data source for cognitive search example"
             );
 
-        public static Skillset GetSkillset(string name, string azureFunctionHostKey, string blobContainerNameForImageStore)
+        public static Skillset GetSkillset(string name, string blobContainerNameForImageStore)
         {
             string azureFunctionEndpointUri = string.Format("https://{0}.azurewebsites.net", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
             return new Skillset()
@@ -160,7 +160,7 @@ namespace JfkInitializer
                     {
                         Description = "Upload image data to the annotation store",
                         Context = "/document/normalized_images/*",
-                        Uri = string.Format("{0}/api/image-store?code={1}", azureFunctionEndpointUri, azureFunctionHostKey),
+                        Uri = string.Format("{0}/api/image-store?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]),
                         HttpHeaders = new Dictionary<string, string>()
                         {
                             ["BlobContainerName"] = blobContainerNameForImageStore
@@ -179,7 +179,7 @@ namespace JfkInitializer
                     {
                         Description = "Generate HOCR for webpage rendering",
                         Context = "/document",
-                        Uri = string.Format("{0}/api/hocr-generator?code={1}", azureFunctionEndpointUri, azureFunctionHostKey),
+                        Uri = string.Format("{0}/api/hocr-generator?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]),
                         BatchSize = 1,
                         Inputs = new List<InputFieldMappingEntry>()
                         {
@@ -195,7 +195,7 @@ namespace JfkInitializer
                     {
                         Description = "Cryptonym linker",
                         Context = "/document",
-                        Uri = string.Format("{0}/api/link-cryptonyms-list?code={1}", azureFunctionEndpointUri, azureFunctionHostKey),
+                        Uri = string.Format("{0}/api/link-cryptonyms-list?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]),
                         BatchSize = 1,
                         Inputs = new List<InputFieldMappingEntry>()
                         {
