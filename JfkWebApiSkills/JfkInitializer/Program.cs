@@ -174,7 +174,7 @@ namespace JfkInitializer
             Console.WriteLine("Creating Skill Set...");
             try
             {
-                Skillset skillset = SearchResources.GetSkillset(SkillsetName, await KeyHelper.GetAzureFunctionHostKey(_httpClient), BlobContainerNameForImageStore);
+                Skillset skillset = SearchResources.GetSkillset(SkillsetName, BlobContainerNameForImageStore);
                 await _searchClient.Skillsets.CreateAsync(skillset);
             }
             catch (Exception ex)
@@ -258,7 +258,7 @@ namespace JfkInitializer
                 envText = envText.Replace("[SearchServiceApiKey]", searchQueryKey);
                 envText = envText.Replace("[SearchServiceApiVersion]", _searchClient.ApiVersion);
                 envText = envText.Replace("[AzureFunctionName]", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
-                envText = envText.Replace("[AzureFunctionDefaultHostKey]", await KeyHelper.GetAzureFunctionHostKey(_httpClient));
+                envText = envText.Replace("[AzureFunctionDefaultHostKey]", ConfigurationManager.AppSettings["AzureFunctionHostKey"]);
                 File.WriteAllText("../../../../frontend/.env", envText);
 
                 Console.WriteLine("Website keys have been set.  Please build the website and then return here and press any key to continue.");
