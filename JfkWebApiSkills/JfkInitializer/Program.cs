@@ -132,12 +132,6 @@ namespace JfkInitializer
                 CloudBlobClient client = storageAccount.CreateCloudBlobClient();
                 CloudBlobContainer container = client.GetContainerReference(BlobContainerNameForImageStore);
                 await container.CreateIfNotExistsAsync();
-                // Note that setting this permission means that the container will be publically accessible.  This is necessary for
-                // the website to work properly.  Remove these next 3 lines if you start using this code to process any private or
-                // confidential data, but note that the website will stop working properly if you do.
-                BlobContainerPermissions permissions = container.GetPermissions();
-                permissions.PublicAccess = BlobContainerPublicAccessType.Container;
-                await container.SetPermissionsAsync(permissions);
             }
             catch (Exception ex)
             {

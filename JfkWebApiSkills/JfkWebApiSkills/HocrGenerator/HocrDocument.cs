@@ -38,10 +38,10 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
         StringWriter metadata = new StringWriter();
         StringWriter text = new StringWriter() { NewLine = " " };
 
-        public HocrPage(OcrImageMetadata imageMetadata, int pageNumber, Dictionary<string,string> wordAnnotations = null)
+        public HocrPage(OcrImageMetadata imageMetadata, int pageNumber, string imageBlobSAS, Dictionary<string,string> wordAnnotations = null)
         {
             // page
-            metadata.WriteLine($"<div class='ocr_page' id='page_{pageNumber}' title='image \"{imageMetadata.ImageStoreUri}\"; bbox 0 0 {imageMetadata.Width} {imageMetadata.Height}; ppageno {pageNumber}'>");
+            metadata.WriteLine($"<div class='ocr_page' id='page_{pageNumber}' title='image \"{imageMetadata.ImageStoreUri}{imageBlobSAS}\"; bbox 0 0 {imageMetadata.Width} {imageMetadata.Height}; ppageno {pageNumber}'>");
             metadata.WriteLine($"<div class='ocr_carea' id='block_{pageNumber}_1'>");
 
             IEnumerable<IEnumerable<NormalizedWord>> wordGroups = BuildOrderedWordGroupsFromBoundingBoxes(imageMetadata.LayoutText.Lines, imageMetadata.LayoutText.Words);
