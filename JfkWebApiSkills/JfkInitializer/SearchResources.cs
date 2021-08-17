@@ -1,213 +1,304 @@
-﻿using System.Collections.Generic;
+﻿using Azure.Search.Documents.Indexes.Models;
+using System.Collections.Generic;
 using System.Configuration;
-using Microsoft.Azure.Search.Models;
 
 namespace JfkInitializer
 {
     static class SearchResources
     {
-        public static DataSource GetDataSource(string name) =>
-            DataSource.AzureBlobStorage(
+        public static SearchIndexerDataSourceConnection GetDataSource(string name) =>
+            new SearchIndexerDataSourceConnection(
                 name: name,
-                storageConnectionString: ConfigurationManager.AppSettings["JFKFilesBlobStorageAccountConnectionString"],
-                containerName: ConfigurationManager.AppSettings["JFKFilesBlobContainerName"],
-                description: "Data source for cognitive search example"
-            );
+                type: SearchIndexerDataSourceType.AzureBlob,
+                connectionString: ConfigurationManager.AppSettings["JFKFilesBlobStorageAccountConnectionString"],
+                container: new SearchIndexerDataContainer(ConfigurationManager.AppSettings["JFKFilesBlobContainerName"]))
+            {
+                Description = "Data source for cognitive search example"
+            };
 
-        public static Skillset GetSkillset(string name, string blobContainerNameForImageStore)
+        public static SearchIndexerSkillset GetSkillset(string name, string blobContainerNameForImageStore)
         {
             string azureFunctionEndpointUri = string.Format("https://{0}.azurewebsites.net", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
-            return new Skillset()
-            {
-                Name = name,
-                Description = "JFK Files Skillset",
-                Skills = new List<Skill>()
+            return new SearchIndexerSkillset(
+                name: name, 
+                skills: new List<SearchIndexerSkill>()
                 {
-                    new OcrSkill()
-                    {
-                        Context = "/document/normalized_images/*",
-                        DefaultLanguageCode = OcrSkillLanguage.En,
-                        Inputs = new List<InputFieldMappingEntry>()
+                    new OcrSkill(
+                        inputs: new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "image", source: "/document/normalized_images/*")
+                            new InputFieldMappingEntry(name: "image")
+                            {
+                                Source = "/document/normalized_images/*"
+                            }
                         },
-                        Outputs = new List<OutputFieldMappingEntry>()
+                        outputs: new List<OutputFieldMappingEntry>()
                         {
                             new OutputFieldMappingEntry(name: "text"),
                             new OutputFieldMappingEntry(name: "layoutText")
-                        }
-                    },
-                    new ImageAnalysisSkill()
+                        })
                     {
                         Context = "/document/normalized_images/*",
-                        VisualFeatures = new List<VisualFeature>() { VisualFeature.Tags, VisualFeature.Description },
-                        Details = new List<ImageDetail>() { ImageDetail.Celebrities },
-                        DefaultLanguageCode = ImageAnalysisSkillLanguage.En,
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "image", source: "/document/normalized_images/*")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "tags", targetName: "Tags"),
-                            new OutputFieldMappingEntry(name: "description", targetName: "Description")
-                        }
+                        DefaultLanguageCode = OcrSkillLanguage.En
                     },
-                    new MergeSkill()
+                    new ImageAnalysisSkill(
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "image")
+                            {
+                                Source = "/document/normalized_images/*"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "tags") 
+                            { 
+                                TargetName = "Tags"
+                            },
+                            new OutputFieldMappingEntry(name: "description")
+                            {
+                                TargetName = "Description"
+                            }
+                        })
+                    {
+                        Context = "/document/normalized_images/*",
+                        VisualFeatures = { VisualFeature.Tags, VisualFeature.Description },
+                        Details = { ImageDetail.Celebrities },
+                        DefaultLanguageCode = ImageAnalysisSkillLanguage.En
+                    },
+                    new MergeSkill(
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "text") 
+                            { 
+                                Source = "/document/content"
+                            },
+                            new InputFieldMappingEntry(name: "itemsToInsert") 
+                            { 
+                                Source = "/document/normalized_images/*/text"
+                            },
+                            new InputFieldMappingEntry(name: "offsets")
+                            {
+                                Source = "/document/normalized_images/*/contentOffset"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "mergedText")
+                            {
+                                TargetName = "nativeTextAndOcr"
+                            }
+                        })
                     {
                         Description = "Merge native text content and inline OCR content where images were present",
-                        Context = "/document",
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "text", source: "/document/content"),
-                            new InputFieldMappingEntry(name: "itemsToInsert", source: "/document/normalized_images/*/text"),
-                            new InputFieldMappingEntry(name: "offsets", source: "/document/normalized_images/*/contentOffset")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "mergedText", targetName: "nativeTextAndOcr")
-                        }
+                        Context = "/document"
                     },
-                    new MergeSkill()
+                    new MergeSkill(                        
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "text") 
+                            { 
+                                Source = "/document/nativeTextAndOcr"
+                            },
+                            new InputFieldMappingEntry(name: "itemsToInsert")
+                            {
+                                Source = "/document/normalized_images/*/Description/captions/*/text"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "mergedText")
+                            {
+                                TargetName = "fullTextAndCaptions"
+                            }
+                        })
                     {
                         Description = "Merge text content with image captions",
-                        Context = "/document",
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "text", source: "/document/nativeTextAndOcr"),
-                            new InputFieldMappingEntry(name: "itemsToInsert", source: "/document/normalized_images/*/Description/captions/*/text")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "mergedText", targetName: "fullTextAndCaptions")
-                        }
+                        Context = "/document"
                     },
-                    new MergeSkill()
+                    new MergeSkill(
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "text") 
+                            { 
+                                Source = "/document/fullTextAndCaptions"
+                            },
+                            new InputFieldMappingEntry(name: "itemsToInsert")
+                            {
+                                Source = "/document/normalized_images/*/Tags/*/name"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "mergedText")
+                            {
+                                TargetName = "finalText"
+                            }
+                        })
                     {
                         Description = "Merge text content with image tags",
-                        Context = "/document",
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "text", source: "/document/fullTextAndCaptions"),
-                            new InputFieldMappingEntry(name: "itemsToInsert", source: "/document/normalized_images/*/Tags/*/name")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "mergedText", targetName: "finalText")
-                        }
+                        Context = "/document"
                     },
-                    new SplitSkill()
+                    new SplitSkill(
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "text")
+                            {
+                                Source = "/document/finalText"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "textItems")
+                            {
+                                TargetName = "pages"
+                            }
+                        })
                     {
                         Description = "Split text into pages for subsequent skill processing",
                         Context = "/document/finalText",
                         TextSplitMode = TextSplitMode.Pages,
-                        MaximumPageLength = 5000,
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "text", source: "/document/finalText")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "textItems", targetName: "pages")
-                        }
+                        MaximumPageLength = 5000
 
                     },
-                    new LanguageDetectionSkill()
-                    {
-                        Inputs = new List<InputFieldMappingEntry>()
+                    new LanguageDetectionSkill(
+                        inputs: new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "text", source: "/document/finalText")
+                            new InputFieldMappingEntry(name: "text")
+                            {
+                                Source = "/document/finalText"
+                            }
                         },
-                        Outputs = new List<OutputFieldMappingEntry>()
+                        outputs: new List<OutputFieldMappingEntry>()
                         {
                             new OutputFieldMappingEntry(name: "languageCode")
-                        }
-                    },
-                    new EntityRecognitionSkill()
-                    {
-                        Context = "/document/finalText/pages/*",
-                        Categories = new List<EntityCategory>() { EntityCategory.Person, EntityCategory.Location, EntityCategory.Organization },
-                        Inputs = new List<InputFieldMappingEntry>()
+                        }),
+                    new EntityRecognitionSkill(
+                        inputs: new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "text", source: "/document/finalText/pages/*"),
-                            new InputFieldMappingEntry(name: "languageCode", source: "/document/languageCode")
+                            new InputFieldMappingEntry(name: "text")
+                            {
+                                Source = "/document/finalText/pages/*"
+                            },
+                            new InputFieldMappingEntry(name: "languageCode")
+                            {
+                                Source = "/document/languageCode"
+                            }
                         },
-                        Outputs = new List<OutputFieldMappingEntry>()
+                        outputs: new List<OutputFieldMappingEntry>()
                         {
-                            new OutputFieldMappingEntry(name: "persons", targetName: "people"),
+                            new OutputFieldMappingEntry(name: "persons") 
+                            { 
+                                TargetName = "people"
+                            },
                             new OutputFieldMappingEntry(name: "locations"),
                             new OutputFieldMappingEntry(name: "organizations"),
-                            new OutputFieldMappingEntry(name: "namedEntities", targetName: "entities")
-                        }
+                            new OutputFieldMappingEntry(name: "namedEntities")
+                            {
+                                TargetName = "entities"
+                            }
+                        },
+                        skillVersion: EntityRecognitionSkill.SkillVersion.V3)
+                    {
+                        Context = "/document/finalText/pages/*",
+                        Categories = { EntityCategory.Person, EntityCategory.Location, EntityCategory.Organization },
                     },
-                    new ShaperSkill()
+                    new ShaperSkill(
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "layoutText") 
+                            { 
+                                Source = "/document/normalized_images/*/layoutText"
+                            },
+                            new InputFieldMappingEntry(name: "imageStoreUri")
+                            {
+                                Source = "/document/normalized_images/*/imageStoreUri"
+                            },
+                            new InputFieldMappingEntry(name: "width")
+                            {
+                                Source = "/document/normalized_images/*/width"
+                            },
+                            new InputFieldMappingEntry(name: "height")
+                            {
+                                Source = "/document/normalized_images/*/height"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "output")
+                            {
+                                TargetName = "ocrImageMetadata"
+                            }
+                        })
                     {
                         Description = "Create a custom OCR image metadata object used to generate an HOCR document",
-                        Context = "/document/normalized_images/*",
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "layoutText", source: "/document/normalized_images/*/layoutText"),
-                            new InputFieldMappingEntry(name: "imageStoreUri", source: "/document/normalized_images/*/imageStoreUri"),
-                            new InputFieldMappingEntry(name: "width", source: "/document/normalized_images/*/width"),
-                            new InputFieldMappingEntry(name: "height", source: "/document/normalized_images/*/height")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "output", targetName: "ocrImageMetadata")
-                        }
+                        Context = "/document/normalized_images/*"
                     },
-                    new WebApiSkill()
+                    new WebApiSkill(
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "imageData")
+                            {
+                                Source = "/document/normalized_images/*/data"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "imageStoreUri")
+                        },
+                        uri: string.Format("{0}/api/image-store?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]))
                     {
                         Description = "Upload image data to the annotation store",
                         Context = "/document/normalized_images/*",
-                        Uri = string.Format("{0}/api/image-store?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]),
-                        HttpHeaders = new Dictionary<string, string>()
+                        HttpHeaders = 
                         {
                             ["BlobContainerName"] = blobContainerNameForImageStore
                         },
-                        BatchSize = 1,
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "imageData", source: "/document/normalized_images/*/data")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "imageStoreUri")
-                        }
+                        BatchSize = 1
                     },
-                    new WebApiSkill()
+                    new WebApiSkill(
+                        inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "ocrImageMetadataList")
+                            { 
+                                Source = "/document/normalized_images/*/ocrImageMetadata"
+                            },
+                            new InputFieldMappingEntry(name: "wordAnnotations")
+                            {
+                                Source = "/document/cryptonyms"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "hocrDocument")
+                        },
+                        uri: string.Format("{0}/api/hocr-generator?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]))
                     {
                         Description = "Generate HOCR for webpage rendering",
                         Context = "/document",
-                        Uri = string.Format("{0}/api/hocr-generator?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]),
                         BatchSize = 1,
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "ocrImageMetadataList", source: "/document/normalized_images/*/ocrImageMetadata"),
-                            new InputFieldMappingEntry(name: "wordAnnotations", source: "/document/cryptonyms")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "hocrDocument")
-                        }
                     },
-                    new WebApiSkill()
+                    new WebApiSkill(inputs: new List<InputFieldMappingEntry>()
+                        {
+                            new InputFieldMappingEntry(name: "words")
+                            {
+                                Source = "/document/normalized_images/*/layoutText/words/*/text"
+                            }
+                        },
+                        outputs: new List<OutputFieldMappingEntry>()
+                        {
+                            new OutputFieldMappingEntry(name: "cryptonyms")
+                        },
+                        uri: string.Format("{0}/api/link-cryptonyms-list?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]))
                     {
                         Description = "Cryptonym linker",
                         Context = "/document",
-                        Uri = string.Format("{0}/api/link-cryptonyms-list?code={1}", azureFunctionEndpointUri, ConfigurationManager.AppSettings["AzureFunctionHostKey"]),
-                        BatchSize = 1,
-                        Inputs = new List<InputFieldMappingEntry>()
-                        {
-                            new InputFieldMappingEntry(name: "words", source: "/document/normalized_images/*/layoutText/words/*/text")
-                        },
-                        Outputs = new List<OutputFieldMappingEntry>()
-                        {
-                            new OutputFieldMappingEntry(name: "cryptonyms")
-                        }
+                        BatchSize = 1
                     }
-                },
-                CognitiveServices = new CognitiveServicesByKey(key: ConfigurationManager.AppSettings["CognitiveServicesAccountKey"])
+            })
+            {
+                Name = name,
+                Description = "JFK Files Skillset",
+                CognitiveServicesAccount = new CognitiveServicesAccountKey(key: ConfigurationManager.AppSettings["CognitiveServicesAccountKey"])
             };
         }
 
@@ -220,89 +311,82 @@ namespace JfkInitializer
                             novenko, nosenko, novenco, nosenko"
             );
 
-        public static Index GetIndex(string name, string synonymMapName) => new Index()
-        {
-            Name = name,
-            Fields = new List<Field>()
+        public static SearchIndex GetIndex(string name, string synonymMapName) => 
+            new SearchIndex(name: name)
             {
-                new Field("id",              DataType.String)                      { IsSearchable = true,  IsFilterable = true,  IsRetrievable = true, IsSortable = true,  IsFacetable = false, IsKey = true },
-                new Field("fileName",        DataType.String)                      { IsSearchable = false, IsFilterable = false, IsRetrievable = true, IsSortable = false, IsFacetable = false },
-                new Field("metadata",        DataType.String)                      { IsSearchable = false, IsFilterable = false, IsRetrievable = true, IsSortable = false, IsFacetable = false },
-                new Field("text",            DataType.String)                      { IsSearchable = true,  IsFilterable = false, IsRetrievable = true, IsSortable = false, IsFacetable = false, SynonymMaps = new List<string>() { synonymMapName } },
-                new Field("entities",        DataType.Collection(DataType.String)) { IsSearchable = false, IsFilterable = true,  IsRetrievable = true, IsSortable = false, IsFacetable = true  },
-                new Field("cryptonyms",      DataType.Collection(DataType.String)) { IsSearchable = false, IsFilterable = true,  IsRetrievable = true, IsSortable = false, IsFacetable = true  },
-                new Field("demoBoost",       DataType.Int32)                       { IsSearchable = false, IsFilterable = true,  IsRetrievable = true, IsSortable = false, IsFacetable = false },
-                new Field("demoInitialPage", DataType.Int32)                       { IsSearchable = false, IsFilterable = false, IsRetrievable = true, IsSortable = false, IsFacetable = false },
-            },
-            ScoringProfiles = new List<ScoringProfile>()
-            {
-                new ScoringProfile()
+                Fields = new List<SearchField>()
                 {
-                    Name = "demoBooster",
-                    FunctionAggregation = ScoringFunctionAggregation.Sum,
-                    Functions = new List<ScoringFunction>()
+                    new SearchField("id",              SearchFieldDataType.String)                                 { IsSearchable = true,  IsFilterable = true,  IsHidden = false, IsSortable = true,  IsFacetable = false, IsKey = true },
+                    new SearchField("fileName",        SearchFieldDataType.String)                                 { IsSearchable = false, IsFilterable = false, IsHidden = false, IsSortable = false, IsFacetable = false },
+                    new SearchField("metadata",        SearchFieldDataType.String)                                 { IsSearchable = false, IsFilterable = false, IsHidden = false, IsSortable = false, IsFacetable = false },
+                    new SearchField("text",            SearchFieldDataType.String)                                 { IsSearchable = true,  IsFilterable = false, IsHidden = false, IsSortable = false, IsFacetable = false, SynonymMapNames = { synonymMapName } },
+                    new SearchField("entities",        SearchFieldDataType.Collection(SearchFieldDataType.String)) { IsSearchable = false, IsFilterable = true,  IsHidden = false, IsSortable = false, IsFacetable = true  },
+                    new SearchField("cryptonyms",      SearchFieldDataType.Collection(SearchFieldDataType.String)) { IsSearchable = false, IsFilterable = true,  IsHidden = false, IsSortable = false, IsFacetable = true  },
+                    new SearchField("demoBoost",       SearchFieldDataType.Int32)                                  { IsSearchable = false, IsFilterable = true,  IsHidden = false, IsSortable = false, IsFacetable = false },
+                    new SearchField("demoInitialPage", SearchFieldDataType.Int32)                                  { IsSearchable = false, IsFilterable = false, IsHidden = false, IsSortable = false, IsFacetable = false },
+                },
+                ScoringProfiles = 
+                {
+                    new ScoringProfile(name: "demoBooster")
                     {
-                        new MagnitudeScoringFunction()
+                        FunctionAggregation = ScoringFunctionAggregation.Sum,
+                        Functions = 
                         {
-                            FieldName = "demoBoost",
-                            Interpolation = ScoringFunctionInterpolation.Linear,
-                            Boost = 1000,
-                            Parameters = new MagnitudeScoringParameters()
+                            new MagnitudeScoringFunction(
+                                fieldName: "demoBoost",
+                                boost: 1000,
+                                parameters: new MagnitudeScoringParameters(
+                                    boostingRangeStart: 0,
+                                    boostingRangeEnd: 100)
+                                {
+                                    ShouldBoostBeyondRangeByConstant = true
+                                })
                             {
-                                BoostingRangeStart = 0,
-                                BoostingRangeEnd = 100,
-                                ShouldBoostBeyondRangeByConstant = true
+                                Interpolation = ScoringFunctionInterpolation.Linear
                             }
                         }
                     }
-                }
-            },
-            CorsOptions = new CorsOptions()
-            {
-                AllowedOrigins = new List<string>() { "*" }
-            },
-            Suggesters = new List<Suggester>()
-            {
-                new Suggester()
+                },
+                CorsOptions = new CorsOptions(allowedOrigins: new List<string>() { "*" }),
+                Suggesters = 
                 {
-                    Name = "sg-jfk",
-                    SourceFields = new List<string>() { "entities" }
+                    new SearchSuggester(name: "sg-jfk", sourceFields: "entities")
                 }
-            }
-        };
+            };
 
-        public static Indexer GetIndexer(string name, string dataSourceName, string indexName, string skillsetName) => new Indexer()
-        {
-            Name = name,
-            DataSourceName = dataSourceName,
-            TargetIndexName = indexName,
-            SkillsetName = skillsetName,
-            Parameters = new IndexingParameters()
+        public static SearchIndexer GetIndexer(string name, string dataSourceName, string indexName, string skillsetName) => 
+            new SearchIndexer(
+                name: name,
+                dataSourceName: dataSourceName,
+                targetIndexName: indexName)
             {
-                BatchSize = 1,
-                MaxFailedItems = 0,
-                MaxFailedItemsPerBatch = 0,
-                Configuration = new Dictionary<string, object>()
+                SkillsetName = skillsetName,
+                Parameters = new IndexingParameters()
                 {
-                    ["dataToExtract"] = "contentAndMetadata",
-                    ["imageAction"] = "generateNormalizedImages",
-                    ["normalizedImageMaxWidth"] = 2000,
-                    ["normalizedImageMaxHeight"] = 2000
+                    BatchSize = 1,
+                    MaxFailedItems = 0,
+                    MaxFailedItemsPerBatch = 0,
+                    Configuration = 
+                    {
+                        ["dataToExtract"] = BlobIndexerDataToExtract.ContentAndMetadata,
+                        ["imageAction"] = BlobIndexerImageAction.GenerateNormalizedImages,
+                        ["normalizedImageMaxWidth"] = 2000,
+                        ["normalizedImageMaxHeight"] = 2000
+                    }
+                },
+                FieldMappings = 
+                {
+                    new FieldMapping(sourceFieldName: "metadata_storage_name")           { TargetFieldName = "fileName"        },
+                    new FieldMapping(sourceFieldName: "metadata_custom_demoBoost")       { TargetFieldName = "demoBoost"       },
+                    new FieldMapping(sourceFieldName: "metadata_custom_demoInitialPage") { TargetFieldName = "demoInitialPage" }
+                },
+                OutputFieldMappings = 
+                {
+                    new FieldMapping(sourceFieldName: "/document/finalText")                         { TargetFieldName = "text"       },
+                    new FieldMapping(sourceFieldName: "/document/hocrDocument/metadata")             { TargetFieldName = "metadata"   },
+                    new FieldMapping(sourceFieldName: "/document/finalText/pages/*/entities/*/text") { TargetFieldName = "entities"   },
+                    new FieldMapping(sourceFieldName: "/document/cryptonyms")                        { TargetFieldName = "cryptonyms" }
                 }
-            },
-            FieldMappings = new List<FieldMapping>()
-            {
-                new FieldMapping() { SourceFieldName = "metadata_storage_name",           TargetFieldName = "fileName"        },
-                new FieldMapping() { SourceFieldName = "metadata_custom_demoBoost",       TargetFieldName = "demoBoost"       },
-                new FieldMapping() { SourceFieldName = "metadata_custom_demoInitialPage", TargetFieldName = "demoInitialPage" }
-            },
-            OutputFieldMappings = new List<FieldMapping>()
-            {
-                new FieldMapping() { SourceFieldName = "/document/finalText",                          TargetFieldName = "text"       },
-                new FieldMapping() { SourceFieldName = "/document/hocrDocument/metadata",              TargetFieldName = "metadata"   },
-                new FieldMapping() { SourceFieldName = "/document/finalText/pages/*/entities/*/value", TargetFieldName = "entities"   },
-                new FieldMapping() { SourceFieldName = "/document/cryptonyms",                         TargetFieldName = "cryptonyms" }
-            }
-        };
+            };
     }
 }

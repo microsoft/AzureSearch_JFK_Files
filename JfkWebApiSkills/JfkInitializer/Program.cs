@@ -9,10 +9,13 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
+using Azure;
+using Azure.Search.Documents;
+using Azure.Search.Documents.Indexes;
+using Azure.Search.Documents.Indexes.Models;
+using Azure.Search.Documents.Models;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace JfkInitializer
 {
@@ -33,7 +36,8 @@ namespace JfkInitializer
         private static bool ShouldDeployWebsite = true;
 
         // Clients
-        private static ISearchServiceClient _searchClient;
+        private static SearchIndexClient _searchIndexClient;
+        private static SearchIndexerClient _searchIndexerClient;
         private static HttpClient _httpClient = new HttpClient();
 
         static void Main(string[] args)
@@ -45,10 +49,11 @@ namespace JfkInitializer
             SynonymMapName = ConfigurationManager.AppSettings["SynonymMapName"];
             BlobContainerNameForImageStore = ConfigurationManager.AppSettings["BlobContainerNameForImageStore"];
 
-            string searchServiceName = ConfigurationManager.AppSettings["SearchServiceName"];
+            Uri searchServiceEndpoint = new Uri(string.Format("https://{0}.{1}", ConfigurationManager.AppSettings["SearchServiceName"], ConfigurationManager.AppSettings["SearchServiceDnsSuffix"]));
             string apiKey = ConfigurationManager.AppSettings["SearchServiceApiKey"];
 
-            _searchClient = new SearchServiceClient(searchServiceName, new SearchCredentials(apiKey));
+            _searchIndexClient = new SearchIndexClient(searchServiceEndpoint, new AzureKeyCredential(apiKey));
+            _searchIndexerClient = new SearchIndexerClient(searchServiceEndpoint, new AzureKeyCredential(apiKey));
 
             bool result = RunAsync().GetAwaiter().GetResult();
             if (!result && !DebugMode)
@@ -106,11 +111,11 @@ namespace JfkInitializer
             Console.WriteLine("Deleting Data Source, Index, Indexer, Skillset and SynonymMap if they exist...");
             try
             {
-                await _searchClient.DataSources.DeleteAsync(DataSourceName);
-                await _searchClient.Indexes.DeleteAsync(IndexName);
-                await _searchClient.Indexers.DeleteAsync(IndexerName);
-                await _searchClient.Skillsets.DeleteAsync(SkillsetName);
-                await _searchClient.SynonymMaps.DeleteAsync(SynonymMapName);
+                await _searchIndexerClient.DeleteDataSourceConnectionAsync(DataSourceName);
+                await _searchIndexClient.DeleteIndexAsync(IndexName);
+                await _searchIndexerClient.DeleteIndexerAsync(IndexerName);
+                await _searchIndexerClient.DeleteSkillsetAsync(SkillsetName);
+                await _searchIndexClient.DeleteSynonymMapAsync(SynonymMapName);
             }
             catch (Exception ex)
             {
@@ -128,16 +133,14 @@ namespace JfkInitializer
             Console.WriteLine("Creating Blob Container for Image Store Skill...");
             try
             {
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["BlobStorageAccountConnectionString"]);
-                CloudBlobClient client = storageAccount.CreateCloudBlobClient();
-                CloudBlobContainer container = client.GetContainerReference(BlobContainerNameForImageStore);
+                BlobContainerClient container = new BlobContainerClient(
+                    connectionString: ConfigurationManager.AppSettings["BlobStorageAccountConnectionString"], 
+                    blobContainerName: BlobContainerNameForImageStore);
                 await container.CreateIfNotExistsAsync();
-                // Note that setting this permission means that the container will be publically accessible.  This is necessary for
-                // the website to work properly.  Remove these next 3 lines if you start using this code to process any private or
+                // Note that setting this access policy means that the container will be publically accessible.  This is necessary for
+                // the website to work properly.  Remove this next line if you start using this code to process any private or
                 // confidential data, but note that the website will stop working properly if you do.
-                BlobContainerPermissions permissions = container.GetPermissions();
-                permissions.PublicAccess = BlobContainerPublicAccessType.Container;
-                await container.SetPermissionsAsync(permissions);
+                await container.SetAccessPolicyAsync(PublicAccessType.BlobContainer);
             }
             catch (Exception ex)
             {
@@ -155,8 +158,8 @@ namespace JfkInitializer
             Console.WriteLine("Creating Data Source...");
             try
             {
-                DataSource dataSource = SearchResources.GetDataSource(DataSourceName);
-                await _searchClient.DataSources.CreateAsync(dataSource);
+                SearchIndexerDataSourceConnection dataSource = SearchResources.GetDataSource(DataSourceName);
+                await _searchIndexerClient.CreateDataSourceConnectionAsync(dataSource);
             }
             catch (Exception ex)
             {
@@ -174,8 +177,8 @@ namespace JfkInitializer
             Console.WriteLine("Creating Skill Set...");
             try
             {
-                Skillset skillset = SearchResources.GetSkillset(SkillsetName, BlobContainerNameForImageStore);
-                await _searchClient.Skillsets.CreateAsync(skillset);
+                SearchIndexerSkillset skillset = SearchResources.GetSkillset(SkillsetName, BlobContainerNameForImageStore);
+                await _searchIndexerClient.CreateSkillsetAsync(skillset);
             }
             catch (Exception ex)
             {
@@ -194,7 +197,7 @@ namespace JfkInitializer
             try
             {
                 SynonymMap synonyms = SearchResources.GetSynonymMap(SynonymMapName);
-                await _searchClient.SynonymMaps.CreateAsync(synonyms);
+                await _searchIndexClient.CreateSynonymMapAsync(synonyms);
             }
             catch (Exception ex)
             {
@@ -212,8 +215,8 @@ namespace JfkInitializer
             Console.WriteLine("Creating Index...");
             try
             {
-                Index index = SearchResources.GetIndex(IndexName, SynonymMapName);
-                await _searchClient.Indexes.CreateAsync(index);
+                SearchIndex index = SearchResources.GetIndex(IndexName, SynonymMapName);
+                await _searchIndexClient.CreateIndexAsync(index);
             }
             catch (Exception ex)
             {
@@ -231,8 +234,8 @@ namespace JfkInitializer
             Console.WriteLine("Creating Indexer...");
             try
             {
-                Indexer indexer = SearchResources.GetIndexer(IndexerName, DataSourceName, IndexName, SkillsetName);
-                await _searchClient.Indexers.CreateAsync(indexer);
+                SearchIndexer indexer = SearchResources.GetIndexer(IndexerName, DataSourceName, IndexName, SkillsetName);
+                await _searchIndexerClient.CreateIndexerAsync(indexer);
             }
             catch (Exception ex)
             {
@@ -253,10 +256,10 @@ namespace JfkInitializer
                 string searchQueryKey = ConfigurationManager.AppSettings["SearchServiceQueryKey"];
                 string envText = File.ReadAllText("../../../../frontend/.env");
                 envText = envText.Replace("[SearchServiceName]", ConfigurationManager.AppSettings["SearchServiceName"]);
-                envText = envText.Replace("[SearchServiceDomain]", _searchClient.SearchDnsSuffix);
+                envText = envText.Replace("[SearchServiceDomain]", ConfigurationManager.AppSettings["SearchServiceDnsSuffix"]);
                 envText = envText.Replace("[IndexName]", IndexName);
                 envText = envText.Replace("[SearchServiceApiKey]", searchQueryKey);
-                envText = envText.Replace("[SearchServiceApiVersion]", _searchClient.ApiVersion);
+                envText = envText.Replace("[SearchServiceApiVersion]", ConfigurationManager.AppSettings["SearchServiceApiVersion"]);
                 envText = envText.Replace("[AzureFunctionName]", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
                 envText = envText.Replace("[AzureFunctionDefaultHostKey]", ConfigurationManager.AppSettings["AzureFunctionHostKey"]);
                 File.WriteAllText("../../../../frontend/.env", envText);
@@ -330,11 +333,11 @@ namespace JfkInitializer
             IndexerExecutionStatus requestStatus = IndexerExecutionStatus.InProgress;
             try
             {
-                await _searchClient.Indexers.GetAsync(IndexerName);
+                await _searchIndexerClient.GetIndexerAsync(IndexerName);
                 while (requestStatus.Equals(IndexerExecutionStatus.InProgress))
                 {
                     Thread.Sleep(3000);
-                    IndexerExecutionInfo info = await _searchClient.Indexers.GetStatusAsync(IndexerName);
+                    SearchIndexerStatus info = await _searchIndexerClient.GetIndexerStatusAsync(IndexerName);
                     requestStatus = info.LastResult.Status;
                     if (DebugMode)
                     {
@@ -358,16 +361,9 @@ namespace JfkInitializer
             Console.WriteLine("Querying Index...");
             try
             {
-                ISearchIndexClient indexClient = _searchClient.Indexes.GetClient(IndexName);
-                DocumentSearchResult<Document> searchResult = await indexClient.Documents.SearchAsync("*");
-                Console.WriteLine("Query Results:");
-                foreach (SearchResult<Document> result in searchResult.Results)
-                {
-                    foreach (string key in result.Document.Keys)
-                    {
-                        Console.WriteLine("{0}: {1}", key, result.Document[key]);
-                    }
-                }
+                SearchClient indexClient = _searchIndexClient.GetSearchClient(IndexName);
+                SearchResults<object> searchResult = await indexClient.SearchAsync<object>("*");
+                Console.WriteLine("Number of Query Results: {0}", searchResult.GetResults().Count());
             }
             catch (Exception ex)
             {
