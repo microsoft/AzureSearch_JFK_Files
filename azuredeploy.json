@@ -46,7 +46,7 @@
     },
     "searchServiceAndCognitiveServicesLocation": {
       "type": "string",
-      "defaultValue": "West US 2",
+      "defaultValue": "Australia East",
       "allowedValues": [
         "South Africa North",
         "East Asia",
