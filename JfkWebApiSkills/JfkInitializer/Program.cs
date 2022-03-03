@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using Azure;
+﻿using Azure;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace JfkInitializer
 {
@@ -134,7 +134,7 @@ namespace JfkInitializer
             try
             {
                 BlobContainerClient container = new BlobContainerClient(
-                    connectionString: ConfigurationManager.AppSettings["BlobStorageAccountConnectionString"], 
+                    connectionString: ConfigurationManager.AppSettings["BlobStorageAccountConnectionString"],
                     blobContainerName: BlobContainerNameForImageStore);
                 await container.CreateIfNotExistsAsync();
                 // Note that setting this access policy means that the container will be publically accessible.  This is necessary for

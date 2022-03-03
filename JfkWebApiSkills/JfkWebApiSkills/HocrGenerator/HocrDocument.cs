@@ -38,7 +38,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
         StringWriter metadata = new StringWriter();
         StringWriter text = new StringWriter() { NewLine = " " };
 
-        public HocrPage(OcrImageMetadata imageMetadata, int pageNumber, Dictionary<string,string> wordAnnotations = null)
+        public HocrPage(OcrImageMetadata imageMetadata, int pageNumber, Dictionary<string, string> wordAnnotations = null)
         {
             // page
             metadata.WriteLine($"<div class='ocr_page' id='page_{pageNumber}' title='image \"{imageMetadata.ImageStoreUri}\"; bbox 0 0 {imageMetadata.Width} {imageMetadata.Height}; ppageno {pageNumber}'>");
@@ -51,7 +51,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
             foreach (IEnumerable<NormalizedWord> words in wordGroups)
             {
                 metadata.WriteLine($"<span class='ocr_line' id='line_{pageNumber}_{li}' title='baseline -0.002 -5; x_size 30; x_descenders 6; x_ascenders 6'>");
-                
+
                 foreach (NormalizedWord word in words)
                 {
                     string annotation = "";
@@ -75,7 +75,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
         {
             get { return metadata.ToString(); }
         }
-        
+
         public string Text
         {
             get { return text.ToString(); }
@@ -96,7 +96,7 @@ namespace Microsoft.CognitiveSearch.Skills.Hocr
                 }
                 lineGroups.Add(currGroup);
             }
-            return lineGroups.OrderBy(grp => grp.Line.BoundingBox.Select(p => p.Y).Max()).Select(grp => grp.Words.FirstOrDefault()?.BoundingBox == null ? grp.Words.ToArray() : grp.Words.OrderBy(l => l.BoundingBox[0].X).ToArray());      
+            return lineGroups.OrderBy(grp => grp.Line.BoundingBox.Select(p => p.Y).Max()).Select(grp => grp.Words.FirstOrDefault()?.BoundingBox == null ? grp.Words.ToArray() : grp.Words.OrderBy(l => l.BoundingBox[0].X).ToArray());
         }
 
         private bool CheckIntersection(List<Point> line, List<Point> word)

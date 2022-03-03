@@ -25,7 +25,7 @@ namespace Microsoft.CognitiveSearch.WebApiSkills
         public List<WebApiErrorWarningContract> Errors { get; set; } = new List<WebApiErrorWarningContract>();
         public List<WebApiErrorWarningContract> Warnings { get; set; } = new List<WebApiErrorWarningContract>();
     }
-    
+
     public class WebApiErrorWarningContract
     {
         public string Message { get; set; }

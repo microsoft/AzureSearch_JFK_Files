@@ -24,7 +24,7 @@ namespace Microsoft.CognitiveSearch.Search
                 errorMessage = e.Message.ToString();
             }
         }
-        
+
         public DocumentSearchResult<Document> GetFacets(string searchText, string facetName, int maxCount = 30)
         {
             // Execute search based on query string

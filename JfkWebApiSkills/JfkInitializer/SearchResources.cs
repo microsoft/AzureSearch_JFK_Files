@@ -20,7 +20,7 @@ namespace JfkInitializer
         {
             string azureFunctionEndpointUri = string.Format("https://{0}.azurewebsites.net", ConfigurationManager.AppSettings["AzureFunctionSiteName"]);
             return new SearchIndexerSkillset(
-                name: name, 
+                name: name,
                 skills: new List<SearchIndexerSkill>()
                 {
                     new OcrSkill(
@@ -50,8 +50,8 @@ namespace JfkInitializer
                         },
                         outputs: new List<OutputFieldMappingEntry>()
                         {
-                            new OutputFieldMappingEntry(name: "tags") 
-                            { 
+                            new OutputFieldMappingEntry(name: "tags")
+                            {
                                 TargetName = "Tags"
                             },
                             new OutputFieldMappingEntry(name: "description")
@@ -68,12 +68,12 @@ namespace JfkInitializer
                     new MergeSkill(
                         inputs: new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "text") 
-                            { 
+                            new InputFieldMappingEntry(name: "text")
+                            {
                                 Source = "/document/content"
                             },
-                            new InputFieldMappingEntry(name: "itemsToInsert") 
-                            { 
+                            new InputFieldMappingEntry(name: "itemsToInsert")
+                            {
                                 Source = "/document/normalized_images/*/text"
                             },
                             new InputFieldMappingEntry(name: "offsets")
@@ -92,11 +92,11 @@ namespace JfkInitializer
                         Description = "Merge native text content and inline OCR content where images were present",
                         Context = "/document"
                     },
-                    new MergeSkill(                        
+                    new MergeSkill(
                         inputs: new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "text") 
-                            { 
+                            new InputFieldMappingEntry(name: "text")
+                            {
                                 Source = "/document/nativeTextAndOcr"
                             },
                             new InputFieldMappingEntry(name: "itemsToInsert")
@@ -118,8 +118,8 @@ namespace JfkInitializer
                     new MergeSkill(
                         inputs: new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "text") 
-                            { 
+                            new InputFieldMappingEntry(name: "text")
+                            {
                                 Source = "/document/fullTextAndCaptions"
                             },
                             new InputFieldMappingEntry(name: "itemsToInsert")
@@ -186,8 +186,8 @@ namespace JfkInitializer
                         },
                         outputs: new List<OutputFieldMappingEntry>()
                         {
-                            new OutputFieldMappingEntry(name: "persons") 
-                            { 
+                            new OutputFieldMappingEntry(name: "persons")
+                            {
                                 TargetName = "people"
                             },
                             new OutputFieldMappingEntry(name: "locations"),
@@ -205,8 +205,8 @@ namespace JfkInitializer
                     new ShaperSkill(
                         inputs: new List<InputFieldMappingEntry>()
                         {
-                            new InputFieldMappingEntry(name: "layoutText") 
-                            { 
+                            new InputFieldMappingEntry(name: "layoutText")
+                            {
                                 Source = "/document/normalized_images/*/layoutText"
                             },
                             new InputFieldMappingEntry(name: "imageStoreUri")
@@ -249,7 +249,7 @@ namespace JfkInitializer
                     {
                         Description = "Upload image data to the annotation store",
                         Context = "/document/normalized_images/*",
-                        HttpHeaders = 
+                        HttpHeaders =
                         {
                             ["BlobContainerName"] = blobContainerNameForImageStore
                         },
@@ -259,7 +259,7 @@ namespace JfkInitializer
                         inputs: new List<InputFieldMappingEntry>()
                         {
                             new InputFieldMappingEntry(name: "ocrImageMetadataList")
-                            { 
+                            {
                                 Source = "/document/normalized_images/*/ocrImageMetadata"
                             },
                             new InputFieldMappingEntry(name: "wordAnnotations")
@@ -311,7 +311,7 @@ namespace JfkInitializer
                             novenko, nosenko, novenco, nosenko"
             );
 
-        public static SearchIndex GetIndex(string name, string synonymMapName) => 
+        public static SearchIndex GetIndex(string name, string synonymMapName) =>
             new SearchIndex(name: name)
             {
                 Fields = new List<SearchField>()
@@ -325,12 +325,12 @@ namespace JfkInitializer
                     new SearchField("demoBoost",       SearchFieldDataType.Int32)                                  { IsSearchable = false, IsFilterable = true,  IsHidden = false, IsSortable = false, IsFacetable = false },
                     new SearchField("demoInitialPage", SearchFieldDataType.Int32)                                  { IsSearchable = false, IsFilterable = false, IsHidden = false, IsSortable = false, IsFacetable = false },
                 },
-                ScoringProfiles = 
+                ScoringProfiles =
                 {
                     new ScoringProfile(name: "demoBooster")
                     {
                         FunctionAggregation = ScoringFunctionAggregation.Sum,
-                        Functions = 
+                        Functions =
                         {
                             new MagnitudeScoringFunction(
                                 fieldName: "demoBoost",
@@ -348,13 +348,13 @@ namespace JfkInitializer
                     }
                 },
                 CorsOptions = new CorsOptions(allowedOrigins: new List<string>() { "*" }),
-                Suggesters = 
+                Suggesters =
                 {
                     new SearchSuggester(name: "sg-jfk", sourceFields: "entities")
                 }
             };
 
-        public static SearchIndexer GetIndexer(string name, string dataSourceName, string indexName, string skillsetName) => 
+        public static SearchIndexer GetIndexer(string name, string dataSourceName, string indexName, string skillsetName) =>
             new SearchIndexer(
                 name: name,
                 dataSourceName: dataSourceName,
@@ -366,7 +366,7 @@ namespace JfkInitializer
                     BatchSize = 1,
                     MaxFailedItems = 0,
                     MaxFailedItemsPerBatch = 0,
-                    Configuration = 
+                    Configuration =
                     {
                         ["dataToExtract"] = BlobIndexerDataToExtract.ContentAndMetadata,
                         ["imageAction"] = BlobIndexerImageAction.GenerateNormalizedImages,
@@ -374,13 +374,13 @@ namespace JfkInitializer
                         ["normalizedImageMaxHeight"] = 2000
                     }
                 },
-                FieldMappings = 
+                FieldMappings =
                 {
                     new FieldMapping(sourceFieldName: "metadata_storage_name")           { TargetFieldName = "fileName"        },
                     new FieldMapping(sourceFieldName: "metadata_custom_demoBoost")       { TargetFieldName = "demoBoost"       },
                     new FieldMapping(sourceFieldName: "metadata_custom_demoInitialPage") { TargetFieldName = "demoInitialPage" }
                 },
-                OutputFieldMappings = 
+                OutputFieldMappings =
                 {
                     new FieldMapping(sourceFieldName: "/document/finalText")                         { TargetFieldName = "text"       },
                     new FieldMapping(sourceFieldName: "/document/hocrDocument/metadata")             { TargetFieldName = "metadata"   },

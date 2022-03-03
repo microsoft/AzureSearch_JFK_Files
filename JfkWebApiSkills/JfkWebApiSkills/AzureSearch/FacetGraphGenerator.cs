@@ -5,17 +5,17 @@ using System.Linq;
 
 namespace Microsoft.CognitiveSearch.Search
 {
-    public class FacetGraphGenerator 
+    public class FacetGraphGenerator
     {
         private SearchClientHelper _searchHelper;
-        
+
         public FacetGraphGenerator(SearchClientHelper searchClient)
         {
             _searchHelper = searchClient;
         }
 
         public JObject GetFacetGraphNodes(string q, string facetName)
-        {           
+        {
             // Calculate nodes for 3 levels
             JObject dataset = new JObject();
             int MaxEdges = 20;
