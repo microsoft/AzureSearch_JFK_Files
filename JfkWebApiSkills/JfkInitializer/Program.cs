@@ -30,7 +30,7 @@ namespace JfkInitializer
         private static string BlobContainerNameForImageStore;
 
         // Set this to true to see additional debugging information in the console.
-        private static bool DebugMode = false;
+        private static bool DebugMode = true;
 
         // Set this to true if you would like this app to deploy the JFK files frontend to your Azure site.
         private static bool ShouldDeployWebsite = true;
