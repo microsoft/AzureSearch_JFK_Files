@@ -82,6 +82,8 @@ These instructions will help you have your own version of the JFK files demo run
 
 11. After a few seconds, the message "Website keys have been set.  Please build the website and then return here and press any key to continue." will be output to the console app.  At this point, open a separate cmd window and cd into the directory of where you cloned or downloaded the repo.  Then run the following commands:
 
+    *Note: you need npm@6, can be installed with `npm install -g npm@6`*
+
     ```shell
     cd frontend
     npm install
