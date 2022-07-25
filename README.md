@@ -37,7 +37,8 @@ These instructions will help you have your own version of the JFK files demo run
     1. Note that this demo requires writing to an Azure Storage Account, which you will be billed monthly for the storage written to, and by default provisions a Basic Azure Search service which is billed hourly.  For an estimation of cost, reference the [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).  In addition, you will be charged for the Cognitive Search part of the demo, which is transaction based.  These charges used with the provided files should be about $15 USD.  [See here for details](https://docs.microsoft.com/en-us/azure/search/cognitive-search-attach-cognitive-services) on what costs may look like if you choose to use Cognitive Search with your own dataset.
 2. [Visual Studio 2019](https://www.visualstudio.com/downloads/) with [Azure Developer Tools](https://azure.microsoft.com/en-us/tools/) enabled.  The free community edition will work fine.
 3. [Node.js](https://nodejs.org/) must be installed on your computer.
-4. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
+4. npm version 6.x is required, newer versions are not supported yet. Can be installed with `npm install -g npm@6`.
+5. Basic familiarity with using the [Azure Portal](https://portal.azure.com) and cloning and compiling code from github.
 
 ### Deploy Required Resources
 
@@ -81,6 +82,8 @@ These instructions will help you have your own version of the JFK files demo run
     ![Run initializer](images/runInitializer.JPG)
 
 11. After a few seconds, the message "Website keys have been set.  Please build the website and then return here and press any key to continue." will be output to the console app.  At this point, open a separate cmd window and cd into the directory of where you cloned or downloaded the repo.  Then run the following commands:
+
+    *Note: you need npm@6, can be installed with `npm install -g npm@6`*
 
     ```shell
     cd frontend

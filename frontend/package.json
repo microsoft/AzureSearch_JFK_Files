@@ -55,7 +55,7 @@
     "file-loader": "~1.1.5",
     "html-webpack-plugin": "~2.30.1",
     "if-env": "^1.0.4",
-    "node-sass": "^4.7.2",
+    "node-sass": "^7.0.1",
     "qs": "^6.5.1",
     "resolve-url-loader": "^2.3.0",
     "rimraf": "^2.6.2",
